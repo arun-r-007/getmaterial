@@ -69,7 +69,8 @@ export default function ContributorAuth() {
 
     try {
 
-      const apiKey = import.meta.env.NEXT_PUBLIC_BREVO_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_BREVO_API_KEY;
+
 
       if (!apiKey) {
         throw new Error('Brevo API key is missing');

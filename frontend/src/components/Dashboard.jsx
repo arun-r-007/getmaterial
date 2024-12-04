@@ -187,12 +187,23 @@ function Dashboard() {
       {/* Notes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredNotes.map((note) => (
-          <div key={note.id} className="bg-white p-4 rounded shadow">
+          <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl">
             <h2 className="text-xl font-bold mb-2">{note.name}</h2>
             
             <p className='text-gray-600 mb-2'>Semester:
               <span
-                onClick={() => setSemesterFilter(note.semester)}
+                onClick={() => {
+                  if (semesterFilter==note.semester)
+                  {
+                    setSemesterFilter("")
+                  }
+                  else 
+                  {
+                    setSemesterFilter(note.semester)
+                  }
+                }
+                  
+                  }
                 className='text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
                 {note.semester || "unknown"}
@@ -206,7 +217,18 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-2'>Subject:
               <span
-                onClick={() => setSubjectFilter(note.subject)}
+                onClick={() => 
+                  {
+                    if (subjectFilter==note.subject)
+                    {
+                      setSubjectFilter("")
+                    }
+                    else 
+                    {
+                      setSubjectFilter(note.subject)
+                    }
+                  }
+                }
                 className='text-gray-600 group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
                 {note.subject || "unknown"}
@@ -221,7 +243,18 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-2'>@
               <span
-                onClick={() => setModuleFilter(note.module)}
+                onClick={() => 
+                  {
+                    if (moduleFilter==note.module)
+                    {
+                      setModuleFilter("")
+                    }
+                    else 
+                    {
+                      setModuleFilter(note.module)
+                    }
+                  }
+                }
                 className='text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
                 {note.module || "unknown"}
@@ -235,7 +268,18 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-4'>Uploaded by:
               <span
-                onClick={() => setNameFilter(note.contributorName)}
+                onClick={() => 
+                  {
+                    if (nameFilter==note.contributorName)
+                    {
+                      setNameFilter("")
+                    }
+                    else 
+                    {
+                      setNameFilter(note.contributorName)
+                    }
+                  }
+                }
                 className='text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
                 {note.contributorName || "unknown"}

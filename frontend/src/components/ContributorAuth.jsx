@@ -80,7 +80,7 @@ export default function ContributorAuth() {
         'https://api.brevo.com/v3/smtp/email', 
         {
           sender: { 
-            email: import.meta.env.VITE_SENDER_EMAIL || 'useles436@gmail.com'
+            email:'useles436@gmail.com'
           },
           to: [{ email }],
           subject: 'Your OTP for Get Material Login',
@@ -243,7 +243,7 @@ export default function ContributorAuth() {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading.googleSignIn}
-          className="w-full flex flex-row justify-center gap-2 items-center font-bold py-4 text-black bg-white p-2 rounded mb-4 transition-colors duration-300 disabled:opacity-50"
+          className="w-full flex flex-row justify-center gap-2 items-center font-bold py-3 text-black bg-white rounded mb-4 transition-colors duration-300 disabled:opacity-50"
         >
           <lord-icon
             src="https://cdn.lordicon.com/eziplgef.json"
@@ -252,6 +252,8 @@ export default function ContributorAuth() {
           </lord-icon>
           <span>Sign In with Google</span>
         </button>
+
+        <h1 className='text-center text-black font-bold pb-4'>OR</h1>
 
         {/* Sign Up Flow */}
         {!isSignInMode && !passwordCreation && (

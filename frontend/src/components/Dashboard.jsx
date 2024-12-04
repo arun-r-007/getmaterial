@@ -266,7 +266,7 @@ function Dashboard() {
           </div>
         )}
       </div>
-      <div className='text-center opacity-90 cursor-pointer pt-14 flex flex-col'>
+      <div className='text-center opacity-90 pt-14 flex flex-col'>
         <a href="https://www.linkedin.com/in/talagana-rajesh-75a546289/" target='_blank'>
           <span className='opacity-60 hover:opacity-100 transition-opacity duration-300'>Built with 💖 by</span> <span className='text-green-700 hover:text-green-600 transition-colors duration-300 font-bold'>Rajesh</span>
         </a>

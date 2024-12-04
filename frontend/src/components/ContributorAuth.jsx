@@ -1,118 +1,400 @@
-import { useState } from 'react';
-import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword 
+} from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/GM logo 2.png';
+import axios from 'axios';
+import './loader.css';
 
-function ContributorAuth() {
+export default function ContributorAuth() {
   const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
   const [isSignUp, setIsSignUp] = useState(true);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [passwordCreation, setPasswordCreation] = useState(false);
+  const [isSignInMode, setIsSignInMode] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  
+  // New loading state variables
+  const [isLoading, setIsLoading] = useState({
+    googleSignIn: false,
+    sendOtp: false,
+    verifyOtp: false,
+    createAccount: false,
+    signIn: false
+  });
+
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmailVerified(user.emailVerified);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleGoogleSignIn = async () => {
+    setIsLoading(prev => ({ ...prev, googleSignIn: true }));
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
       navigate('/upload');
     } catch (error) {
       console.error('Error signing in with Google:', error);
+      alert('Google Sign-In failed. Please try again.');
+    } finally {
+      setIsLoading(prev => ({ ...prev, googleSignIn: false }));
+    }
+  };
+
+  const generateOtp = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const sendOtpEmail = async (email, otp) => {
+    setIsLoading(prev => ({ ...prev, sendOtp: true }));
+
+
+    try {
+
+      const apiKey = import.meta.env.VITE_BREVO_API_KEY;
+
+      if (!apiKey) {
+        throw new Error('Brevo API key is missing');
+      }
+
+      const response = await axios.post(
+        'https://api.brevo.com/v3/smtp/email', 
+        {
+          sender: { 
+            email: import.meta.env.VITE_SENDER_EMAIL || 'useles436@gmail.com'
+          },
+          to: [{ email }],
+          subject: 'Your OTP for Get Material Login',
+          htmlContent: `
+            <html>
+              <body>
+                <h2>Your One-Time Password (OTP)</h2>
+                <p>Your OTP is: <strong>${otp}</strong></p>
+                <p>This OTP will expire in 10 minutes.</p>
+              </body>
+            </html>
+          `,
+        }, 
+        {
+          headers: {
+            'api-key': apiKey,
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000
+        }
+      );
+
+      console.log('OTP email sent successfully:', response.data);
+      return true;
+    } catch (error) {
+      console.error('Detailed OTP Email Error:', error);
+      throw new Error('Failed to send OTP email');
+    } finally {
+      setIsLoading(prev => ({ ...prev, sendOtp: false }));
     }
   };
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
 
+
+    // NEW EMAIL DOMAIN VALIDATION
     if (!email.endsWith('@nist.edu')) {
-      alert('Please use your NIST email address (valid one)');
-      return;
-    }
-    if(email==='himanshu.mishra.cse.2022@nist.edu'){
-      alert('You are not allowed to access this page');
+      alert('NIST edu Email is required');
       return;
     }
 
+    
+
+    if (isSignUp) {
+      try {
+        setIsLoading(prev => ({ ...prev, verifyOtp: true }));
+        const otp = generateOtp();
+        setGeneratedOtp(otp);
+
+        await sendOtpEmail(email, otp);
+        setVerificationSent(true);
+        setIsSignUp(false);
+      } catch (error) {
+        console.error('Email sending failed:', error);
+        alert('Failed to send OTP. Please check your email and try again.');
+      } finally {
+        setIsLoading(prev => ({ ...prev, verifyOtp: false }));
+      }
+    } else {
+      try {
+        setIsLoading(prev => ({ ...prev, verifyOtp: true }));
+        if (verificationSent && otp === generatedOtp) {
+          setPasswordCreation(true);
+          setVerificationSent(false);
+        } else {
+          alert('Incorrect OTP. Please try again.');
+        }
+      } finally {
+        setIsLoading(prev => ({ ...prev, verifyOtp: false }));
+      }
+    }
+  };
+
+  const handlePasswordCreation = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      alert('Password should be at least 6 characters long');
+      return;
+    }
 
     try {
+      setIsLoading(prev => ({ ...prev, createAccount: true }));
+      const userCredential = await createUserWithEmailAndPassword(
+        auth, 
+        email, 
+        password
+      );
 
-
-      const response = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=b93348664aa54a598ade846a4d2e6ab6&email=${email}`);
-      const data = await response.json();
-
-      // Check if the email is valid and exists
-      if (data.deliverability !== "DELIVERABLE") {
-        alert('The provided email address does not exist or cannot receive emails.');
-
-        return;
-      }
-
-
-
-
-      if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
+      const user = userCredential.user;
+      console.log('User created successfully:', user);
       navigate('/upload');
     } catch (error) {
-      console.error('Error with email authentication:', error);
+      console.error('Account creation error:', error);
+      
+      if (error.code === 'auth/email-already-in-use') {
+        alert('Email is already registered. Please sign in.');
+      } else {
+        alert('Failed to create account. Please try again.');
+      }
+    } finally {
+      setIsLoading(prev => ({ ...prev, createAccount: false }));
     }
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(prev => ({ ...prev, signIn: true }));
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log('User signed in successfully:', user);
+      navigate('/upload');
+    } catch (error) {
+      console.error('Sign-in error:', error);
+      
+      if (error.code === 'auth/invalid-credential') {
+        alert('Invalid email or password. Please try again.');
+      } else if (error.code === 'auth/user-not-found') {
+        alert('No account found with this email. Please sign up.');
+      } else {
+        alert('Sign-in failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(prev => ({ ...prev, signIn: false }));
+    }
+  };
+
+  // Loader Component
+  const Loader = () => (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setOtp('');
+    setVerificationSent(false);
+    setPasswordCreation(false);
+    setIsSignUp(true);
+    setIsSignInMode(false);
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className='flex justify-center items-center'>
-        <img src={logo} alt="logo" className='size-20' />
+      <div className="flex justify-center items-center">
+        <img src={logo} alt="logo" width={80} height={80} />
         <h1 className="text-3xl font-bold">Account</h1>
       </div>
-      <div className="max-w-md mx-auto bg-cyan-50 p-8 rounded-xl">
+      <div className="max-w-md mx-auto bg-gradient-to-r login-container p-8 rounded-xl">
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-gradient-to-r flex flex-row justify-center gap-2 items-center from-red-950 to-black font-bold py-4 text-white p-2 rounded mb-4 hover:bg-gradient-to-l transition-colors duration-300"
+          disabled={isLoading.googleSignIn}
+          className="w-full flex flex-row justify-center gap-2 items-center font-bold py-4 text-black bg-white p-2 rounded mb-4 transition-colors duration-300 disabled:opacity-50"
         >
-
           <lord-icon
             src="https://cdn.lordicon.com/eziplgef.json"
-            trigger="hover"
+            trigger="loop"
           >
           </lord-icon>
+          <span>Sign In with Google</span>
+        </button>
 
-          Sign in with Google
-        </button>
-        <form onSubmit={handleEmailAuth} className="space-y-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="w-full p-2 border-2 rounded-lg"
-            required
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full p-2 border-2 rounded-lg"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-cyan-400 to-green-500 text-black font-bold p-2 rounded hover:bg-blue-600"
-          >
-            {isSignUp ? 'Sign Up' : 'Sign In'}
-          </button>
-        </form>
-        <button
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="w-full mt-4 text-black hover:underline"
-        >
-          {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
-        </button>
+        {/* Sign Up Flow */}
+        {!isSignInMode && !passwordCreation && (
+          <form onSubmit={handleEmailAuth} className="space-y-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your Email"
+              className="w-full p-3 border-2 rounded-lg font-semibold"
+              required
+              disabled={isLoading.sendOtp || isLoading.verifyOtp}
+            />
+
+            {!verificationSent && isSignUp && (
+              <button
+                type="submit"
+                disabled={isLoading.sendOtp}
+                className="w-full font-bold p-2 rounded-lg bg-gradient-to-r from-green-950 to-black text-white hover:bg-green-600 transition-colors duration-300 disabled:opacity-50"
+              >
+                {isLoading.sendOtp ? <Loader /> : 'Send OTP'}
+              </button>
+            )}
+
+            {verificationSent && (
+              <div>
+                <div className="text-center text-green-500 mb-4">
+                  OTP sent! Please check your mail inbox and enter the OTP to verify.
+                </div>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full p-2 border-2 rounded-lg"
+                  required
+                  disabled={isLoading.verifyOtp}
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading.verifyOtp}
+                  className="w-full mt-2 font-bold p-2 rounded bg-gradient-to-r from-cyan-400 to-green-400 text-black hover:bg-green-600 transition-colors duration-300 disabled:opacity-50"
+                >
+                  {isLoading.verifyOtp ? <Loader /> : 'Verify OTP'}
+                </button>
+              </div>
+            )}
+          </form>
+        )}
+
+        {/* Password Creation Flow */}
+        {passwordCreation && (
+          <form onSubmit={handlePasswordCreation} className="space-y-4">
+            <div className="text-center text-green-600 mb-4">
+              Email verified! Now create your password
+            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Create Password"
+              className="w-full p-2 border-2 rounded-lg"
+              required
+              minLength={6}
+              disabled={isLoading.createAccount}
+            />
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              className="w-full p-2 border-2 rounded-lg"
+              required
+              minLength={6}
+              disabled={isLoading.createAccount}
+            />
+            <button
+              type="submit"
+              disabled={isLoading.createAccount}
+              className="w-full font-bold p-2 rounded bg-gradient-to-r from-cyan-400 to-green-600 text-black hover:bg-green-600 transition-colors duration-300 disabled:opacity-50"
+            >
+              {isLoading.createAccount ? <Loader /> : 'Create Account'}
+            </button>
+          </form>
+        )}
+
+        {/* Sign In Flow */}
+        {isSignInMode && (
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full p-2 border-2 rounded-lg font-semibold"
+              required
+              disabled={isLoading.signIn}
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-2 border-2 rounded-lg font-semibold"
+              required
+              disabled={isLoading.signIn}
+            />
+            <button
+              type="submit"
+              disabled={isLoading.signIn}
+              className="w-full font-bold p-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-black transition-colors duration-300 disabled:opacity-50"
+            >
+              {isLoading.signIn ? <Loader /> : 'Sign In'}
+            </button>
+          </form>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="mt-4 text-center">
+          {!isSignInMode && !passwordCreation && (
+            <button
+              onClick={() => {
+                resetForm();
+                setIsSignInMode(true);
+              }}
+              className="text-red-950 font-semibold hover:underline"
+            >
+              Already have an account? Sign In
+            </button>
+          )}
+
+          {isSignInMode && (
+            <button
+              onClick={() => {
+                resetForm();
+                setIsSignInMode(false);
+              }}
+              className="text-red-950 font-semibold hover:underline"
+            >
+              Need an account? Sign Up
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-export default ContributorAuth;

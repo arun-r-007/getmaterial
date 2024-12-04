@@ -12,6 +12,10 @@ import logo from '../assets/GM logo 2.png';
 import axios from 'axios';
 import './loader.css';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 export default function ContributorAuth() {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');

@@ -12,8 +12,6 @@ import logo from '../assets/GM logo 2.png';
 import axios from 'axios';
 import './loader.css';
 
-import dotenv from 'dotenv';
-dotenv.config();
 
 
 export default function ContributorAuth() {
@@ -73,7 +71,7 @@ export default function ContributorAuth() {
 
     try {
 
-      const apiKey = process.env.NEXT_PUBLIC_BREVO_API_KEY;
+      const apiKey = import.meta.env.VITE_BREVO_API_KEY;
 
 
       if (!apiKey) {

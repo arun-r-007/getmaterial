@@ -189,21 +189,19 @@ function Dashboard() {
         {filteredNotes.map((note) => (
           <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl">
             <h2 className="text-xl font-bold mb-2">{note.name}</h2>
-            
+
             <p className='text-gray-600 mb-2'>Semester:
               <span
                 onClick={() => {
-                  if (semesterFilter==note.semester)
-                  {
+                  if (semesterFilter == note.semester) {
                     setSemesterFilter("")
                   }
-                  else 
-                  {
+                  else {
                     setSemesterFilter(note.semester)
                   }
                 }
-                  
-                  }
+
+                }
                 className='text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
                 {note.semester || "unknown"}
@@ -217,17 +215,14 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-2'>Subject:
               <span
-                onClick={() => 
-                  {
-                    if (subjectFilter==note.subject)
-                    {
-                      setSubjectFilter("")
-                    }
-                    else 
-                    {
-                      setSubjectFilter(note.subject)
-                    }
+                onClick={() => {
+                  if (subjectFilter == note.subject) {
+                    setSubjectFilter("")
                   }
+                  else {
+                    setSubjectFilter(note.subject)
+                  }
+                }
                 }
                 className='text-gray-600 group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
@@ -243,17 +238,14 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-2'>@
               <span
-                onClick={() => 
-                  {
-                    if (moduleFilter==note.module)
-                    {
-                      setModuleFilter("")
-                    }
-                    else 
-                    {
-                      setModuleFilter(note.module)
-                    }
+                onClick={() => {
+                  if (moduleFilter == note.module) {
+                    setModuleFilter("")
                   }
+                  else {
+                    setModuleFilter(note.module)
+                  }
+                }
                 }
                 className='text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
@@ -268,17 +260,14 @@ function Dashboard() {
 
             <p className='text-gray-600 mb-4'>Uploaded by:
               <span
-                onClick={() => 
-                  {
-                    if (nameFilter==note.contributorName)
-                    {
-                      setNameFilter("")
-                    }
-                    else 
-                    {
-                      setNameFilter(note.contributorName)
-                    }
+                onClick={() => {
+                  if (nameFilter == note.contributorName) {
+                    setNameFilter("")
                   }
+                  else {
+                    setNameFilter(note.contributorName)
+                  }
+                }
                 }
                 className='text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
               >
@@ -292,14 +281,21 @@ function Dashboard() {
             </p>
 
 
+            <div className='flex flex-row justify-between items-center'>
 
-            <a
-              href={note.fileUrl}
-              rel="noopener noreferrer"
-              className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
-            >
-              View Note
-            </a>
+              <a
+                href={note.fileUrl}
+                rel="noopener noreferrer"
+                className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
+              >
+                View Note
+              </a>
+
+              <p className='opacity-50'>Dt: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+
+            </div>
+
+
           </div>
         ))}
 

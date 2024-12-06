@@ -5,6 +5,40 @@ import { getNotes } from '../firebase';
 
 import './loader.css'
 
+
+function findTopContributor(notes) {
+  // Filter out notes with empty or "unknown" contributor names
+  const validNotes = notes.filter(note =>
+    note.contributorName &&
+    note.contributorName.trim() !== '' &&
+    note.contributorName.toLowerCase() !== 'unknown'
+  );
+
+  // Count notes per valid contributor
+  const contributorCounts = validNotes.reduce((acc, note) => {
+    const contributorName = note.contributorName;
+    acc[contributorName] = (acc[contributorName] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Find the contributor with the most notes
+  let topContributor = null;
+  let maxNotes = 0;
+
+  for (const [contributor, count] of Object.entries(contributorCounts)) {
+    if (count > maxNotes) {
+      maxNotes = count;
+      topContributor = contributor;
+    }
+  }
+
+  return {
+    name: topContributor,
+    noteCount: maxNotes
+  };
+}
+
+
 function Dashboard() {
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
@@ -22,6 +56,10 @@ function Dashboard() {
   const [uniqueSemesters, setUniqueSemesters] = useState([]);
   const [uniqueSubjects, setUniqueSubjects] = useState([]);
   const [uniqueModules, setUniqueModules] = useState([]);
+
+  //top contributor
+  const [topContributor, setTopContributor] = useState(null);
+
 
   useEffect(() => {
 
@@ -48,6 +86,10 @@ function Dashboard() {
         setUniqueSemesters(semesters.sort());
         setUniqueSubjects(subjects.sort());
         setUniqueModules(modules.sort());
+
+        // Find top contributor
+        const contributorInfo = findTopContributor(fetchedNotes);
+        setTopContributor(contributorInfo);
 
         setError(null);
       } catch (error) {
@@ -87,6 +129,18 @@ function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes</h1>
+      {/* Updated rendering of top contributor */}
+      <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex cursor-pointer gap-1 relative group">
+        Top Contributor: <h1 className='text-green-700'>{topContributor
+          ? `${topContributor.name} (${topContributor.noteCount} notes)`
+          : 'Loading...'}</h1>
+
+        {/* Tooltip */}
+        <span className="tooltip absolute left-44 bottom-10 w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          Thank you {topContributor? topContributor.name:'loading'}
+        </span>
+
+      </h1>
 
       {/* Filter Panel */}
       <div className="mb-6 bg-gray-100 p-4 rounded-2xl">

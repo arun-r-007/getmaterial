@@ -291,7 +291,7 @@ function Dashboard() {
                 View Note
               </a>
 
-              <p className='opacity-50'>Dt: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+              <h1 className='opacity-30'>NIST: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</h1>
 
             </div>
 

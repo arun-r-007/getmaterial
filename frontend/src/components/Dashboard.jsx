@@ -86,7 +86,7 @@ function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">All Notes</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes</h1>
 
       {/* Filter Panel */}
       <div className="mb-6 bg-gray-100 p-4 rounded-2xl">

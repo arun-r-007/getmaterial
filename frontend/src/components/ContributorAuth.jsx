@@ -238,7 +238,7 @@ export default function ContributorAuth() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-center items-center">
-        <img src={logo} alt="logo" width={80} height={80} />
+        <img src={logo} alt="logo get material NIST Notes" width={80} height={80} />
         <h1 className="text-3xl font-bold">Account</h1>
       </div>
       <div className="max-w-md mx-auto bg-gradient-to-r login-container p-8 rounded-xl">

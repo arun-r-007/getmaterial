@@ -136,7 +136,7 @@ function Dashboard() {
           : 'Loading...'}</h1>
 
         {/* Tooltip */}
-        <span className="tooltip absolute left-44 bottom-10 w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <span className="tooltip absolute left-44 bottom-10 transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           Thank you {topContributor? topContributor.name:'loading'}
         </span>
 

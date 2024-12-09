@@ -340,6 +340,7 @@ function Dashboard() {
               <a
                 href={note.fileUrl}
                 rel="noopener noreferrer"
+                target="_blank"
                 className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
               >
                 View Note

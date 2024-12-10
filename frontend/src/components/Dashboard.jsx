@@ -107,7 +107,11 @@ function Dashboard() {
   useEffect(() => {
     // Apply filters
     const filtered = notes.filter(note =>
-      note.name.toLowerCase().includes(titleFilter.toLowerCase()) &&
+      (
+        note.name.toLowerCase().includes(titleFilter.toLowerCase()) ||
+        note.subject.toLowerCase().includes(titleFilter.toLowerCase()) || // Match subject as well
+        note.contributorName.toLowerCase().includes(titleFilter.toLowerCase()) // Match contributor name as well
+    )&&
       (semesterFilter === '' || note.semester === semesterFilter) &&
       (subjectFilter === '' || note.subject === subjectFilter) &&
       (moduleFilter === '' || note.module === moduleFilter) && // Filter by contributor name
@@ -155,7 +159,7 @@ function Dashboard() {
               id="titleFilter"
               value={titleFilter}
               onChange={(e) => setTitleFilter(e.target.value)}
-              placeholder="Search by title"
+              placeholder="Search by teacher name / title"
               className="mt-1 p-3 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>

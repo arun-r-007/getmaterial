@@ -247,7 +247,7 @@ function Upload() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter note title / teacher name etc."
+            placeholder="Enter teacher name / note title etc."
             className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500 font-semibold"
             required
           />

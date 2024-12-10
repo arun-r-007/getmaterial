@@ -106,6 +106,8 @@ function Upload() {
     'Java',
     'Operating system',
     'Python',
+    'RADAR SYSTEM ENGINEERING (RSE)',
+    'Smart grid',
     'Syllabus',
     'wt']
    );

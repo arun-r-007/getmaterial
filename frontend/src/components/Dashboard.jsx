@@ -111,7 +111,7 @@ function Dashboard() {
         note.name.toLowerCase().includes(titleFilter.toLowerCase()) ||
         note.subject.toLowerCase().includes(titleFilter.toLowerCase()) || // Match subject as well
         note.contributorName.toLowerCase().includes(titleFilter.toLowerCase()) // Match contributor name as well
-    )&&
+      ) &&
       (semesterFilter === '' || note.semester === semesterFilter) &&
       (subjectFilter === '' || note.subject === subjectFilter) &&
       (moduleFilter === '' || note.module === moduleFilter) && // Filter by contributor name
@@ -133,18 +133,50 @@ function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes</h1>
+
       {/* Updated rendering of top contributor */}
       <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex cursor-pointer gap-1 relative group">
-        Top Contributor: <h1 className='text-green-700'>{topContributor
-          ? `${topContributor.name} (${topContributor.noteCount} notes)`
-          : 'Loading...'}</h1>
+        Top Contributor:
+        <h1 className='text-green-700 shining-text'>
+          {topContributor
+            ? `${topContributor.name} (${topContributor.noteCount} notes)`
+            : 'Loading...'}
+        </h1>
 
         {/* Tooltip */}
-        <span className="tooltip absolute left-44 bottom-10 transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          Thank you {topContributor? topContributor.name:'loading'}
-        </span>
-
+        {/* <span className="tooltip absolute left-44 bottom-10 transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          Thank you {topContributor ? topContributor.name : 'loading'}
+        </span> */}
       </h1>
+
+      <style jsx>{`
+  /* Shining effect with a moving gradient */
+  @keyframes shine {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .shining-text {
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(90deg, rgb(255 0 31) 0%, rgb(18 149 99) 50%, rgb(220 0 255) 100%);
+    background-size: 200% 100%;
+    animation: shine 2s infinite linear;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+
+
+
+
+
+`}</style>
+
 
       {/* Filter Panel */}
       <div className="mb-6 bg-gray-100 p-4 rounded-2xl">

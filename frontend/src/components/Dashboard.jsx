@@ -149,34 +149,6 @@ function Dashboard() {
         </span> */}
       </h1>
 
-      <style jsx>{`
-  /* Shining effect with a moving gradient */
-  @keyframes shine {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  .shining-text {
-    position: relative;
-    display: inline-block;
-    background: linear-gradient(90deg, rgb(255 0 31) 0%, rgb(18 149 99) 50%, rgb(220 0 255) 100%);
-    background-size: 200% 100%;
-    animation: shine 2s infinite linear;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-
-
-
-
-
-
-`}</style>
-
 
       {/* Filter Panel */}
       <div className="mb-6 bg-gray-100 p-4 rounded-2xl">

@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import { auth, addNote } from '../firebase';
 
+import './loader.css'
 
 
 function Upload() {
@@ -89,7 +90,7 @@ function Upload() {
 
 
 
-  const [subjects, setSubjects] = useState(['Not mentioned','AI',
+  const [subjects, setSubjects] = useState(['Not mentioned', 'AI',
     'C',
     'CI',
     'CNDC',
@@ -110,7 +111,7 @@ function Upload() {
     'Smart grid',
     'Syllabus',
     'wt']
-   );
+  );
   const [selectedSubject, setSelectedSubject] = useState('');
   const [newSubject, setNewSubject] = useState('');
 
@@ -222,7 +223,7 @@ function Upload() {
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="max-w-md bg-gradient-to-r from-green-200 to-emerald-200 p-6 rounded-lg mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r p-6 rounded-lg mx-auto space-y-4">
 
 
         <div>
@@ -232,118 +233,108 @@ function Upload() {
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-full p-2 border-dashed border-black border rounded focus:ring-2 focus:ring-green-500"
+            className="w-full p-2 border-dashed border-black border rounded-xl focus:ring-2 focus:ring-green-500"
             required
           />
         </div>
 
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Subject (if not mentioned, select 'Not mentioned')
+          </label>
+          <select
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+            className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+          >
+            <option value="">Select a subject</option>
+            {subjects.map((subject, index) => (
+              <option key={index} value={subject}>
+                {subject}
+              </option>
+            ))}
+          </select>
+
+          {/* Conditionally render the input field when 'Not mentioned' is selected */}
+          {selectedSubject === 'Not mentioned' && (
+            <div className="mt-2 flex">
+              <input
+                type="text"
+                value={newSubject}
+                onChange={(e) => setNewSubject(e.target.value)}
+                placeholder="Add new subject"
+                className="w-full p-2 border rounded-l-lg focus:ring-1 focus:ring-green-500"
+              />
+              <button
+                onClick={handleAddSubject}
+                className="bg-green-500 text-white px-4 rounded-r-lg"
+              >
+                Add
+              </button>
+            </div>
+          )}
+        </div>
+
+
+
+
+
+
+
+        <div className='flex gap-5'>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Semester
+            </label>
+            <select
+              value={semester}
+              onChange={(e) => setSemester(e.target.value)}
+              className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+              required
+            >
+              <option value="">Select Semester</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                <option key={sem} value={sem}>Semester {sem}</option>
+              ))}
+            </select>
+
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Module
+            </label>
+            <select
+              value={module}
+              onChange={(e) => setModule(e.target.value)}
+              className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+              required
+            >
+              <option value="">Select Module</option>
+              {["Module: 1", "Module: 2", "Module: 3", "Module: 4", "Module: 5", "assignments", "questions", "others"].map(mod => (
+                <option key={mod} value={mod}>{mod}</option>
+              ))}
+            </select>
+          </div>
+
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teacher name / Note title
+            Teacher name / Section
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter teacher name / note title etc."
-            className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500 font-semibold"
+            placeholder="Ex: Shankar sir , section D"
+            className="w-full p-2 border rounded-lg focus:ring-1 font-semibold"
             required
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Semester
-          </label>
-          <select
-            value={semester}
-            onChange={(e) => setSemester(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-1 focus:ring-green-500"
-            required
-          >
-            <option value="">Select Semester</option>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
-              <option key={sem} value={sem}>Semester {sem}</option>
-            ))}
-          </select>
-        </div>
-
-
-
-        <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        Subject (if not mentioned, select 'Not mentioned')
-      </label>
-      <select
-        value={selectedSubject}
-        onChange={(e) => setSelectedSubject(e.target.value)}
-        className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
-      >
-        <option value="">Select a subject</option>
-        {subjects.map((subject, index) => (
-          <option key={index} value={subject}>
-            {subject}
-          </option>
-        ))}
-      </select>
-
-      {/* Conditionally render the input field when 'Not mentioned' is selected */}
-      {selectedSubject === 'Not mentioned' && (
-        <div className="mt-2 flex">
-          <input
-            type="text"
-            value={newSubject}
-            onChange={(e) => setNewSubject(e.target.value)}
-            placeholder="Add new subject"
-            className="w-full p-2 border rounded-l-lg focus:ring-1 focus:ring-green-500"
-          />
-          <button
-            onClick={handleAddSubject}
-            className="bg-green-500 text-white px-4 rounded-r-lg"
-          >
-            Add
-          </button>
-        </div>
-      )}
-    </div>
-
-
-
-
-
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Module
-          </label>
-          <select
-            value={module}
-            onChange={(e) => setModule(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-1 focus:ring-green-500"
-            required
-          >
-            <option value="">Select Module</option>
-            {["Module: 1", "Module: 2", "Module: 3", "Module: 4", "Module: 5", "assignments", "questions", "others"].map(mod => (
-              <option key={mod} value={mod}>{mod}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Subject
-          </label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Enter subject name"
-            className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
-            required
-          />
-        </div> */}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -354,12 +345,9 @@ function Upload() {
             value={contributorName}
             onChange={(e) => setContributorName(e.target.value)}
             placeholder="Enter your name"
-            className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+            className="w-full p-2 border rounded-lg focus:ring-1"
           />
         </div>
-
-
-
 
 
         <button

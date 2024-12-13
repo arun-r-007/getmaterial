@@ -21,33 +21,61 @@ function Upload() {
 
   const [module, setModule] = useState('');
 
-
   const messages = [
-    "Relax, it's just pixels and patience!",
-    "This upload is faster than my coding skills!",
-    "Loading... more jokes than bytes.",
-    "Good things take time... bad uploads take longer!",
-    "Uploading... faster than a turtle race!",
-    "Patience, the file's worth it!",
-    "Bytes are working overtime. Hang in there!",
-    "Uploading... not as fast as my coffee run!",
-    "Just a moment — or maybe three coffee sips.",
-    "99% complete... like your exam prep!",
-    "Uploading... because magic is not real!",
-    "Almost there... unless 'there' moved!",
-    "This upload's slower than my Monday mornings!",
-    "Uploading... do not blink, you might miss it!",
-    "Just like fine wine, uploads take time!",
-    "Loading... faster than my internet bill!",
-    "File in progress... like my life decisions!",
-    "Uploads and chill? Stay with us!",
-    "Loading... because instant noodles spoiled us!",
-    "This upload's cooking — let it simmer!",
-    "Hold tight... we're coding in real-time!",
-    "Patience! It's on file, not on fire.",
-    "Upload speed: 1 turtle per second.",
-    "Processing... do not refresh, it panics!",
-  ];
+    "Uploading... slower than my grandma's Wi-Fi!",
+    "Hold up, the bytes are arguing.",
+    "Almost there... if 'there' is still far!",
+    "Loading... as reliable as my alarm clock.",
+    "Hang tight... I bribed the server with cookies!",
+    "This upload is practicing yoga. Namaste!",
+    "Loading... because teleportation is not an option!",
+    "Uploading... one byte at a time, literally!",
+    "Oops, the pixels went on a coffee break!",
+    "Patience, the file’s catching its breath!",
+    "99% done... like my eternal procrastination!",
+    "Uploading... like it’s dragging its feet home.",
+    "Relax, the file's just stuck in traffic!",
+    "Loading... it’s in no rush, unlike you.",
+    "Uploading... fueled by hopes and prayers.",
+    "Processing... with the speed of a sloth!",
+    "Just a sec... or maybe an eternity.",
+    "Uploading... trying to find the right vibe!",
+    "Loading... it's waiting for applause!",
+    "Uploading... slower than me on a treadmill.",
+    "Oops, the bytes took a wrong turn!",
+    "This upload’s in the queue behind a snail.",
+    "Almost done... or am I lying?",
+    "Uploading... because teleporting bytes is illegal.",
+    "Waiting... because why not?",
+    "Hold on, it’s buffering its confidence.",
+    "Uploading... powered by hamster wheels!",
+    "Relax, it’s on bytecation.",
+    "Loading... slower than my last breakup.",
+    "This upload’s stuck in existential dread!",
+    "Uploading... we’re counting sheep, too!",
+    "Hold up... the bytes are stretching first.",
+    "Uploading... not running, just strolling.",
+    "Bytes loading... but first, a selfie!",
+    "Processing... the bytes are shy today.",
+    "Uploading... slower than a dial-up modem.",
+    "Relax, the bytes are on union break!",
+    "Almost there... on a cosmic timeline.",
+    "Uploading... the file’s learning patience.",
+    "Oops, it took the scenic route!",
+    "Loading... it's meditating on life choices.",
+    "Uploading... like it’s writing a novel.",
+    "Pixels stuck in a philosophical debate.",
+    "Uploading... slower than me before coffee.",
+    "Processing... powered by wishful thinking!",
+    "Hold tight... the bytes are gossiping!",
+    "Uploading... powered by good vibes only.",
+    "Almost done... just redefining 'almost.'",
+    "Uploading... even turtles are laughing!",
+    "Loading... it’s probably napping!",
+    "Uploading... let’s just hope for the best.",
+    "Relax... the bytes are on their way!"
+];
+
 
 
 
@@ -323,7 +351,7 @@ function Upload() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Details/Teacher name / Section
+            Details/Teacher name/Section
           </label>
           <input
             type="text"

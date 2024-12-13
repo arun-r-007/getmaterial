@@ -173,14 +173,14 @@ function Dashboard() {
           {/* Title Filter */}
           <div>
             <label htmlFor="titleFilter" className="block text-sm font-medium text-gray-700">
-              Title/section
+              Search
             </label>
             <input
               type="text"
               id="titleFilter"
               value={titleFilter}
               onChange={(e) => setTitleFilter(e.target.value)}
-              placeholder="Search by teacher name / title"
+              placeholder="Enter subject / teacher etc."
               className="mt-1 p-3 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>

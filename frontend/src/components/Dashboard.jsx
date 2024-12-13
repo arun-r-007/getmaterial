@@ -6,6 +6,18 @@ import { getNotes } from '../firebase';
 import './loader.css'
 
 
+const getPDFPreviewUrl = (fileId) => {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`;
+}
+
+
+const extractFileIdFromUrl = (url) => {
+  const fileIdMatch = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/);
+  return fileIdMatch ? fileIdMatch[1] : null;
+}
+
+
+
 function findTopContributor(notes) {
   // Filter out notes with empty or "unknown" contributor names
   const validNotes = notes.filter(note =>
@@ -70,6 +82,7 @@ function Dashboard() {
         setLoading(true);
         const fetchedNotes = await getNotes();
 
+
         // Normalize subject names
         const normalizedNotes = fetchedNotes.map(note => ({
           ...note,
@@ -77,6 +90,8 @@ function Dashboard() {
         }));
 
         setNotes(normalizedNotes);
+
+
 
         // Extract unique semesters and subjects
         const semesters = [...new Set(normalizedNotes.map(note => note.semester))];
@@ -130,6 +145,8 @@ function Dashboard() {
     setModuleFilter('');
   };
 
+
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes</h1>
@@ -156,7 +173,7 @@ function Dashboard() {
           {/* Title Filter */}
           <div>
             <label htmlFor="titleFilter" className="block text-sm font-medium text-gray-700">
-              Title
+              Title/section
             </label>
             <input
               type="text"
@@ -249,119 +266,135 @@ function Dashboard() {
       {/* Notes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredNotes.map((note) => (
-          <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl">
-            <h1 className='text-xl font-bold mb-2'>
-              <span
-                onClick={() => {
-                  if (subjectFilter == note.subject) {
-                    setSubjectFilter("")
-                  }
-                  else {
-                    setSubjectFilter(note.subject)
-                  }
-                }
-                }
-                className='group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
-              >
-                {note.subject || "unknown"}
+          <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl flex flex-row justify-between">
 
-                {/* Tooltip */}
-                <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  View all notes of {note.subject}
+            <div className='flex flex-col justify-between'>
+
+              <h1 className='text-xl font-bold mb-2'>
+                <span
+                  onClick={() => {
+                    if (subjectFilter == note.subject) {
+                      setSubjectFilter("")
+                    }
+                    else {
+                      setSubjectFilter(note.subject)
+                    }
+                  }
+                  }
+                  className='group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
+                >
+                  {note.subject || "unknown"}
+
+                  {/* Tooltip */}
+                  <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    View all notes of {note.subject}
+                  </span>
                 </span>
-              </span>
-            </h1>
+              </h1>
 
-            <p className='text-gray-600 mb-2'>@
-              <span
-                onClick={() => {
-                  if (moduleFilter == note.module) {
-                    setModuleFilter("")
+              <p className='text-gray-600 mb-2'>@
+                <span
+                  onClick={() => {
+                    if (moduleFilter == note.module) {
+                      setModuleFilter("")
+                    }
+                    else {
+                      setModuleFilter(note.module)
+                    }
                   }
-                  else {
-                    setModuleFilter(note.module)
                   }
-                }
-                }
-                className='text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
-              >
-                {note.module || "unknown"}
+                  className='text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
+                >
+                  {note.module || "unknown"}
 
-                {/* Tooltip */}
-                <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  View all notes of {note.module}
+                  {/* Tooltip */}
+                  <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    View all notes of {note.module}
+                  </span>
                 </span>
-              </span>
-            </p>
+              </p>
 
 
-            <p className='text-gray-600 mb-2'>Semester:
-              <span
-                onClick={() => {
-                  if (semesterFilter == note.semester) {
-                    setSemesterFilter("")
+              <p className='text-gray-600 mb-2'>Semester:
+                <span
+                  onClick={() => {
+                    if (semesterFilter == note.semester) {
+                      setSemesterFilter("")
+                    }
+                    else {
+                      setSemesterFilter(note.semester)
+                    }
                   }
-                  else {
-                    setSemesterFilter(note.semester)
+
                   }
-                }
+                  className='text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
+                >
+                  {note.semester || "unknown"}
 
-                }
-                className='text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
-              >
-                {note.semester || "unknown"}
-
-                {/* Tooltip */}
-                <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  View all notes of sem {note.semester}
+                  {/* Tooltip */}
+                  <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    View all notes of sem {note.semester}
+                  </span>
                 </span>
-              </span>
-            </p>
+              </p>
 
 
-            <h2 className="mb-2 text-gray-600">Details: {note.name}</h2>
+              <h2 className="mb-2 text-gray-600">Details: {note.name}</h2>
 
 
-            <p className='text-gray-600 mb-4'>Uploaded by:
-              <span
-                onClick={() => {
-                  if (nameFilter == note.contributorName) {
-                    setNameFilter("")
+              <p className='text-gray-600 mb-4'>Uploaded by:
+                <span
+                  onClick={() => {
+                    if (nameFilter == note.contributorName) {
+                      setNameFilter("")
+                    }
+                    else {
+                      setNameFilter(note.contributorName)
+                    }
                   }
-                  else {
-                    setNameFilter(note.contributorName)
                   }
-                }
-                }
-                className='text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
-              >
-                {note.contributorName || "unknown"}
+                  className='text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative'
+                >
+                  {note.contributorName || "unknown"}
 
-                {/* Tooltip */}
-                <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  View all notes by {note.contributorName}
+                  {/* Tooltip */}
+                  <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    View all notes by {note.contributorName}
+                  </span>
                 </span>
-              </span>
-            </p>
+              </p>
 
 
-            <div className='flex flex-row justify-between items-center'>
+              <div className='flex flex-row justify-between items-center'>
 
-              <a
-                href={note.fileUrl}
-                rel="noopener noreferrer"
-                target="_blank"
-                className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
-              >
-                View Note
-              </a>
+                <a
+                  href={note.fileUrl}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
+                >
+                  View Note
+                </a>
 
-              <p className='opacity-40'>NIST: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+              </div>
+
 
             </div>
 
+            <div className='flex flex-col items-center justify-between'>
+              <img
+                src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl))}
+                alt="PDF Preview"
+                className="md:w-40 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
+              />
+              <p className='opacity-40 bottom-0'>NIST: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+            </div>
 
           </div>
+
+
+
+
         ))}
 
         {/* No results message */}

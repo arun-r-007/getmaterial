@@ -323,13 +323,13 @@ function Upload() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Teacher name / Section
+            Details/Teacher name / Section
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ex: Shankar sir , section D"
+            placeholder="Ex: Shankar sir , sec-D , handwritten notes"
             className="w-full p-2 border rounded-lg focus:ring-1 font-semibold"
             required
           />

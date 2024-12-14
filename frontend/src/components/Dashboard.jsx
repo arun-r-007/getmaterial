@@ -185,25 +185,6 @@ function Dashboard() {
             />
           </div>
 
-          {/* Semester Filter */}
-          <div>
-            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700">
-              Semester
-            </label>
-            <select
-              id="semesterFilter"
-              value={semesterFilter}
-              onChange={(e) => setSemesterFilter(e.target.value)}
-              className="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">All Semesters</option>
-              {uniqueSemesters.map(semester => (
-                <option key={semester} value={semester}>
-                  {semester}
-                </option>
-              ))}
-            </select>
-          </div>
 
 
           {/* Subject Filter */}
@@ -247,6 +228,25 @@ function Dashboard() {
             </select>
           </div>
 
+          {/* Semester Filter */}
+          <div>
+            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700">
+              Semester
+            </label>
+            <select
+              id="semesterFilter"
+              value={semesterFilter}
+              onChange={(e) => setSemesterFilter(e.target.value)}
+              className="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            >
+              <option value="">All Semesters</option>
+              {uniqueSemesters.map(semester => (
+                <option key={semester} value={semester}>
+                  {semester}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Reset Filters Button */}
           <div className="mt-4 p-3 text-center">

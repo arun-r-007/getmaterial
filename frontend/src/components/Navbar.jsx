@@ -1,32 +1,30 @@
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Github } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Linkedin } from 'lucide-react';
+
 import { Button } from '@headlessui/react';
 
 import './loader.css'
 
 function Navbar({ user }) {
-  const handleSignOut = async () => {
+
+
+ const handleSignOut = async () => {
+  const userConfirmed = window.confirm("Are you sure you want to sign out?");
+  
+  if (userConfirmed) {
     try {
       await signOut(auth);
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
-  };
+  } else {
+    console.log("Sign out canceled by the user.");
+  }
+};
 
 
-
-  const [stars, setStars] = useState(0);
-
-  useEffect(() => {
-    // Replace 'username/repo' with your actual GitHub repository path
-    fetch('https://api.github.com/repos/talaganaRajesh/getmaterial')
-      .then(response => response.json())
-      .then(data => setStars(data.stargazers_count))
-      .catch(error => console.error('Error fetching GitHub stats:', error));
-  }, []);
 
 
   return (
@@ -51,19 +49,15 @@ function Navbar({ user }) {
                 Become a Contributor
               </Link>
 
-              {/* GitHub Button */}
+              {/* LinkedIn Button */}
               <Button className="px-2 md:px-3">
                 <a
-                  href="https://github.com/talaganaRajesh/getmaterial.git" // Replace with your actual repo URL
+                  href="https://www.linkedin.com/in/talagana-rajesh-75a546289/" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex group relative bg-gray-100 p-3 rounded-lg items-center gap-1 text-white"
+                  className="flex group relative bg-gray-100 hover:bg-blue-500 transition-colors duration-300 p-3 rounded-lg items-center gap-1 text-white"
                 >
-                  <Github size={16} className="md:size-6 text-black" />
-                  <span className="tooltip absolute top-full w-1/3 hidden md:block transform -translate-x-1/2 mt-2 py-2 px-1 bg-gray-300 text-black text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    star on github
-                  </span>
-                  <span className="font-semibold text-black text-sm md:text-base">{stars}</span>
+                  <Linkedin size={16} className="md:size-6 text-black" />
                 </a>
               </Button>
 

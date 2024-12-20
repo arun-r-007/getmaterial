@@ -99,10 +99,10 @@ function Upload() {
       }
 
       // Check if the file is an image
-      if (selectedFile.type.startsWith('image/')) {
-        setError('Image files are not allowed');
-        return;
-      }
+      // if (selectedFile.type.startsWith('image/')) {
+      //   setError('Image files are not allowed');
+      //   return;
+      // }
 
       // Check if the file is audio/music
       if (selectedFile.type.startsWith('audio/')) {

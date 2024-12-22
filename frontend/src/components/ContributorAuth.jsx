@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import logo from '/favicon.ico';
+// import logo from '/favicon.ico';
 import axios from 'axios';
 import './loader.css';
 
@@ -238,7 +238,7 @@ export default function ContributorAuth() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-center items-center">
-        <img src={logo} alt="logo get material NIST Notes" width={80} height={80} />
+        <img src='/favicon.ico' alt="logo get material NIST Notes" width={80} height={80} />
         <h1 className="text-3xl font-bold">Account</h1>
       </div>
       <div className="max-w-md mx-auto bg-gradient-to-r login-container p-8 rounded-xl">

@@ -7,8 +7,46 @@ import { auth, addNote } from '../firebase';
 
 import './loader.css'
 
+import { useEffect } from 'react';
+import { getNotes } from '../firebase';
+
+
 
 function Upload() {
+  const [subjects, setSubjects] = useState([]);
+
+
+    useEffect(() => {
+      const fetchNotes = async () => {
+        try {
+          const fetchedNotes = await getNotes();
+
+          // Normalize subject names
+        const normalizedNotes = fetchedNotes.map(note => ({
+          ...note,
+          subject: note.subject.trim().toUpperCase(), // Normalize subject jjjjjjjjsjust test comment
+        }));
+
+  
+          // Extract unique subjects
+          const fetchedsubjects = [...new Set(normalizedNotes.map(note => note.subject))];
+
+          fetchedsubjects.sort();
+          fetchedsubjects.push('Not mentioned');
+
+          setSubjects(fetchedsubjects);
+
+        } catch (error) {
+          console.error('Error fetching subjects:', error);
+          setError(error.message);
+        }
+      };
+  
+      fetchNotes();
+    }, []);
+
+
+
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const [semester, setSemester] = useState('');
@@ -118,32 +156,6 @@ function Upload() {
 
 
 
-  const [subjects, setSubjects] = useState(['Not mentioned', 'AI',
-    'C',
-    'CI',
-    'CNDC',
-    'Computer architecture COA',
-    'DAA',
-    'Data structures',
-    'DBMS',
-    'DCT',
-    'Dec',
-    'Digital electronics',
-    'Discrete mathematics',
-    'ENGINEERING MANAGEMENT',
-    'Flat',
-    'IIT',
-    'GEE',
-    'Java',
-    'MA',
-    'MC',
-    'Operating system',
-    'Python',
-    'RADAR SYSTEM ENGINEERING (RSE)',
-    'Smart grid',
-    'Syllabus',
-    'wt']
-  );
   const [selectedSubject, setSelectedSubject] = useState('');
   const [newSubject, setNewSubject] = useState('');
 
@@ -248,14 +260,14 @@ function Upload() {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-2 pb-5">
+    <div className="container mx-auto px-4 pt-1 pb-2">
       <h1 className="text-3xl font-bold mb-6 text-center">Upload Note</h1>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r p-6 rounded-lg mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-6 py-5 rounded-lg mx-auto space-y-4">
 
 
         <div>

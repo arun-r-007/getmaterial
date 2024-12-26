@@ -75,7 +75,6 @@ function Dashboard() {
 
   useEffect(() => {
 
-    document.getElementById('titleFilter')?.focus();
 
     const fetchNotes = async () => {
       try {

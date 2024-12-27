@@ -407,7 +407,6 @@ function Dashboard() {
         <a href="https://talaganarajesh.vercel.app/" target='_blank' rel="noopener noreferrer" >
           <span className='opacity-60 hover:opacity-100 transition-opacity duration-300'>Built with 💖 by</span> <span className='text-green-700 hover:text-green-600 transition-colors duration-300 font-bold'>Rajesh</span>
         </a>
-        {!loading && <a href="https://forms.gle/pA75Prd8ku7t2n9n6" className='mt-3 text-black hover:text-blue-600 hover:underline' target='_blank' rel="noopener noreferrer">Feedback</a>}
       </div>
     </div>
   );

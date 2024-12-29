@@ -6,7 +6,6 @@ import Dashboard from './components/Dashboard';
 import ContributorAuth from './components/ContributorAuth';
 import Upload from './components/Upload';
 import Navbar from './components/Navbar';
-import NotFound from "./components/NotFound"; // Your 404 Page
 
 
 import './App.css';
@@ -30,7 +29,6 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/auth" element={<ContributorAuth />} />
           <Route path="/upload" element={<Upload user={user} />} />
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

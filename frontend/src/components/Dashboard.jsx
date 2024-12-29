@@ -17,7 +17,6 @@ const extractFileIdFromUrl = (url) => {
 }
 
 
-
 function findTopContributor(notes) {
   // Filter out notes with empty or "unknown" contributor names
   const validNotes = notes.filter(note =>
@@ -72,6 +71,9 @@ function Dashboard() {
   //top contributor
   const [topContributor, setTopContributor] = useState(null);
 
+  // Total notes count
+  const [totalNotes, setTotalNotes] = useState(0);
+
 
   useEffect(() => {
 
@@ -104,6 +106,9 @@ function Dashboard() {
         // Find top contributor
         const contributorInfo = findTopContributor(fetchedNotes);
         setTopContributor(contributorInfo);
+
+        setTotalNotes(fetchedNotes.length);
+        
 
         setError(null);
       } catch (error) {
@@ -148,7 +153,7 @@ function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes <span className='text-gray-600 text-2xl'>({totalNotes})</span></h1>
 
       {/* Updated rendering of top contributor */}
       <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex cursor-pointer gap-1 relative group">

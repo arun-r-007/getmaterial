@@ -10,7 +10,7 @@ import './loader.css'
 import { useEffect } from 'react';
 import { getNotes } from '../firebase';
 
-
+import CustomSelect from './CustomSelect';
 
 function Upload() {
   const [subjects, setSubjects] = useState([]);
@@ -260,8 +260,8 @@ function Upload() {
   };
 
   return (
-    <div className="container mx-auto px-4 pt-1 pb-2">
-      <h1 className="text-3xl font-bold mb-6 text-center">Upload Note</h1>
+    <div className="container mx-auto px-4 pt-2">
+      <h1 className="text-3xl font-bold mb-3 text-center">Upload Note</h1>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
@@ -287,18 +287,12 @@ function Upload() {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Subject (if not mentioned, select 'Not mentioned')
           </label>
-          <select
-            value={selectedSubject}
-            onChange={(e) => setSelectedSubject(e.target.value)}
-            className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
-          >
-            <option value="">Select a subject</option>
-            {subjects.map((subject, index) => (
-              <option key={index} value={subject}>
-                {subject}
-              </option>
-            ))}
-          </select>
+
+          <CustomSelect
+            options={subjects}
+            placeholder={selectedSubject || "Select a subject"}
+            onChange={(selectedOption)=> setSelectedSubject(selectedOption)}
+          />
 
           {/* Conditionally render the input field when 'Not mentioned' is selected */}
           {selectedSubject === 'Not mentioned' && (

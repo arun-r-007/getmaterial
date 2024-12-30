@@ -3,6 +3,10 @@ import axios from 'axios';
 
 import { getNotes } from '../firebase';
 
+import CustomSelect from "./CustomSelect";
+
+
+
 import './loader.css'
 
 
@@ -108,7 +112,7 @@ function Dashboard() {
         setTopContributor(contributorInfo);
 
         setTotalNotes(fetchedNotes.length);
-        
+
 
         setError(null);
       } catch (error) {
@@ -192,71 +196,57 @@ function Dashboard() {
 
 
           {/* Subject Filter */}
+
           <div>
-            <label htmlFor="subjectFilter" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="subjectFilter"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Subject
             </label>
-            <select
-              id="subjectFilter"
-              value={subjectFilter}
-              onChange={(e) => setSubjectFilter(e.target.value)}
-              className="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">All Subjects</option>
-              {uniqueSubjects.map(subject => (
-                <option key={subject} value={subject}>
-                  {subject}
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+              options={uniqueSubjects}
+              placeholder={subjectFilter || "All Subjects"}
+              onChange={(selectedOption) => setSubjectFilter(selectedOption)}
+            />
+
           </div>
+
+
 
 
           {/* module Filter */}
           <div>
-            <label htmlFor="moduleFilter" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="moduleFilter" className="block text-sm font-medium text-gray-700 mb-1">
               Module
             </label>
-            <select
-              id="moduleFilter"
-              value={moduleFilter}
-              onChange={(e) => setModuleFilter(e.target.value)}
-              className="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">All Modules</option>
-              {uniqueModules.map(module => (
-                <option key={module} value={module}>
-                  {module}
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+              options={uniqueModules}
+              placeholder={moduleFilter||"All Modules"}
+              onChange={(selectedOption) => setModuleFilter(selectedOption)}
+
+            />
           </div>
 
           {/* Semester Filter */}
           <div>
-            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700 mb-1">
               Semester
             </label>
-            <select
-              id="semesterFilter"
-              value={semesterFilter}
-              onChange={(e) => setSemesterFilter(e.target.value)}
-              className="mt-1 p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">All Semesters</option>
-              {uniqueSemesters.map(semester => (
-                <option key={semester} value={semester}>
-                  {semester}
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+            
+              options={uniqueSemesters}
+              placeholder={semesterFilter || "All Semesters"}
+              onChange={(selectedOption) => setSemesterFilter(selectedOption)}
+
+            />
           </div>
 
           {/* Reset Filters Button */}
           <div className="mt-4 p-3 text-center">
             <button
               onClick={resetFilters}
-              className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors"
+              className="bg-red-100 text-gray-800 py-2 px-4 rounded font-semibold hover:bg-red-200 transition-colors"
             >
               Reset Filters
             </button>

@@ -160,7 +160,7 @@ function Dashboard() {
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes <span className='text-gray-600 text-2xl'>({totalNotes})</span></h1>
 
       {/* Updated rendering of top contributor */}
-      <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex cursor-pointer gap-1 relative group">
+      <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex gap-1 relative group">
         Top Contributor:
         <h1 className='text-green-700 shining-text'>
           {topContributor

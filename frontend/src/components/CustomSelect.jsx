@@ -70,7 +70,7 @@ const CustomSelect = ({ options, placeholder, onChange, value }) => {
             placeholder="Search..."
             className="p-2 w-full border-b text-green-700 font-semibold focus:outline-none"
           />
-          <div className="max-h-40 overflow-y-auto">
+          <div className="max-h-60 overflow-y-auto">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <div

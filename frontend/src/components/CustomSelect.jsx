@@ -33,11 +33,15 @@ const CustomSelect = ({ options, placeholder, onChange, value }) => {
 
 
   useEffect(() => {
-    // Focus the input when the dropdown is opened
+    // Focus the input when the dropdown is opened and the device is not mobile
     if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+      const isDesktop = window.matchMedia("(min-width: 768px)").matches; // Adjust min-width as needed
+      if (isDesktop) {
+        inputRef.current.focus();
+      }
     }
   }, [isOpen]);
+  
 
   const handleSelect = (option) => {
     setSearchTerm("");

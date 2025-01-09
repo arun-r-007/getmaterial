@@ -5,7 +5,9 @@ import { getNotes } from '../firebase';
 
 import CustomSelect from "./CustomSelect";
 
-
+import { db } from '../firebase';
+import { doc, deleteDoc } from 'firebase/firestore';
+import {auth} from '../firebase';
 
 import './loader.css'
 
@@ -83,6 +85,10 @@ function Dashboard() {
   // Total notes count
   const [totalNotes, setTotalNotes] = useState(0);
 
+  // Admin Email 
+
+  const adminEmail = "talaganarajesh25@gmail.com"
+  const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
 
@@ -91,6 +97,13 @@ function Dashboard() {
       try {
         setLoading(true);
         const fetchedNotes = await getNotes();
+
+
+        const user = auth.currentUser;
+
+        if (user && user.email == adminEmail) {
+          setAdmin(true);
+        }
 
 
         // Normalize subject names
@@ -158,7 +171,18 @@ function Dashboard() {
     setModuleFilter('');
   };
 
-
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this note?")) {
+      try {
+        const noteRef = doc(db, "notes", id); // Replace "notes" with your collection name
+        await deleteDoc(noteRef);
+        setNotes(prevNotes => prevNotes.filter(note => note.id !== id)); // Remove deleted note from state
+        console.log(`Note with ID: ${id} has been deleted successfully.`);
+      } catch (error) {
+        console.error("Error deleting note:", error);
+      }
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -227,7 +251,7 @@ function Dashboard() {
             </label>
             <CustomSelect
               options={uniqueModules}
-              placeholder={moduleFilter||"All Modules"}
+              placeholder={moduleFilter || "All Modules"}
               onChange={(selectedOption) => setModuleFilter(selectedOption)}
 
             />
@@ -239,7 +263,7 @@ function Dashboard() {
               Semester
             </label>
             <CustomSelect
-            
+
               options={uniqueSemesters}
               placeholder={semesterFilter || "All Semesters"}
               onChange={(selectedOption) => setSemesterFilter(selectedOption)}
@@ -364,7 +388,7 @@ function Dashboard() {
               </p>
 
 
-              <div className='flex flex-row justify-between items-center'>
+              <div className='flex flex-row justify-start gap-3 items-center'>
 
                 <a
                   href={note.fileUrl}
@@ -374,6 +398,12 @@ function Dashboard() {
                 >
                   View Note
                 </a>
+
+                {admin && ( // Show Delete button only for admin
+                <div className="bg-red-600 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
+                  <button onClick={() => handleDelete(note.id)}>Delete</button>
+                </div>
+              )}
 
               </div>
 
@@ -386,7 +416,9 @@ function Dashboard() {
                 alt="PDF Preview"
                 className="md:w-40 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
               />
-              <p className='opacity-40 bottom-0'>NIST: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+              <p className='opacity-40 bottom-0'>Date: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+
+
             </div>
 
 

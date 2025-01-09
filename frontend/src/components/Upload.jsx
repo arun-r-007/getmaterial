@@ -14,9 +14,12 @@ import CustomSelect from './CustomSelect';
 
 function Upload() {
   const [subjects, setSubjects] = useState([]);
+  
 
 
     useEffect(() => {
+
+      
       const fetchNotes = async () => {
         try {
           const fetchedNotes = await getNotes();
@@ -43,6 +46,22 @@ function Upload() {
       };
   
       fetchNotes();
+
+
+    }, []);
+
+    
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          setContributorName(user.displayName);
+        } else {
+          setContributorName("");
+        }
+      });
+  
+      // Cleanup the listener on unmount
+      return () => unsubscribe();
     }, []);
 
 
@@ -180,6 +199,8 @@ function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
+
+    
 
     if (!user) {
       setError('You must be authenticated to upload files.');
@@ -394,7 +415,7 @@ function Upload() {
           className={`w-full ${uploading || !file
             ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-green-500 hover:bg-green-600'
-            } text-white p-2 rounded transition duration-200`}
+            } text-black font-semibold  p-2 rounded transition duration-200`}
         >
           {uploading ? 'Uploading...' : 'Upload Note'}
         </button>

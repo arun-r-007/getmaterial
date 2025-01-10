@@ -230,6 +230,8 @@ function Upload() {
     formData.append('contributorName', contributorName);
     formData.append('module', module);
 
+    formData.append('likes',0)
+
 
 
     // Start interval to change messages
@@ -260,7 +262,8 @@ function Upload() {
         contributorName,
         module,
         fileUrl: response.data.fileLink,
-        fileId: response.data.fileId
+        fileId: response.data.fileId,
+        likes:0
       };
 
       // Add note to Firestore

@@ -7,9 +7,22 @@ import CustomSelect from "./CustomSelect";
 
 import { db } from '../firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
-import {auth} from '../firebase';
+
+
+
+import { auth } from '../firebase';
 
 import './loader.css'
+
+import { getFirestore, updateDoc, increment } from "firebase/firestore";
+
+
+
+import { getDocs, collection } from "firebase/firestore";
+
+import { ThumbsUp } from "lucide-react";
+import { Heart } from "lucide-react";
+
 
 
 const getPDFPreviewUrl = (fileId) => {
@@ -21,9 +34,6 @@ const extractFileIdFromUrl = (url) => {
   const fileIdMatch = url.match(/\/d\/([^/]+)/) || url.match(/id=([^&]+)/);
   return fileIdMatch ? fileIdMatch[1] : null;
 }
-
-
-
 
 
 
@@ -90,6 +100,29 @@ function Dashboard() {
   const adminEmail = "talaganarajesh25@gmail.com"
   const [admin, setAdmin] = useState(false);
 
+
+
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLike = async (noteId, currentLikes) => {
+    const db = getFirestore();
+    const noteRef = doc(db, "notes", noteId);
+
+    try {
+      await updateDoc(noteRef, {
+        likes: increment(isLiked ? -1 : 1), // Increment likes atomically
+      });
+      console.log("Like added!");
+      setIsLiked(!isLiked)
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+
+
+
+
   useEffect(() => {
 
 
@@ -130,6 +163,7 @@ function Dashboard() {
         setTopContributor(contributorInfo);
 
         setTotalNotes(fetchedNotes.length);
+
 
 
         setError(null);
@@ -182,6 +216,12 @@ function Dashboard() {
         console.error("Error deleting note:", error);
       }
     }
+  };
+
+  const handleLikes = async (id) => {
+
+    setLikes(likes + 1)
+
   };
 
   return (
@@ -399,11 +439,20 @@ function Dashboard() {
                   View Note
                 </a>
 
-                {admin && ( // Show Delete button only for admin
-                <div className="bg-red-600 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
-                  <button onClick={() => handleDelete(note.id)}>Delete</button>
+                <div className='flex flex-row'>
+                  <Heart style={{
+                    cursor: "pointer",
+                    marginRight: "5px",
+                    color: "gray", // Toggle color based on the `liked` state
+                  }} onClick={() => handleLike(note.id, note.likes || 0)} className="hover:bg-red-400 rounded-md hover:p-1 transition-all" />
+                  {note.likes || 0}
                 </div>
-              )}
+
+                {admin && ( // Show Delete button only for admin
+                  <div className="bg-red-600 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
+                    <button onClick={() => handleDelete(note.id)}>Delete</button>
+                  </div>
+                )}
 
               </div>
 

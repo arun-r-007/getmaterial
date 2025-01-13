@@ -20,8 +20,39 @@ import { getFirestore, updateDoc, increment } from "firebase/firestore";
 
 import { getDocs, collection } from "firebase/firestore";
 
-import { ThumbsUp } from "lucide-react";
 import { Heart } from "lucide-react";
+
+import "./style.css";
+
+
+const TopContributor = ({ topContributor }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const contributors = topContributor || []; // Fallback to an empty array
+
+  useEffect(() => {
+    if (contributors.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % contributors.length);
+      }, 2000);
+
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [contributors]);
+
+  return (
+    <div className="text-green-700 shining-text">
+      {contributors.length > 0 ? (
+        <div key={currentIndex}>
+          <h2>{contributors[currentIndex].name}
+            <span>({contributors[currentIndex].noteCount})</span>
+          </h2>
+        </div>
+      ) : (
+        <p>NULL</p>
+      )}
+    </div>
+  );
+};
 
 
 
@@ -53,21 +84,19 @@ function findTopContributor(notes) {
     return acc;
   }, {});
 
-  // Find the contributor with the most notes
-  let topContributor = null;
-  let maxNotes = 0;
+  // Convert the contributor counts object to an array of [name, count] pairs and sort by count in descending order
+  const sortedContributors = Object.entries(contributorCounts)
+    .sort((a, b) => b[1] - a[1]);
 
-  for (const [contributor, count] of Object.entries(contributorCounts)) {
-    if (count > maxNotes) {
-      maxNotes = count;
-      topContributor = contributor;
-    }
-  }
+  // Extract top 3 contributors
+  const topContributors = sortedContributors.slice(0, 3).map(([name, count]) => ({
+    name,
+    noteCount: count
+  }));
 
-  return {
-    name: topContributor,
-    noteCount: maxNotes
-  };
+
+  return topContributors;
+
 }
 
 
@@ -89,8 +118,7 @@ function Dashboard() {
   const [uniqueSubjects, setUniqueSubjects] = useState([]);
   const [uniqueModules, setUniqueModules] = useState([]);
 
-  //top contributor
-  const [topContributor, setTopContributor] = useState(null);
+
 
   // Total notes count
   const [totalNotes, setTotalNotes] = useState(0);
@@ -103,21 +131,10 @@ function Dashboard() {
 
 
   const [isLiked, setIsLiked] = useState(false);
+  const [allLikes, setAllLikes] = useState({});
 
-  const handleLike = async (noteId, currentLikes) => {
-    const db = getFirestore();
-    const noteRef = doc(db, "notes", noteId);
 
-    try {
-      await updateDoc(noteRef, {
-        likes: increment(isLiked ? -1 : 1), // Increment likes atomically
-      });
-      console.log("Like added!");
-      setIsLiked(!isLiked)
-    } catch (error) {
-      console.error("Error updating likes:", error);
-    }
-  };
+  const [topContributor, setTopContributor] = useState(null);
 
 
 
@@ -160,10 +177,10 @@ function Dashboard() {
 
         // Find top contributor
         const contributorInfo = findTopContributor(fetchedNotes);
+
         setTopContributor(contributorInfo);
 
         setTotalNotes(fetchedNotes.length);
-
 
 
         setError(null);
@@ -189,11 +206,12 @@ function Dashboard() {
       ) &&
       (semesterFilter === '' || note.semester === semesterFilter) &&
       (subjectFilter === '' || note.subject === subjectFilter) &&
-      (moduleFilter === '' || note.module === moduleFilter) && // Filter by contributor name
+      (moduleFilter === '' || note.module === moduleFilter) && // Filter by module
       (nameFilter === '' || note.contributorName === nameFilter) // Filter by contributor name
     );
 
     setFilteredNotes(filtered);
+
   }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter]); // Include nameFilter
 
   // Reset filters
@@ -218,29 +236,68 @@ function Dashboard() {
     }
   };
 
-  const handleLikes = async (id) => {
 
-    setLikes(likes + 1)
 
+
+  const handleLike = async (noteId) => {
+    const db = getFirestore();
+    const noteRef = doc(db, "notes", noteId);
+
+    // Optimistically update the likes locally
+    setAllLikes((prevLikes) => ({
+      ...prevLikes,
+      [noteId]: (prevLikes[noteId] || 0) + (isLiked ? -1 : 1), // Increment or decrement based on `isLiked`
+    }));
+
+    try {
+      // Update the likes count in the Firestore database
+      await updateDoc(noteRef, {
+        likes: increment(isLiked ? -1 : 1), // Atomically increment in Firestore
+      });
+
+      // Toggle the liked state
+      setIsLiked(!isLiked);
+    } catch (error) {
+
+      // Roll back the local state if the database update fails
+      setAllLikes((prevLikes) => ({
+        ...prevLikes,
+        [noteId]: (prevLikes[noteId] || 0) + (isLiked ? 1 : -1), // Revert the optimistic update
+      }));
+    }
   };
+
+
+  useEffect(() => {
+    const fetchLikes = async () => {
+      const fetchedLikes = {};
+
+      await Promise.all(
+        notes.map((note) => {
+          fetchedLikes[note.id] = note.likes || 0; // Populate likes dictionary
+        })
+      );
+
+      setAllLikes(fetchedLikes); // Update state with fetched likes
+    };
+
+    fetchLikes();
+  }, [notes]); // Depend on `notes` array
+
+
+
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes <span className='text-gray-600 text-2xl'>({totalNotes})</span></h1>
 
       {/* Updated rendering of top contributor */}
-      <h1 className="text-lg text-gray-600 mb-0 font-semibold flex-row flex gap-1 relative group">
-        Top Contributor:
-        <h1 className='text-green-700 shining-text'>
-          {topContributor
-            ? `${topContributor.name} (${topContributor.noteCount} notes)`
-            : 'Loading...'}
-        </h1>
+      <h1 className=" items-center text-gray-600 mb-0 font-semibold flex-row flex gap-1 relative group">
+        <p className='text-sm'>Top Contributors:</p>
 
-        {/* Tooltip */}
-        {/* <span className="tooltip absolute left-44 bottom-10 transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          Thank you {topContributor ? topContributor.name : 'loading'}
-        </span> */}
+        <TopContributor topContributor={topContributor || []} />
+
+
       </h1>
 
 
@@ -444,8 +501,10 @@ function Dashboard() {
                     cursor: "pointer",
                     marginRight: "5px",
                     color: "gray", // Toggle color based on the `liked` state
-                  }} onClick={() => handleLike(note.id, note.likes || 0)} className="hover:bg-red-400 rounded-md hover:p-1 transition-all" />
-                  {note.likes || 0}
+                  }} onClick={() => handleLike(note.id)} className="hover:bg-red-400 rounded-md hover:p-1 transition-all" />
+
+                  {allLikes[note.id] || 0}
+
                 </div>
 
                 {admin && ( // Show Delete button only for admin
@@ -487,8 +546,8 @@ function Dashboard() {
         )}
       </div>
       <div className='text-center opacity-90 pt-14 flex flex-col'>
-        <a href="https://talaganarajesh.vercel.app/" target='_blank' rel="noopener noreferrer" >
-          <span className='opacity-60 hover:opacity-100 transition-opacity duration-300'>Built with 💖 by</span> <span className='text-green-700 hover:text-green-600 transition-colors duration-300 font-bold'>Rajesh</span>
+        <a href="https://talaganarajesh.vercel.app/" target='_blank' rel="noopener noreferrer" className='hover:-rotate-3 transition-all duration-300'>
+          <span className='text-green-700 font-bold'><span className='text-black'>~ by</span> Rajesh</span>
         </a>
       </div>
     </div>

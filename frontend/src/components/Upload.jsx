@@ -237,7 +237,7 @@ function Upload() {
     // Start interval to change messages
     const interval = setInterval(() => {
       setMessage(messages[Math.floor(Math.random() * messages.length)]);
-    }, 4000); // Change message every 4 seconds
+    }, 4000); // Change message every 4 seconds 
 
 
 

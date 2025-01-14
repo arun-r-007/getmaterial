@@ -50,22 +50,22 @@ app.use(express.json());
 
 // Upload endpoint
 app.post('/', upload.single('file'), async (req, res) => {
-  console.log('Upload request received');
+  // console.log('Upload request received');
 
-  console.log('Request body:', req.body);
+  // console.log('Request body:', req.body);
   
   if (!req.file) {
-    console.log('No file in request');
+    // console.log('No file in request');
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
   if (!process.env.GOOGLE_DRIVE_FOLDER_ID) {
-    console.error('Google Drive folder ID not configured');
+    // console.error('Google Drive folder ID not configured');
     return res.status(500).json({ message: 'Server configuration error: Folder ID missing' });
   }
 
   try {
-    console.log('Preparing file upload:', req.file.originalname);
+    // console.log('Preparing file upload:', req.file.originalname);
 
     const fileMetadata = {
       name: req.file.originalname,
@@ -83,7 +83,7 @@ app.post('/', upload.single('file'), async (req, res) => {
       fields: 'id, webViewLink',
     });
 
-    console.log('File uploaded successfully:', response.data);
+    // console.log('File uploaded successfully:', response.data);
 
     res.status(200).json({
       message: 'File uploaded successfully',

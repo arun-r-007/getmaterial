@@ -139,39 +139,67 @@ function Upload() {
   const [message, setMessage] = useState(messages[0]);
 
 
+  const [uploadedFileLink, setUploadedFileLink] = useState('');
+const [uploadedFileId, setUploadedFileId] = useState('');
 
-  const handleFileChange = (e) => {
+
+
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       if (selectedFile.size > 500 * 1024 * 1024) { // 500MB limit
         setError('File size must be less than 500MB');
         return;
       }
-
-
-      // Check if the file is a video
+  
       if (selectedFile.type.startsWith('video/')) {
         setError('Video files are not allowed');
         return;
       }
-
-      // Check if the file is an image
-      // if (selectedFile.type.startsWith('image/')) {
-      //   setError('Image files are not allowed');
-      //   return;
-      // }
-
-      // Check if the file is audio/music
+  
       if (selectedFile.type.startsWith('audio/')) {
         setError('Audio files are not allowed');
         return;
       }
-
-
+  
       setFile(selectedFile);
       setError(null);
+  
+      try {
+  
+        // Upload file to Google Drive
+        const user = auth.currentUser;
+        if (!user) throw new Error('User not authenticated');
+  
+        const idToken = await user.getIdToken();
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+  
+        const response = await axios.post(
+          'https://getmaterial-fq27.onrender.com',
+          formData,
+          {
+            headers: {
+              'Authorization': `Bearer ${idToken}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+  
+        const { fileLink, fileId } = response.data;
+  
+        // Save the uploaded file's link and ID to state
+        setUploadedFileLink(fileLink);
+        setUploadedFileId(fileId);
+  
+        console.log('File uploaded successfully:', fileLink);
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setError('Failed to upload file. Please try again.');
+      }
     }
   };
+  
 
 
 
@@ -199,89 +227,49 @@ function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-
-    
-
+  
     if (!user) {
-      setError('You must be authenticated to upload files.');
-      alert('You must be authenticated to upload files. Redirecting to login page...');
+      setError('You must be authenticated to submit the form.');
+      alert('Redirecting to login page...');
       navigate('/auth');
       return;
     }
-
-    if (!file) {
-      setError('Please select a file to upload');
+  
+    if (!uploadedFileLink || !uploadedFileId) {
+      setError('Please select and upload a file before submitting.');
       return;
     }
-
+  
     setUploading(true);
     setError(null);
-
-    const formData = new FormData();
-
-
-
-
-
-    formData.append('file', file);
-    formData.append('title', title);
-    formData.append('semester', semester);
-    formData.append('subject', selectedSubject);
-    formData.append('contributorName', contributorName);
-    formData.append('module', module);
-
-    formData.append('likes',0)
-
-
-
-    // Start interval to change messages
-    const interval = setInterval(() => {
-      setMessage(messages[Math.floor(Math.random() * messages.length)]);
-    }, 4000); // Change message every 4 seconds 
-
-
-
+  
     try {
-
-
-      const idToken = await user.getIdToken();
-      const response = await axios.post('https://getmaterial-fq27.onrender.com', formData, {
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-
-
-      // Prepare note data
+      // Prepare the note data with pre-uploaded file details
       const noteData = {
         name: title,
         semester,
         subject: selectedSubject,
         contributorName,
         module,
-        fileUrl: response.data.fileLink,
-        fileId: response.data.fileId,
-        likes:0
+        fileUrl: uploadedFileLink,
+        fileId: uploadedFileId,
+        likes: 0,
       };
-
+  
       // Add note to Firestore
       await addNote(noteData);
-
-
-      console.log('Upload successful:', response.data);
-      alert('File uploaded successfully!');
+  
+      console.log('Form submitted successfully.');
+      alert('Note uploaded successfully!');
       navigate('/');
     } catch (error) {
-      console.error('Error uploading file:', error);
-      setError(error.response?.data?.message || 'Upload failed');
+      console.error('Error submitting form:', error);
+      setError('Submission failed. Please try again.');
     } finally {
       setUploading(false);
-      clearInterval(interval); // Clear interval after upload
     }
-
   };
+  
 
   return (
     <div className="container mx-auto px-4 pt-2">

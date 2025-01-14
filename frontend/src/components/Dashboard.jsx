@@ -7,7 +7,7 @@ import CustomSelect from "./CustomSelect";
 
 import { db } from '../firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
-
+import { Trash } from 'lucide-react';
 
 
 import { auth } from '../firebase';
@@ -136,7 +136,7 @@ function Dashboard() {
 
   const [topContributor, setTopContributor] = useState(null);
 
-
+  const owner = auth.currentUser;
 
 
 
@@ -150,6 +150,7 @@ function Dashboard() {
 
 
         const user = auth.currentUser;
+
 
         if (user && user.email == adminEmail) {
           setAdmin(true);
@@ -508,8 +509,18 @@ function Dashboard() {
                 </div>
 
                 {admin && ( // Show Delete button only for admin
-                  <div className="bg-red-600 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
-                    <button onClick={() => handleDelete(note.id)}>Delete</button>
+                  <div className="bg-slate-200 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
+                    <button onClick={() => handleDelete(note.id)}>
+                    <Trash size={20} color="red" />
+                    </button>
+                  </div>
+                )}
+
+                {owner && owner.email == note.metadata.createdBy && (
+                  <div className="bg-slate-200 rounded-lg md:p-2 p-1 hover:rounded-xl transition-all duration-300">
+                    <button onClick={() => handleDelete(note.id)}> 
+                      <Trash size={20} color="red" />
+                    </button>
                   </div>
                 )}
 
@@ -524,7 +535,7 @@ function Dashboard() {
                 alt="PDF Preview"
                 className="md:w-40 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
               />
-              <p className='opacity-40 bottom-0'>Date: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+              <p className='opacity-40 bottom-0'>Dt: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
 
 
             </div>

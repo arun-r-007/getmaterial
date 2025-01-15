@@ -12,57 +12,62 @@ import { getNotes } from '../firebase';
 
 import CustomSelect from './CustomSelect';
 
+import PopUpMessage from "./PopUpMessage";
+
+
+
+
 function Upload() {
   const [subjects, setSubjects] = useState([]);
-  
 
 
-    useEffect(() => {
 
-      
-      const fetchNotes = async () => {
-        try {
-          const fetchedNotes = await getNotes();
+  useEffect(() => {
 
-          // Normalize subject names
+
+    const fetchNotes = async () => {
+      try {
+        const fetchedNotes = await getNotes();
+
+        // Normalize subject names
         const normalizedNotes = fetchedNotes.map(note => ({
           ...note,
           subject: note.subject.trim().toUpperCase(), // Normalize subject jjjjjjjjsjust test comment
         }));
 
-  
-          // Extract unique subjects
-          const fetchedsubjects = [...new Set(normalizedNotes.map(note => note.subject))];
 
-          fetchedsubjects.sort();
-          fetchedsubjects.push('Not mentioned');
+        // Extract unique subjects
+        const fetchedsubjects = [...new Set(normalizedNotes.map(note => note.subject))];
 
-          setSubjects(fetchedsubjects);
+        fetchedsubjects.sort();
+        fetchedsubjects.push('Not mentioned');
 
-        } catch (error) {
-          console.error('Error fetching subjects:', error);
-          setError(error.message);
-        }
-      };
-  
-      fetchNotes();
+        setSubjects(fetchedsubjects);
+
+      } catch (error) {
+        console.error('Error fetching subjects:', error);
+        setError(error.message);
+      }
+    };
+
+    fetchNotes();
 
 
-    }, []);
+  }, []);
 
-    
-    useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        if (user) {
-          setContributorName(user.displayName);
-        } else {
-          setContributorName("");
-        }
-      });
-  
-      // Cleanup the listener on unmount
-      return () => unsubscribe();
-    }, []);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setContributorName(user.displayName);
+      } else {
+        setContributorName("");
+      }
+    });
+
+    // Cleanup the listener on unmount
+    return () => unsubscribe();
+  }, []);
 
 
 
@@ -131,7 +136,7 @@ function Upload() {
     "Loading... it’s probably napping!",
     "Uploading... let’s just hope for the best.",
     "Relax... the bytes are on their way!"
-];
+  ];
 
 
 
@@ -140,7 +145,13 @@ function Upload() {
 
 
   const [uploadedFileLink, setUploadedFileLink] = useState('');
-const [uploadedFileId, setUploadedFileId] = useState('');
+  const [uploadedFileId, setUploadedFileId] = useState('');
+
+  const [fileUploading, setFileUploading] = useState(false);
+
+  const [fileUploaded, setFileUploaded] = useState(false);
+
+  const [notesUploaded,setNotesUploaded]=useState(false);
 
 
 
@@ -151,30 +162,34 @@ const [uploadedFileId, setUploadedFileId] = useState('');
         setError('File size must be less than 500MB');
         return;
       }
-  
+
       if (selectedFile.type.startsWith('video/')) {
         setError('Video files are not allowed');
         return;
       }
-  
+
       if (selectedFile.type.startsWith('audio/')) {
         setError('Audio files are not allowed');
         return;
       }
-  
+
       setFile(selectedFile);
       setError(null);
-  
+
       try {
-  
+
+        setFileUploaded(false);
+        setFileUploading(true);
+
+
         // Upload file to Google Drive
         const user = auth.currentUser;
         if (!user) throw new Error('User not authenticated');
-  
+
         const idToken = await user.getIdToken();
         const formData = new FormData();
         formData.append('file', selectedFile);
-  
+
         const response = await axios.post(
           'https://getmaterial-fq27.onrender.com',
           formData,
@@ -185,21 +200,24 @@ const [uploadedFileId, setUploadedFileId] = useState('');
             },
           }
         );
-  
+
         const { fileLink, fileId } = response.data;
-  
+
         // Save the uploaded file's link and ID to state
         setUploadedFileLink(fileLink);
         setUploadedFileId(fileId);
-  
+
         console.log('File uploaded successfully:', fileLink);
+        setFileUploaded(true);
       } catch (error) {
         console.error('Error uploading file:', error);
         setError('Failed to upload file. Please try again.');
+        setFileUploaded(false)
       }
+      
     }
   };
-  
+
 
 
 
@@ -227,22 +245,24 @@ const [uploadedFileId, setUploadedFileId] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-  
+
     if (!user) {
       setError('You must be authenticated to submit the form.');
       alert('Redirecting to login page...');
       navigate('/auth');
       return;
     }
-  
+
     if (!uploadedFileLink || !uploadedFileId) {
-      setError('Please select and upload a file before submitting.');
+      setError('File Uploading... please wait || select a file if not selected.');
       return;
     }
-  
-    setUploading(true);
+
+    if (fileUploading) {
+      setUploading(true);
+    }
     setError(null);
-  
+
     try {
       // Prepare the note data with pre-uploaded file details
       const noteData = {
@@ -255,12 +275,14 @@ const [uploadedFileId, setUploadedFileId] = useState('');
         fileId: uploadedFileId,
         likes: 0,
       };
-  
+
       // Add note to Firestore
       await addNote(noteData);
-  
+
       console.log('Form submitted successfully.');
-      alert('Note uploaded successfully!');
+
+      setNotesUploaded(true);
+
       navigate('/');
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -269,7 +291,7 @@ const [uploadedFileId, setUploadedFileId] = useState('');
       setUploading(false);
     }
   };
-  
+
 
   return (
     <div className="container mx-auto px-4 pt-2">
@@ -279,10 +301,40 @@ const [uploadedFileId, setUploadedFileId] = useState('');
           {error}
         </div>
       )}
+
+      {notesUploaded && (
+        <PopUpMessage
+        message="Notes Uploaded 🎉🎉!"
+        type="success" // 'info', 'error', 'warning', or 'success'
+        duration={5000} // Duration in milliseconds
+      />
+      )}
+
       <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-6 py-5 rounded-lg mx-auto space-y-4">
 
+        {fileUploading ? (
 
-        <div>
+          <div>
+            {fileUploaded ? (
+              <div className='border-dashed border-black border rounded-xl p-3'>
+                <p className=' text-green-500 font-bold text-center'>Uploaded 🎉</p>
+                <p className='text-gray-500 text-sm text-center font-semibold'>click Upload Note !</p>
+                <PopUpMessage
+                  message="SUBMIT NOW! ,File uploaded ✅!"
+                  type="success" // 'info', 'error', 'warning', or 'success'
+                  duration={5000} // Duration in milliseconds
+                />
+              </div>
+
+            ) : (
+              <div className='border-dashed border-black border rounded-xl p-3'>
+                <p className=' text-red-500 text-center font-bold '>uploading...</p>
+                <p className='text-gray-500 text-sm text-center font-semibold'>please wait ! Don't submit</p>
+              </div>
+            )}
+          </div>
+
+        ) : (<div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Notes File
           </label>
@@ -290,9 +342,10 @@ const [uploadedFileId, setUploadedFileId] = useState('');
             type="file"
             onChange={handleFileChange}
             className="w-full p-2 border-dashed border-black border rounded-xl focus:ring-2 focus:ring-green-500"
-            required
           />
-        </div>
+        </div>)}
+
+
 
 
         <div>
@@ -303,7 +356,7 @@ const [uploadedFileId, setUploadedFileId] = useState('');
           <CustomSelect
             options={subjects}
             placeholder={selectedSubject || "Select a subject"}
-            onChange={(selectedOption)=> setSelectedSubject(selectedOption)}
+            onChange={(selectedOption) => setSelectedSubject(selectedOption)}
           />
 
           {/* Conditionally render the input field when 'Not mentioned' is selected */}

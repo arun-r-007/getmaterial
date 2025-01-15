@@ -1,0 +1,37 @@
+.popup-message {
+    position: fixed;
+    top: -50px;
+    right:40px;
+    padding: 10px 20px;
+    background-color: #4caf50; /* Default background for success messages */
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    opacity: 0;
+    z-index: 1000;
+  }
+  
+  .popup-message.show {
+    top: 90px;
+    opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    .popup-message {
+      right: 20px;
+    }
+}
+  
+  .popup-message.error {
+    background-color: #f44336; /* Red for error messages */
+  }
+  
+  .popup-message.warning {
+    background-color: #ff9800; /* Orange for warning messages */
+  }
+  
+  .popup-message.info {
+    background-color: #2196f3; /* Blue for informational messages */
+  }
+  

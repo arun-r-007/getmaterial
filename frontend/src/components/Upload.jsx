@@ -466,11 +466,8 @@ function Upload() {
       </form>
 
       {uploading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50">
-          <div className="p-3 bg-yellow-100 border flex-col flex border-yellow-400 text-yellow-700 rounded transition-all duration-300 text-center w-[300px] md:right-10 right-3">
-            <span className="text-green-600 text-center pb-2">uploading...</span>
-            {message}
-          </div>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 transition-all z-50">
+          <h1 className='loader'></h1>
         </div>
       )}
 

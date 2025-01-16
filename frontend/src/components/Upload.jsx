@@ -151,7 +151,7 @@ function Upload() {
 
   const [fileUploaded, setFileUploaded] = useState(false);
 
-  const [notesUploaded,setNotesUploaded]=useState(false);
+  const [notesUploaded, setNotesUploaded] = useState(false);
 
 
 
@@ -214,7 +214,7 @@ function Upload() {
         setError('Failed to upload file. Please try again by refreshing.');
         setFileUploaded(false)
       }
-      
+
     }
   };
 
@@ -262,7 +262,7 @@ function Upload() {
       setUploading(true);
     }
 
-    if(!fileUploaded){
+    if (!fileUploaded) {
       setUploading(true);
     };
 
@@ -309,15 +309,15 @@ function Upload() {
 
       {notesUploaded && (
         <PopUpMessage
-        message="Notes Uploaded 🎉🎉!"
-        type="success" // 'info', 'error', 'warning', or 'success'
-        duration={5000} // Duration in milliseconds
-      />
+          message="Notes Uploaded 🎉🎉!"
+          type="success" // 'info', 'error', 'warning', or 'success'
+          duration={5000} // Duration in milliseconds
+        />
       )}
 
       <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-6 py-5 rounded-lg mx-auto space-y-4">
 
-        {fileUploading ? (
+        {!fileUploading ? (
 
           <div>
             {fileUploaded ? (
@@ -332,8 +332,12 @@ function Upload() {
               </div>
 
             ) : (
-              <div className='border-dashed border-black border rounded-xl p-3'>
-                <p className=' text-red-500 text-center font-bold '>uploading...</p>
+              <div className='border-dashed border-black border flex flex-col justify-center items-center rounded-xl p-3'>
+
+                <div className='justify-center flex items-center'>
+                  <p className=' text-red-500 text-center font-bold  '>uploading...</p>
+                  <p className='loader2 text-center flex align-middle justify-center'></p>
+                </div>
                 <p className='text-gray-500 text-sm text-center font-semibold'>please wait ! Don't submit</p>
               </div>
             )}

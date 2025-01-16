@@ -317,7 +317,7 @@ function Upload() {
 
       <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-6 py-5 rounded-lg mx-auto space-y-4">
 
-        {!fileUploading ? (
+        {fileUploading ? (
 
           <div>
             {fileUploaded ? (

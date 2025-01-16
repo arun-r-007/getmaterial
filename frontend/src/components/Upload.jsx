@@ -211,7 +211,7 @@ function Upload() {
         setFileUploaded(true);
       } catch (error) {
         console.error('Error uploading file:', error);
-        setError('Failed to upload file. Please try again.');
+        setError('Failed to upload file. Please try again by refreshing.');
         setFileUploaded(false)
       }
       
@@ -253,10 +253,10 @@ function Upload() {
       return;
     }
 
-    if (!uploadedFileLink || !uploadedFileId) {
-      setError('File Uploading... please wait || select a file if not selected.');
-      return;
-    }
+    // if (!uploadedFileLink || !uploadedFileId) {
+    //   setError('File Uploading... please wait || select a file if not selected.');
+    //   return;
+    // }
 
     if (fileUploading) {
       setUploading(true);
@@ -349,9 +349,9 @@ function Upload() {
 
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Subject (if not mentioned, select 'Not mentioned')
-          </label>
+          {/* <label className="block text-sm font-medium text-gray-700 mb-1">
+            Subject
+          </label> */}
 
           <CustomSelect
             options={subjects}
@@ -388,13 +388,14 @@ function Upload() {
         <div className='flex gap-5'>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            {/* <label className="block text-sm font-medium text-gray-700 mb-1">
               Semester
-            </label>
+            </label> */}
+
             <select
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
-              className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+              className="w-full p-2 border border-gray-400 rounded-lg"
               required
             >
               <option value="">Select Semester</option>
@@ -406,13 +407,13 @@ function Upload() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            {/* <label className="block text-sm font-medium text-gray-700 mb-1">
               Module
-            </label>
+            </label> */}
             <select
               value={module}
               onChange={(e) => setModule(e.target.value)}
-              className="w-full p-2 border rounded-lg focus:ring-1 focus:ring-green-500"
+              className="w-full p-2 border-gray-400 border rounded-lg"
               required
             >
               <option value="">Select Module</option>

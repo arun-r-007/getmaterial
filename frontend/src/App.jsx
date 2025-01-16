@@ -23,7 +23,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-r from-cyan-100 to-green-100">
+      <div className="min-h-screen bg-gradient-to-r from-yellow-50 to-amber-50">
         <Navbar user={user} />
         <Routes>
           <Route path="/" element={<Dashboard />} />

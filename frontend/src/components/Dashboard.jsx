@@ -22,8 +22,6 @@ import { getDocs, collection } from "firebase/firestore";
 
 import { Heart } from "lucide-react";
 
-import "./style.css";
-
 
 const TopContributor = ({ topContributor }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -293,7 +291,7 @@ function Dashboard() {
       <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes <span className='text-gray-600 text-2xl'>({totalNotes})</span></h1>
 
       {/* Updated rendering of top contributor */}
-      <h1 className=" items-center text-gray-600 mb-0 font-semibold flex-row flex gap-1 relative group">
+      <h1 className=" items-center text-gray-600 mb-1 ml-1 font-semibold flex-row flex gap-1 relative group">
         <p className='text-sm'>Top Contributors:</p>
 
         <TopContributor topContributor={topContributor || []} />
@@ -303,7 +301,7 @@ function Dashboard() {
 
 
       {/* Filter Panel */}
-      <div className="mb-6 bg-gray-100 p-4 rounded-2xl">
+      <div className="mb-6 border-2 border-green-200 shadow-xl border-x-teal-200 p-4 rounded-2xl">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Title Filter */}
           <div>
@@ -373,7 +371,7 @@ function Dashboard() {
           <div className="mt-4 p-3 text-center">
             <button
               onClick={resetFilters}
-              className="bg-red-100 text-gray-800 py-2 px-4 rounded font-semibold hover:bg-red-200 transition-colors"
+              className="bg-green-200 text-gray-800 py-2 px-4 rounded font-semibold md:hover:bg-green-300 transition-colors"
             >
               Reset Filters
             </button>
@@ -386,6 +384,8 @@ function Dashboard() {
 
       {/* Notes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+
         {filteredNotes.map((note) => (
           <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl flex flex-row justify-between">
 

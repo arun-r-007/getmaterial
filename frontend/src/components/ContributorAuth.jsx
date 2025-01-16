@@ -245,7 +245,7 @@ export default function ContributorAuth() {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading.googleSignIn}
-          className="w-full flex flex-row justify-center gap-2 items-center font-bold py-3 text-black bg-white rounded mb-4 transition-colors duration-300 disabled:opacity-50"
+          className="w-full flex flex-row justify-center gap-2 border-2 border-gray-200 hover:border-gray-300 bg-amber-50 items-center font-bold py-3 text-black rounded-2xl mb-4 transition-colors duration-300 disabled:opacity-50"
         >
           <lord-icon
             src="https://cdn.lordicon.com/eziplgef.json"
@@ -366,7 +366,7 @@ export default function ContributorAuth() {
             <button
               type="submit"
               disabled={isLoading.signIn}
-              className="w-full font-bold p-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-black transition-colors duration-300 disabled:opacity-50"
+              className="w-full font-bold p-2 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 text-black transition-colors duration-300 disabled:opacity-50"
             >
               {isLoading.signIn ? <Loader /> : 'Sign In'}
             </button>

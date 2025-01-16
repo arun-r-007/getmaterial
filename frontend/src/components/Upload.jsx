@@ -261,6 +261,11 @@ function Upload() {
     if (fileUploading) {
       setUploading(true);
     }
+
+    if(!fileUploaded){
+      setUploading(true);
+    };
+
     setError(null);
 
     try {
@@ -457,7 +462,7 @@ function Upload() {
         <button
           type="submit"
           disabled={uploading || !file}
-          className={`w-full ${uploading || !file
+          className={`w-full ${uploading || !file || !fileUploaded
             ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-green-500 hover:bg-green-600'
             } text-black font-semibold  p-2 rounded transition duration-200`}

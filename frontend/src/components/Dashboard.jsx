@@ -128,7 +128,7 @@ function Dashboard() {
 
 
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState({});
   const [allLikes, setAllLikes] = useState({});
 
 
@@ -245,17 +245,20 @@ function Dashboard() {
     // Optimistically update the likes locally
     setAllLikes((prevLikes) => ({
       ...prevLikes,
-      [noteId]: (prevLikes[noteId] || 0) + (isLiked ? -1 : 1), // Increment or decrement based on `isLiked`
+      [noteId]: (prevLikes[noteId] || 0) + (isLiked[noteId] ? -1 : 1), // Increment or decrement based on `isLiked`
     }));
+
+    setIsLiked((prevIsLiked) => ({
+      ...prevIsLiked,
+      [noteId]: !prevIsLiked[noteId],
+    })); // Toggle the liked state for the specific note
 
     try {
       // Update the likes count in the Firestore database
       await updateDoc(noteRef, {
-        likes: increment(isLiked ? -1 : 1), // Atomically increment in Firestore
+        likes: increment(isLiked[noteId] ? -1 : 1), // Atomically increment in Firestore
       });
 
-      // Toggle the liked state
-      setIsLiked(!isLiked);
     } catch (error) {
 
       // Roll back the local state if the database update fails
@@ -487,7 +490,7 @@ function Dashboard() {
               </p>
 
 
-              <div className='flex flex-row justify-start gap-3 items-center'>
+              <div className='flex flex-row justify-start gap-1 items-center'>
 
                 <a
                   href={note.fileUrl}
@@ -498,12 +501,12 @@ function Dashboard() {
                   View Note
                 </a>
 
-                <div className='flex flex-row'>
+                <div className='flex flex-row bg-gray-100 md:px-2 p-1 rounded-lg md:hover:bg-gray-200 transition-all'>
                   <Heart style={{
                     cursor: "pointer",
-                    marginRight: "5px",
+                    marginRight: "0px",
                     color: "gray", // Toggle color based on the `liked` state
-                  }} onClick={() => handleLike(note.id)} className="hover:bg-red-400 rounded-md hover:p-1 transition-all" />
+                  }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" :"bg-transparent hover:bg-red-400 hover:p-1 rounded-full transition-all"} />
 
                   {allLikes[note.id] || 0}
 
@@ -518,7 +521,7 @@ function Dashboard() {
                 )}
 
                 {owner && owner.email == note.metadata.createdBy && (
-                  <div className="bg-slate-200 rounded-lg md:p-2 p-1 hover:rounded-xl transition-all duration-300">
+                  <div className="bg-slate-100 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
                     <button onClick={() => handleDelete(note.id)}> 
                       <Trash size={20} color="red" />
                     </button>

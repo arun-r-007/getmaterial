@@ -38,11 +38,11 @@ const TopContributor = ({ topContributor }) => {
   }, [contributors]);
 
   return (
-    <div className="text-green-700 shining-text">
+    <div className="text-green-700 text-sm shining-text">
       {contributors.length > 0 ? (
         <div key={currentIndex}>
           <h2>{contributors[currentIndex].name}
-            <span>({contributors[currentIndex].noteCount})</span>
+            <span>-{contributors[currentIndex].noteCount}</span>
           </h2>
         </div>
       ) : (
@@ -288,11 +288,11 @@ function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Nist Notes <span className='text-gray-600 text-2xl'>({totalNotes})</span></h1>
+      <h1 className="md:text-3xl text-xl font-bold mb-6 text-center">NIST NOTES - <span>{totalNotes}</span></h1>
 
       {/* Updated rendering of top contributor */}
       <h1 className=" items-center text-gray-600 mb-1 ml-1 font-semibold flex-row flex gap-1 relative group">
-        <p className='text-sm'>Top Contributors:</p>
+        <p className='text-sm'>Top contributors :-</p>
 
         <TopContributor topContributor={topContributor || []} />
 
@@ -302,19 +302,19 @@ function Dashboard() {
 
       {/* Filter Panel */}
       <div className="mb-6 border-2 border-green-200 shadow-xl border-x-teal-200 p-4 rounded-2xl">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid md:grid-cols-5 gap-4 p-2 items-center">
           {/* Title Filter */}
           <div>
-            <label htmlFor="titleFilter" className="block text-sm font-medium text-gray-700">
+            {/* <label htmlFor="titleFilter" className="block text-sm font-medium text-gray-700">
               Search
-            </label>
+            </label> */}
             <input
               type="text"
               id="titleFilter"
               value={titleFilter}
               onChange={(e) => setTitleFilter(e.target.value)}
-              placeholder="Enter subject / teacher etc."
-              className="mt-1 p-3 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Search subject / teacher etc."
+              className="p-3 block w-full rounded-md border-gray-300 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
           </div>
 
@@ -323,12 +323,12 @@ function Dashboard() {
           {/* Subject Filter */}
 
           <div>
-            <label
+            {/* <label
               htmlFor="subjectFilter"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Subject
-            </label>
+            </label> */}
             <CustomSelect
               options={uniqueSubjects}
               placeholder={subjectFilter || "All Subjects"}
@@ -339,12 +339,13 @@ function Dashboard() {
 
 
 
+          
 
           {/* module Filter */}
           <div>
-            <label htmlFor="moduleFilter" className="block text-sm font-medium text-gray-700 mb-1">
+            {/* <label htmlFor="moduleFilter" className="block text-sm font-medium text-gray-700 mb-1">
               Module
-            </label>
+            </label> */}
             <CustomSelect
               options={uniqueModules}
               placeholder={moduleFilter || "All Modules"}
@@ -355,9 +356,9 @@ function Dashboard() {
 
           {/* Semester Filter */}
           <div>
-            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700 mb-1">
+            {/* <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700 mb-1">
               Semester
-            </label>
+            </label> */}
             <CustomSelect
 
               options={uniqueSemesters}
@@ -368,10 +369,10 @@ function Dashboard() {
           </div>
 
           {/* Reset Filters Button */}
-          <div className="mt-4 p-3 text-center">
+          <div className=" text-center">
             <button
               onClick={resetFilters}
-              className="bg-green-200 text-gray-800 py-2 px-4 rounded font-semibold md:hover:bg-green-300 transition-colors"
+              className="bg-green-200 text-gray-800 py-3 px-4 rounded font-semibold md:hover:bg-green-300 transition-colors"
             >
               Reset Filters
             </button>

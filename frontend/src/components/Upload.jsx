@@ -300,7 +300,7 @@ function Upload() {
 
   return (
     <div className="container mx-auto px-4 pt-2">
-      <h1 className="text-3xl font-bold mb-3 text-center">Upload Note</h1>
+      <h1 className="text-3xl font-bold md:my-6 mb-3 text-center">Upload Note</h1>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
@@ -458,7 +458,7 @@ function Upload() {
             value={contributorName}
             onChange={(e) => setContributorName(e.target.value)}
             placeholder="Enter your name"
-            className="w-full p-2 border rounded-lg focus:ring-1"
+            className="w-full p-2 font-semibold border rounded-lg focus:ring-1"
           />
         </div>
 
@@ -467,8 +467,8 @@ function Upload() {
           type="submit"
           disabled={uploading || !file || !fileUploaded}
           className={`w-full ${uploading || !file || !fileUploaded
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-green-500 hover:bg-green-600'
+            ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+            : 'bg-green-500 hover:bg-green-600' 
             } text-black font-semibold  p-2 rounded transition duration-200`}
         >
           {uploading ? 'Uploading...' : 'Upload Note'}

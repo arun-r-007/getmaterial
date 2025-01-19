@@ -36,17 +36,17 @@ function Navbar({ user }) {
         <div>
           {user ? (
             <>
-              <Link to="/upload" className="text-black md:text-base bg-white md:py-2 md:px-5 text-sm px-1 mr-2 border-white border-4 rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
+              <Link to="/upload" className="text-black md:text-base bg-white md:py-2 md:px-5 text-sm px-3 py-1 mr-2 border-white border-4 rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
                 Upload
               </Link>
-              <button onClick={handleSignOut} className="text-white md:text-base bg-black opacity-80 text-xs font-semibold md:py-2 md:px-4 rounded-lg hover:text-red-500 transition-colors duration-300">
+              <button onClick={handleSignOut} className="text-white md:text-base border border-dashed px-2 border-gray-500 py-2 bg-black opacity-80 text-xs font-semibold md:py-2 md:px-4 rounded-lg hover:text-red-500 transition-colors duration-300">
                 Sign Out
               </button>
             </>
           ) : (
             <div className='flex justify-end items-center'>
-              <Link to="/auth" className="text-black font-bold text-xs w-1/2 text-center md:w-full md:text-sm bg-gradient-to-r from-green-400 to-green-500 md:py-3 hover:underline md:px-3 rounded-md">
-                Become a Contributor
+              <Link to="/auth" className="text-black font-bold text-xs w-full text-center md:w-full md:text-sm bg-gradient-to-r from-green-400 to-green-500 md:py-3 p-2 hover:underline md:px-3 rounded-md">
+                Contribute
               </Link>
 
               {/* LinkedIn Button */}

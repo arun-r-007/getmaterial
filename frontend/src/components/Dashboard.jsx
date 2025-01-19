@@ -496,7 +496,7 @@ function Dashboard() {
                   href={note.fileUrl}
                   rel="noopener noreferrer"
                   target="_blank"
-                  className="text-white bg-black py-2 px-3 rounded-lg hover:rounded-2xl transition-all duration-300"
+                  className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                 >
                   View Note
                 </a>
@@ -539,7 +539,7 @@ function Dashboard() {
                 alt="PDF Preview"
                 className="md:w-40 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
               />
-              <p className='opacity-40 bottom-0'>Dt: {note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+              <p className='opacity-40 bottom-0'>{note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
 
 
             </div>

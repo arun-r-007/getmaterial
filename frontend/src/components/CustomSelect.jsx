@@ -54,7 +54,7 @@ const CustomSelect = ({ options, placeholder, onChange, value }) => {
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <div
-        className="border border-gray-400 rounded-lg p-3 bg-white cursor-pointer shadow-sm"
+        className="border border-gray-400 md:hover:bg-yellow-50 transition-all rounded-lg p-3 bg-white cursor-pointer shadow-sm"
         onClick={() => setIsOpen(!isOpen)}
       >
         {value || placeholder || "Select an option"}

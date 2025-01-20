@@ -14,6 +14,8 @@ import CustomSelect from './CustomSelect';
 
 import PopUpMessage from "./PopUpMessage";
 
+import { UploadIcon } from 'lucide-react';
+
 
 
 
@@ -327,7 +329,7 @@ function Upload() {
                 <PopUpMessage
                   message="SUBMIT NOW! ,File uploaded ✅!"
                   type="success" // 'info', 'error', 'warning', or 'success'
-                  duration={5000} // Duration in milliseconds
+                // Duration in milliseconds
                 />
               </div>
 
@@ -344,14 +346,23 @@ function Upload() {
           </div>
 
         ) : (<div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Notes File
-          </label>
+          
+          <div className='flex justify-center hover:bg-yellow-50 transition-all'>
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-full p-2 border-dashed border-black border rounded-xl focus:ring-2 focus:ring-green-500"
+            className="hidden"
+            id="file-upload"
           />
+          <label
+            htmlFor="file-upload"
+            className="w-full text-center items-center  flex justify-center p-4 border-dashed border-black cursor-pointer hover:bg-green-00 transition-all border rounded-xl focus:ring-2 focus:ring-green-500"
+          >
+            <UploadIcon className="inline-block mr-5 size-5 items-center" />
+            Upload File
+
+          </label>
+          </div>
         </div>)}
 
 
@@ -404,7 +415,7 @@ function Upload() {
             <select
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
-              className="w-full p-2 border border-gray-400 rounded-lg"
+              className="w-full p-2 border md:hover:bg-yellow-50 cursor-pointer transition-all border-gray-400 rounded-lg"
               required
             >
               <option value="">Select Semester</option>
@@ -422,7 +433,7 @@ function Upload() {
             <select
               value={module}
               onChange={(e) => setModule(e.target.value)}
-              className="w-full p-2 border-gray-400 border rounded-lg"
+              className="w-full p-2 border-gray-400 md:hover:bg-yellow-50 cursor-pointer transition-all border rounded-lg"
               required
             >
               <option value="">Select Module</option>
@@ -468,7 +479,7 @@ function Upload() {
           disabled={uploading || !file || !fileUploaded}
           className={`w-full ${uploading || !file || !fileUploaded
             ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-            : 'bg-green-500 hover:bg-green-600' 
+            : 'bg-green-500 hover:bg-green-600'
             } text-black font-semibold  p-2 rounded transition duration-200`}
         >
           {uploading ? 'Uploading...' : 'Upload Note'}

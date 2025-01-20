@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "@react-oauth/google": "^0.12.1",
     "@types/canvas-confetti": "^1.6.4",
+    "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.7.7",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",

@@ -506,7 +506,7 @@ function Dashboard() {
                     cursor: "pointer",
                     marginRight: "0px",
                     color: "gray", // Toggle color based on the `liked` state
-                  }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" :"bg-transparent hover:bg-red-400 hover:p-1 rounded-full transition-all"} />
+                  }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" :"bg-transparent md:hover:fill-red-400 md:hover:p-0.5 rounded-full transition-all"} />
 
                   {allLikes[note.id] || 0}
 

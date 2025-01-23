@@ -395,10 +395,10 @@ function Dashboard() {
       {loading ?
 
         <div className="flex-row justify-center gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((card) => (
+          {[1, 2, 3,4,5,6].map((card) => (
             <div
               key={card}
-              className="z-70 w-full bg-white rounded-lg shadow-lg p-4 flex flex-row space-x-6 overflow-hidden"
+              className="z-70 w-full bg-zinc-50 rounded-lg shadow-lg p-4 flex flex-row space-x-6 overflow-hidden"
             >
               {/* Left Section Skeletons */}
               <div className="flex flex-col justify-center flex-grow">
@@ -414,7 +414,7 @@ function Dashboard() {
 
               {/* Right Section Skeleton */}
               <div className="flex-shrink-0">
-                <Skeleton height={160} width={150} className="rounded-lg" /> {/* Image Placeholder */}
+                <Skeleton height={200} width={150} className="rounded-lg" /> {/* Image Placeholder */}
               </div>
             </div>
           ))}
@@ -591,7 +591,7 @@ function Dashboard() {
           {/* No results message */}
           {filteredNotes.length === 0 && !loading && (
             <div className="col-span-full text-center text-gray-500 py-8">
-              No notes found. Try adjusting your filters.
+              Check internet ! Try adjusting your filters.
             </div>
           )}
         </div>

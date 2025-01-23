@@ -591,7 +591,7 @@ function Dashboard() {
           {/* No results message */}
           {filteredNotes.length === 0 && !loading && (
             <div className="col-span-full text-center text-gray-500 py-8">
-              Check internet ! Try adjusting your filters.
+              No notes found ! Reset filters or Refresh page.
             </div>
           )}
         </div>

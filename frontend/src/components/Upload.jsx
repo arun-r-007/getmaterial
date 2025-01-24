@@ -497,7 +497,7 @@ function Upload() {
         </button>
       </form>
 
-      {fileUploading && (
+      {fileUploading && !fileUploaded && (
         <div>
           <div className='mt-5 h-20 md:h-0'>
             <p className='text-center text-red-500 font-semibold'>{message}</p>

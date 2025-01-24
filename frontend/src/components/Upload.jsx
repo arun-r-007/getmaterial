@@ -143,7 +143,18 @@ function Upload() {
 
 
 
-  const [message, setMessage] = useState(messages[0]);
+  const [message, setMessage] = useState(messages[Math.floor(Math.random() * messages.length)]);
+
+
+  useEffect(()=>{
+    const interval=setInterval(()=>{
+      const index=Math.floor(Math.random() * messages.length);
+      setMessage(messages[index]);
+
+    },4000);
+
+    return ()=>clearInterval(interval);
+  },[]);
 
 
   const [uploadedFileLink, setUploadedFileLink] = useState('');
@@ -485,6 +496,14 @@ function Upload() {
           {uploading ? 'Uploading...' : 'Upload Note'}
         </button>
       </form>
+
+      {fileUploading && (
+        <div>
+          <div className='mt-5 h-20 md:h-0'>
+            <p className='text-center text-red-500 font-semibold'>{message}</p>
+          </div>
+        </div>
+      )}
 
       {uploading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 transition-all z-50">

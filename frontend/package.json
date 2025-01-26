@@ -23,6 +23,7 @@
     "express": "^4.21.1",
     "firebase": "^11.0.2",
     "firebase-admin": "^13.0.1",
+    "framer-motion": "^12.0.5",
     "googleapis": "^144.0.0",
     "jszip": "^3.10.1",
     "lord-icon-element": "^4.1.2",
@@ -33,7 +34,7 @@
     "react-dom": "^18.3.1",
     "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^6.28.0",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {

@@ -25,6 +25,10 @@ import { Heart } from "lucide-react";
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
+import { MorphingText } from "@/components/ui/morphing-text";
+
 
 const TopContributor = ({ topContributor }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -40,17 +44,17 @@ const TopContributor = ({ topContributor }) => {
     }
   }, [contributors]);
 
+  const texts = contributors.map((contributor) => `${contributor.name}-${contributor.noteCount}`);
+
   return (
-    <div className="text-green-700 text-sm shining-text">
-      {contributors.length > 0 ? (
-        <div key={currentIndex}>
-          <h2>{contributors[currentIndex].name}
-            <span>-{contributors[currentIndex].noteCount}</span>
-          </h2>
-        </div>
+    <div className='w-full'>
+
+      {texts.length > 0 ? (
+        <MorphingText texts={texts} />        
       ) : (
-        <p>NULL</p>
-      )}
+        <p className="text-black font-bold text-center h-14">Loading..</p>
+      ) }
+
     </div>
   );
 };
@@ -294,15 +298,15 @@ function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="md:text-3xl text-xl font-bold mb-6 text-center">NIST NOTES - <span>{totalNotes}</span></h1>
-
-      {/* Updated rendering of top contributor */}
-      <h1 className=" items-center text-gray-600 mb-1 ml-1 font-semibold flex-row flex gap-1 relative group">
-        <p className='text-sm'>Top contributors :-</p>
-
+      <div className="flex justify-center items-center flex-col">
+        <p className='text-xs '>Top Contributors</p>
         <TopContributor topContributor={topContributor || []} />
 
+      </div>
 
+      {/* Updated rendering of top contributor */}
+      <h1 className=" text-xs text-gray-600 mb-1 ml-1 font-semibold ">
+        NIST NOTES - <span>{totalNotes}</span>
       </h1>
 
 
@@ -395,7 +399,7 @@ function Dashboard() {
       {loading ?
 
         <div className="flex-row justify-center gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3,4,5,6].map((card) => (
+          {[1, 2, 3, 4, 5, 6].map((card) => (
             <div
               key={card}
               className="z-70 w-full bg-zinc-50 rounded-lg shadow-lg p-4 flex flex-row space-x-6 overflow-hidden"

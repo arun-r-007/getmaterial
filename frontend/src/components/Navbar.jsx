@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { Linkedin } from 'lucide-react';
+import { LogOutIcon } from 'lucide-react';
+import { UserIcon } from 'lucide-react';
+
 
 import { Button } from '@headlessui/react';
 
@@ -135,11 +138,13 @@ const getColorFromHash = (str) => {
                       transition={{ duration: 0.2 }}
                     >
                       <ul className="py-2 px-1 bg-amber-50 rounded-xl">
-                        <li className="px-4 py-2  rounded-2xl mb-1 hover:bg-amber-100 transition-all font-semibold cursor-pointer">
-                          <Link to="/auth" onClick={toggleMenu}>Change Account</Link>
+                        <li className="px-4 py-0 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer">
+                          <UserIcon size={20} className='mr-2'/>
+                          <Link to="/auth" onClick={toggleMenu} className=' pr-0 py-2'>Change Account</Link>
                         </li>
-                        <li className="px-4 py-2 rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
-                          Log Out
+                        <li className="px-4 py-2 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
+                          <LogOutIcon size={16} className="mr-2" />
+                          <p>Log out</p>
                         </li>
                       </ul>
                     </motion.div>

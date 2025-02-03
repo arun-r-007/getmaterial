@@ -5,6 +5,8 @@ import { Linkedin } from 'lucide-react';
 import { LogOutIcon } from 'lucide-react';
 import { UserIcon } from 'lucide-react';
 
+import myPhoto3 from '../assets/myphoto3.jpg';
+
 
 import { Button } from '@headlessui/react';
 
@@ -155,22 +157,17 @@ const getColorFromHash = (str) => {
               </div>
             </div>
           ) : (
-            <div className='flex justify-end items-center'>
+            <div className='flex justify-end items-center gap-3'>
               <Link to="/auth" className="text-black font-bold text-xs w-full text-center md:w-full md:text-sm bg-gradient-to-r from-green-400 to-green-500 md:py-3 p-2 hover:underline md:px-3 rounded-md">
                 Contribute
               </Link>
 
               {/* LinkedIn Button */}
-              <Button className="px-2 md:px-3">
-                <a
-                  href="https://www.linkedin.com/in/talagana-rajesh-75a546289/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex group relative bg-gray-100 hover:bg-blue-500 transition-colors duration-300 p-2 md:p-2 rounded-lg items-center gap-1 text-white"
+                <Link
+                  to="/about"
                 >
-                  <Linkedin size={16} className="md:size-6 size-4 text-black" />
-                </a>
-              </Button>
+                  <img src={myPhoto3} alt="rajesh" className='w-[50px] h-[30px] md:w-[68px] md:h-[40px] hover:brightness-90 transition-all rounded-full ' />
+                </Link>
 
             </div>
 

@@ -28,6 +28,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { MorphingText } from "@/components/ui/morphing-text";
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 const TopContributor = ({ topContributor }) => {
@@ -143,6 +144,8 @@ function Dashboard() {
 
   const owner = auth.currentUser;
 
+  const Navigate=useNavigate();
+
 
 
   useEffect(() => {
@@ -246,6 +249,13 @@ function Dashboard() {
 
 
   const handleLike = async (noteId) => {
+
+    if (!auth.currentUser) {
+      alert("Please sign in to like a note!");
+      Navigate("/auth");
+      return;
+    }
+
     const db = getFirestore();
     const noteRef = doc(db, "notes", noteId);
 
@@ -544,8 +554,8 @@ function Dashboard() {
                     <Heart style={{
                       cursor: "pointer",
                       marginRight: "0px",
-                      color: "gray", // Toggle color based on the `liked` state
-                    }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" : "bg-transparent md:hover:fill-red-400 md:hover:p-0.5 rounded-full transition-all"} />
+                      color:isLiked[note.id] ? "orange" : "gray" // Toggle color based on the `liked` state
+                    }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" : "bg-transparent md:hover:fill-red-500 md:hover:p-0.5 rounded-full transition-all"} />
 
                     {allLikes[note.id] || 0}
 

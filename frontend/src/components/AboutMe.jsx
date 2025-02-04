@@ -9,9 +9,9 @@ import { useEffect } from 'react';
 import { Linkedin, Github, Globe } from 'lucide-react';
 
 export default function About() {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    // useEffect(() => {
+    //     window.scrollTo(0, 0);
+    // }, []);
 
     return (
         <section className="py-20 relative">
@@ -62,14 +62,14 @@ export default function About() {
                         </motion.p>
 
                         <a href="https://www.linkedin.com/in/talagana-rajesh-75a546289/" target="_blank" rel="noopener noreferrer">
-                        <motion.button
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-[#362C00] text-white px-6 mt-5 md:px-8 py-4 md:py-5 font-bold rounded-full hover:bg-[#60461c] transition-colors text-sm md:text-base"
-                        >
-                            Discover My Work
-                        </motion.button>
+                            <motion.button
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-[#362C00] text-white px-6 mt-5 md:px-8 py-4 md:py-5 font-bold rounded-full hover:bg-[#60461c] transition-colors text-sm md:text-base"
+                            >
+                                Discover My Work
+                            </motion.button>
                         </a>
                     </div>
 
@@ -123,7 +123,7 @@ export default function About() {
                                 <h1>www.linkedin.com/in/talagana-rajesh-75a546289</h1>
                             </a>
                             <a href="https://github.com/talaganaRajesh" target="_blank" rel="noopener noreferrer" className='flex gap-5 flex-row hover:text-green-500 transition-all'>
-                                <Github size={24}  />
+                                <Github size={24} />
                                 <h1>github.com/talaganaRajesh</h1>
                             </a>
                             <a href="https://talaganarajesh.vercel.app/" target="_blank" rel="noopener noreferrer" className='flex gap-5 hover:text-green-500 transition-all flex-row'>
@@ -133,6 +133,13 @@ export default function About() {
                         </div>
                     </div>
                 </div>
+
+                <div className='text-center flex flex-col items-center gap-5 px-32 mt-28 justify-center'>
+                    <h1 className='text-sm font-semibold'>Short Description</h1>
+                    <p className='font-semibold'>Hey, I’m <span className='bg-yellow-200 px-1'>Talagana Rajesh</span>! I’m a tech enthusiast who loves building innovative solutions with code and creativity. Whether it’s designing websites, exploring AI, or working on unique side projects, I enjoy solving real-world problems with technology.
+                        Beyond coding, I’m always eager to learn new things, experiment with ideas, and take on exciting challenges. If I’m not working on a project, you’ll probably find me exploring new trends in tech or brainstorming my next big idea! 🚀 . I am currently pursuing my B.Tech in NIST University berhampur and working as a <span className='bg-yellow-200 px-1'>freelancer</span>.</p>
+                </div>
+
             </div>
         </section>
     );

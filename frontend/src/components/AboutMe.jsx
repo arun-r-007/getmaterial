@@ -14,7 +14,7 @@ export default function About() {
     }, []);
 
     return (
-        <section className="bg-[#FFFCE6] py-10 md:py-20 relative">
+        <section className="py-20 relative">
             {/* Decorative dots */}
             <div
                 className="absolute top-0 right-0 rounded-full w-32 md:w-48 h-32 md:h-48 bg-[#FFE5B4] opacity-20"

@@ -8,7 +8,6 @@ import Upload from './components/Upload';
 import Navbar from './components/Navbar';
 import AboutMe from './components/AboutMe';
 
-import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -23,7 +22,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-r from-yellow-50 to-amber-50">
+      <div className="min-h-screen bg-gradient-to-r flex items-center flex-col from-yellow-50 to-amber-50">
         <Navbar user={user} />
         <Routes>
           <Route path="/" element={<Dashboard />} />

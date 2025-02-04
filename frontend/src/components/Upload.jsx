@@ -312,7 +312,7 @@ function Upload() {
 
 
   return (
-    <div className="container mx-auto px-4 pt-2">
+    <div className="container mx-auto md:mt-20 mt-14 px-4 pt-2">
       <h1 className="text-3xl font-bold md:my-6 mb-3 text-center">Upload Note</h1>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -328,7 +328,7 @@ function Upload() {
         />
       )}
 
-      <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-6 py-5 rounded-lg mx-auto space-y-4">
+      <form onSubmit={handleSubmit} className="upload-container max-w-md bg-gradient-to-r px-8 py-7 rounded-2xl mx-auto space-y-4">
 
         {fileUploading ? (
 
@@ -491,7 +491,7 @@ function Upload() {
           className={`w-full ${uploading || !file || !fileUploaded
             ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
             : 'bg-green-500 hover:bg-green-600'
-            } text-black font-semibold  p-2 rounded transition duration-200`}
+            } text-black font-semibold  p-2 rounded-lg transition duration-200`}
         >
           {uploading ? 'Uploading...' : 'Upload Note'}
         </button>

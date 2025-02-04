@@ -307,9 +307,9 @@ function Dashboard() {
 
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
       <div className="flex justify-center items-center flex-col">
-        <p className='text-xs '>Top Contributors</p>
+        <p className='text-xs font-semibold '>Thanks</p>
         <TopContributor topContributor={topContributor || []} />
 
       </div>

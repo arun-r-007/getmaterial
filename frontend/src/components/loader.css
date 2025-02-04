@@ -77,7 +77,7 @@
 
   .login-container {
     background: #ffffff;
-    box-shadow: #362d03d7 2px 5px 30px;
+    box-shadow: #13470235 1px 1px 20px;
   }
 
 
@@ -108,7 +108,7 @@
 
   .upload-container {
     background: #ffffff;
-    box-shadow: #362d03d7 2px 5px 30px;
+    box-shadow: #13470235 1px 1px 20px;
   }
 
 
@@ -121,4 +121,56 @@
   }
   
 
-  
+
+  .contributeButton {
+    position: relative; /* Ensure the button is a reference for absolute positioning */
+    overflow: hidden; /* Prevents the pseudo-element from overflowing */
+    z-index: 1;
+  }
+
+
+  .contributeButton::before{
+    position: absolute;
+    background: #000000;
+    transition: all 0.7s;
+    top: 100%;
+    left: 100%;
+    width: 200px;
+    height: 150px;
+    border-radius: 50%;
+    content: '';
+    z-index: -1;
+  }
+
+  .contributeButton:hover::before{
+    top: -30px;
+    left: -30px;
+
+  }
+
+
+  .uploadButton {
+    position: relative; /* Ensure the button is a reference for absolute positioning */
+    overflow: hidden; /* Prevents the pseudo-element from overflowing */
+    z-index: 1;
+  }
+
+
+  .uploadButton::before{
+    position: absolute;
+    background: #25d366;
+    transition: all 0.7s;
+    top: 100%;
+    left: 100%;
+    width: 200px;
+    height: 150px;
+    border-radius: 50%;
+    content: '';
+    z-index: -1;
+  }
+
+  .uploadButton:hover::before{
+    top: -30px;
+    left: -30px;
+
+  }

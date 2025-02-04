@@ -107,15 +107,15 @@ const getColorFromHash = (str) => {
 
 
   return (
-    <nav className="bg-black">
-      <div className="container mx-auto flex justify-between md:py-3 p-2 items-center">
-        <Link to="/" className="text-white md:text-2xl text-lg font-bold">
-          Get <span className='text-green-400'>Material</span>
+    <nav className="shadow-md fixed z-50 bg-yellow-50 rounded-full w-full max-w-7xl px-5">
+      <div className="container  mx-auto flex justify-between md:py-3 p-2 items-center">
+        <Link to="/" className="text-black md:text-2xl text-lg font-bold">
+          Get <span className='text-[#25d366]'>Material</span>
         </Link>
         <div>
           {user ? (
             <div className='flex justify-center items-center'>
-              <Link to="/upload" className="text-black md:text-base bg-white md:py-1.5 md:px-5 text-sm px-3 py-1 mr-2 border-white border-4 rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
+              <Link to="/upload" className="text-black md:text-base uploadButton md:py-2 md:px-5 text-sm px-3 py-1 mr-2 border-black border-[1px] rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
                 Upload
               </Link>
               <div className='relative' ref={menuRef}>
@@ -158,8 +158,8 @@ const getColorFromHash = (str) => {
             </div>
           ) : (
             <div className='flex justify-end items-center gap-3'>
-              <Link to="/auth" className="text-black font-bold text-xs w-full text-center md:w-full md:text-sm bg-gradient-to-r from-green-400 to-green-500 md:py-3 p-2 hover:underline md:px-3 rounded-md">
-                Contribute
+              <Link to="/auth" className="text-black bg-[#25d366] hover:text-white delay-200 transition-all contributeButton font-semibold text-xs w-full text-center md:w-full md:text-sm  md:py-3 p-2 md:px-3 rounded-full border-[1px] border-black">
+                  Contribute
               </Link>
 
               {/* LinkedIn Button */}

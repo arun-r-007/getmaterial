@@ -31,7 +31,7 @@ export default function About() {
                 }}
             />
 
-            <div className="container mx-auto px-4 pt-10 md:pt-10">
+            <div className="container mx-auto px-0 pt-5 md:pt-10">
                 {/* Hero Section */}
                 <div className="flex flex-col justify-center md:flex-row gap-8 md:gap-12 items-center mb-16 md:mb-32">
                     {/* Text Content */}
@@ -134,9 +134,9 @@ export default function About() {
                     </div>
                 </div>
 
-                <div className='text-center flex flex-col items-center gap-5 px-32 mt-28 justify-center'>
-                    <h1 className='text-sm font-semibold'>Short Description</h1>
-                    <p className='font-semibold'>Hey, I’m <span className='bg-yellow-200 px-1'>Talagana Rajesh</span>! I’m a tech enthusiast who loves building innovative solutions with code and creativity. Whether it’s designing websites, exploring AI, or working on unique side projects, I enjoy solving real-world problems with technology.
+                <div className='text-center flex flex-col items-center gap-5 md:px-32 px-5 mt-28 justify-center'>
+                    <h1 className='md:text-sm text-xs font-semibold'>Short Description</h1>
+                    <p className='font-semibold md:text-base text-xs'>Hey, I’m <span className='bg-yellow-200 px-1'>Talagana Rajesh</span>! I’m a tech enthusiast who loves building innovative solutions with code and creativity. Whether it’s designing websites, exploring AI, or working on unique side projects, I enjoy solving real-world problems with technology.
                         Beyond coding, I’m always eager to learn new things, experiment with ideas, and take on exciting challenges. If I’m not working on a project, you’ll probably find me exploring new trends in tech or brainstorming my next big idea! 🚀 . I am currently pursuing my B.Tech in NIST University berhampur and working as a <span className='bg-yellow-200 px-1'>freelancer</span>.</p>
                 </div>
 

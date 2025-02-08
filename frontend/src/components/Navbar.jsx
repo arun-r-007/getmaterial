@@ -107,7 +107,7 @@ const getColorFromHash = (str) => {
 
 
   return (
-    <nav className="shadow-md fixed z-50 bg-yellow-50 rounded-full w-full max-w-7xl px-5">
+    <nav className="shadow-md fixed border border-amber-200 mt-2 flex items-center z-50 bg-yellow-50 rounded-full w-full max-w-7xl px-5">
       <div className="container  mx-auto flex justify-between md:py-3 p-2 items-center">
         <Link to="/" className="text-black md:text-2xl text-lg font-bold">
           Get <span className='text-[#25d366]'>Material</span>

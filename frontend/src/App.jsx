@@ -7,6 +7,7 @@ import ContributorAuth from './components/ContributorAuth';
 import Upload from './components/Upload';
 import Navbar from './components/Navbar';
 import AboutMe from './components/AboutMe';
+import NotePage from './components/NotePage';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/auth" element={<ContributorAuth />} />
           <Route path="/upload" element={<Upload user={user} />} />
           <Route path='/about' element={<AboutMe/>} />
+          <Route path='/note' element={<NotePage/>} />
         </Routes>
       </div>
     </Router>

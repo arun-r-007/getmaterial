@@ -174,3 +174,29 @@
     left: -30px;
 
   }
+
+  .downloadButton {
+    position: relative; /* Ensure the button is a reference for absolute positioning */
+    overflow: hidden; /* Prevents the pseudo-element from overflowing */
+    z-index: 1;
+  }
+
+
+  .downloadButton::before{
+    position: absolute;
+    background: #25d366;
+    transition: all 0.7s;
+    top: 100%;
+    left: 100%;
+    width: 200px;
+    height: 150px;
+    border-radius: 50%;
+    content: '';
+    z-index: -1;
+  }
+
+  .downloadButton:hover::before{
+    top: -30px;
+    left: -30px;
+
+  }

@@ -29,6 +29,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { MorphingText } from "@/components/ui/morphing-text";
 import { Navigate, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Button } from '@headlessui/react';
 
 
 const TopContributor = ({ topContributor }) => {
@@ -51,10 +53,10 @@ const TopContributor = ({ topContributor }) => {
     <div className='w-full'>
 
       {texts.length > 0 ? (
-        <MorphingText texts={texts} />        
+        <MorphingText texts={texts} />
       ) : (
         <p className="text-black font-bold text-center h-14">Loading..</p>
-      ) }
+      )}
 
     </div>
   );
@@ -144,7 +146,7 @@ function Dashboard() {
 
   const owner = auth.currentUser;
 
-  const Navigate=useNavigate();
+  const Navigate = useNavigate();
 
 
 
@@ -305,6 +307,13 @@ function Dashboard() {
 
 
 
+  const handleViewNote = (noteUrl) => {
+    // Encode the URL to handle special characters
+    const encodedUrl = noteUrl;
+    Navigate(`/note?url=${encodedUrl}`);
+  };
+
+
 
   return (
     <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
@@ -392,7 +401,7 @@ function Dashboard() {
           <div className=" text-center">
             <button
               onClick={resetFilters}
-              className="bg-green-200 text-gray-800 py-3 px-4 rounded font-semibold md:hover:bg-green-300 transition-colors"
+              className="bg-yellow-100 border-yellow-300 border text-gray-800 py-3 px-5 rounded-lg font-semibold md:hover:border-yellow-500 transition-colors"
             >
               Reset Filters
             </button>
@@ -541,20 +550,18 @@ function Dashboard() {
 
                 <div className='flex flex-row justify-start gap-1 items-center'>
 
-                  <a
-                    href={note.fileUrl}
-                    rel="noopener noreferrer"
-                    target="_blank"
+                  <button
+                    onClick={() => handleViewNote(note.fileUrl)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                   >
                     View Note
-                  </a>
+                  </button>
 
                   <div className='flex flex-row bg-gray-100 md:px-2 p-1 rounded-lg md:hover:bg-gray-200 transition-all'>
                     <Heart style={{
                       cursor: "pointer",
                       marginRight: "0px",
-                      color:isLiked[note.id] ? "orange" : "gray" // Toggle color based on the `liked` state
+                      color: isLiked[note.id] ? "orange" : "gray" // Toggle color based on the `liked` state
                     }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" : "bg-transparent md:hover:fill-red-500 md:hover:p-0.5 rounded-full transition-all"} />
 
                     {allLikes[note.id] || 0}

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { ArrowBigLeftIcon, ArrowDownLeft, ArrowLeft, ArrowLeftCircle, ArrowUpLeft, Download, Expand } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
+
+
 function NotePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -34,39 +36,58 @@ function NotePage() {
     window.scrollTo(0, 0);
   }, []);
 
-
   const handleDownload = async () => {
     if (!embedUrl) return;
-
-    setIsDownloading(true); // Show loader on Download button
-
+  
+    setIsDownloading(true);
+  
     try {
       let finalUrl = embedUrl;
-
-      // 🔹 If the file is from Google Drive, force download
+      let fileName = "note-file.pdf"; // Default name
+  
       if (embedUrl.includes("drive.google.com")) {
-        const fileIdMatch = embedUrl.match(/[-\w]{25,}/); // Extract file ID
+        const fileIdMatch = embedUrl.match(/[-\w]{25,}/);
         if (fileIdMatch) {
           const fileId = fileIdMatch[0];
-          finalUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+          const apiKey = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
+  
+          // 🔹 Fetch file metadata to get the actual file name
+          const metadataUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?fields=name&key=${apiKey}`;
+          const metadataResponse = await fetch(metadataUrl);
+          const metadata = await metadataResponse.json();
+  
+          if (metadata && metadata.name) {
+            fileName = metadata.name; // Use actual file name
+          }
+  
+          // 🔹 Construct direct download URL
+          finalUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
         }
       }
-
-      // 🔹 Create an anchor tag to force download
+  
+      // 🔹 Fetch file as a blob
+      const response = await fetch(finalUrl);
+      const blob = await response.blob();
+  
+      // 🔹 Create a local URL and trigger the download
+      const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = finalUrl;
-      link.setAttribute("download", "note-file"); // Default filename
+      link.href = blobUrl;
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
+  
+      // 🔹 Clean up after download
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Download failed:", error);
-      window.open(embedUrl, "_blank"); // Fallback to open in a new tab
+      window.open(embedUrl, "_blank");
     } finally {
-      setTimeout(() => setIsDownloading(false), 2000); // Ensures the loader appears before hiding
+      setTimeout(() => setIsDownloading(false), 2000);
     }
   };
-
+  
 
 
 
@@ -133,7 +154,7 @@ function NotePage() {
         >
           <iframe
             src={embedUrl}
-            className="w-full h-full rounded-lg overflow-auto"
+            className="w-full h-full rounded-lg bg-white overflow-auto"
             title="Note Viewer"
             allow="fullscreen"
             onLoad={() => setIsLoading(false)}

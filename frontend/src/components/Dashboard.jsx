@@ -7,7 +7,7 @@ import CustomSelect from "./CustomSelect";
 
 import { db } from '../firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
-import { Trash } from 'lucide-react';
+import { ArrowUp, Trash } from 'lucide-react';
 
 
 import { auth } from '../firebase';
@@ -317,6 +317,11 @@ function Dashboard() {
 
   return (
     <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
+
+      <button className='fixed bottom-4 right-4 border border-black  text-black p-2 rounded-full shadow-lg hover:bg-green-100 transition-all duration-300' onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <ArrowUp className='md:size-5 size-3'/>
+      </button>
+
       <div className="flex justify-center items-center flex-col">
         <p className='text-xs font-semibold '>Thanks</p>
         <TopContributor topContributor={topContributor || []} />

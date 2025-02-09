@@ -613,10 +613,10 @@ function Dashboard() {
               </div>
 
               <div className='flex flex-col items-center justify-between'>
-                <img
+                <img onClick={() => handleViewNote(note.fileUrl)}
                   src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl))}
                   alt="PDF Preview"
-                  className="md:w-40 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
+                  className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
                 />
                 <p className='opacity-40 bottom-0'>{note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
 

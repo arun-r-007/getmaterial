@@ -6,7 +6,6 @@ import { getNotes } from '../firebase';
 import CustomSelect from "./CustomSelect";
 
 import { db } from '../firebase';
-import { doc, deleteDoc } from 'firebase/firestore';
 import { ArrowUp, Trash } from 'lucide-react';
 
 
@@ -14,11 +13,10 @@ import { auth } from '../firebase';
 
 import './loader.css'
 
-import { getFirestore, updateDoc, increment } from "firebase/firestore";
 
 
 
-import { getDocs, collection } from "firebase/firestore";
+// import { getDocs, collection } from "firebase/firestore";
 
 import { Heart } from "lucide-react";
 
@@ -31,6 +29,9 @@ import { MorphingText } from "@/components/ui/morphing-text";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@headlessui/react';
+
+
+import { getFirestore, doc, updateDoc, increment, collection, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 
 const TopContributor = ({ topContributor }) => {
@@ -251,59 +252,73 @@ function Dashboard() {
 
 
   const handleLike = async (noteId) => {
-
     if (!auth.currentUser) {
-      alert("Please sign in to like a note!");
+      alert("Please sign in to vote!");
       Navigate("/auth");
       return;
     }
 
     const db = getFirestore();
+    const userId = auth.currentUser.uid;
     const noteRef = doc(db, "notes", noteId);
+    const likeRef = doc(collection(noteRef, "likes"), userId);
 
-    // Optimistically update the likes locally
-    setAllLikes((prevLikes) => ({
-      ...prevLikes,
-      [noteId]: (prevLikes[noteId] || 0) + (isLiked[noteId] ? -1 : 1), // Increment or decrement based on `isLiked`
-    }));
+    // Optimistic UI Update
+    const previousLiked = isLiked[noteId];
+    const previousLikes = allLikes[noteId] || 0;
 
-    setIsLiked((prevIsLiked) => ({
-      ...prevIsLiked,
-      [noteId]: !prevIsLiked[noteId],
-    })); // Toggle the liked state for the specific note
+    setIsLiked((prev) => ({ ...prev, [noteId]: !previousLiked }));
+    setAllLikes((prev) => ({ ...prev, [noteId]: previousLiked ? previousLikes - 1 : previousLikes + 1 }));
 
     try {
-      // Update the likes count in the Firestore database
-      await updateDoc(noteRef, {
-        likes: increment(isLiked[noteId] ? -1 : 1), // Atomically increment in Firestore
-      });
+      const likeSnap = await getDoc(likeRef);
 
+      if (likeSnap.exists()) {
+        // Unlike (Remove like)
+        await deleteDoc(likeRef);
+        await updateDoc(noteRef, { likes: increment(-1) });
+      } else {
+        // Like (Add like)
+        await setDoc(likeRef, { liked: true });
+        await updateDoc(noteRef, { likes: increment(1) });
+      }
     } catch (error) {
+      console.error("Error updating like:", error);
 
-      // Roll back the local state if the database update fails
-      setAllLikes((prevLikes) => ({
-        ...prevLikes,
-        [noteId]: (prevLikes[noteId] || 0) + (isLiked ? 1 : -1), // Revert the optimistic update
-      }));
+      // Revert UI changes if Firebase request fails
+      setIsLiked((prev) => ({ ...prev, [noteId]: previousLiked }));
+      setAllLikes((prev) => ({ ...prev, [noteId]: previousLikes }));
     }
   };
 
-
+  // Fetch Likes on Component Mount
   useEffect(() => {
     const fetchLikes = async () => {
+      if (!auth.currentUser) return;
+
       const fetchedLikes = {};
+      const likedNotes = {};
 
       await Promise.all(
-        notes.map((note) => {
-          fetchedLikes[note.id] = note.likes || 0; // Populate likes dictionary
+        notes.map(async (note) => {
+          const likeRef = doc(collection(doc(db, "notes", note.id), "likes"), auth.currentUser.uid);
+          const likeSnap = await getDoc(likeRef);
+
+          fetchedLikes[note.id] = note.likes || 0;
+          likedNotes[note.id] = likeSnap.exists();
         })
       );
 
-      setAllLikes(fetchedLikes); // Update state with fetched likes
+      setAllLikes(fetchedLikes);
+      setIsLiked(likedNotes);
     };
 
     fetchLikes();
-  }, [notes]); // Depend on `notes` array
+  }, [notes, auth.currentUser]); // Dependencies
+
+
+
+
 
 
 
@@ -319,7 +334,7 @@ function Dashboard() {
     <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
 
       <button className='fixed bottom-4 right-4 border border-black  text-black p-2 rounded-full shadow-lg hover:bg-green-100 transition-all duration-300' onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-        <ArrowUp className='md:size-5 size-3'/>
+        <ArrowUp className='md:size-5 size-3' />
       </button>
 
       <div className="flex justify-center items-center flex-col">
@@ -562,16 +577,19 @@ function Dashboard() {
                     View Note
                   </button>
 
-                  <div className='flex flex-row bg-gray-100 md:px-2 p-1 rounded-lg md:hover:bg-gray-200 transition-all'>
-                    <Heart style={{
-                      cursor: "pointer",
-                      marginRight: "0px",
-                      color: isLiked[note.id] ? "orange" : "gray" // Toggle color based on the `liked` state
-                    }} onClick={() => handleLike(note.id)} className={isLiked[note.id] ? " fill-red-500 rounded-md transition-all" : "bg-transparent md:hover:fill-red-500 md:hover:p-0.5 rounded-full transition-all"} />
-
+                  <div className='flex flex-row bg-gray-50 md:px-2 p-1 rounded-lg md:hover:bg-gray-100 transition-all'>
+                    <Heart
+                      style={{
+                        cursor: "pointer",
+                        marginRight: "0px",
+                        color: isLiked[note.id] ? "red" : "black" // Instant UI toggle
+                      }}
+                      onClick={() => handleLike(note.id)}
+                      className={isLiked[note.id] ? "fill-red-500 rounded-md transition-all" : "bg-transparent md:hover:fill-red-500 md:hover:p-0.5 rounded-full transition-all"}
+                    />
                     {allLikes[note.id] || 0}
-
                   </div>
+
 
                   {admin && ( // Show Delete button only for admin
                     <div className="bg-slate-200 rounded-lg p-2 hover:rounded-xl transition-all duration-300">

@@ -79,9 +79,57 @@ const getNotes = async () => {
     }
 };
 
+
+
+const handleLike = async (noteId) => {
+    if (!auth.currentUser) {
+        alert("Please sign in to vote!");
+        return;
+    }
+
+    const userId = auth.currentUser.uid;
+    const noteRef = doc(db, "notes", noteId);
+    const likeRef = doc(collection(noteRef, "likes"), userId); // User's like reference
+
+    try {
+        const likeSnap = await getDoc(likeRef);
+
+        if (likeSnap.exists()) {
+            // If user already liked, remove like
+            await deleteDoc(likeRef);
+            await updateDoc(noteRef, { likes: increment(-1) });
+            console.log(`User ${userId} removed like from note ${noteId}`);
+        } else {
+            // If user hasn't liked, add like
+            await setDoc(likeRef, { liked: true });
+            await updateDoc(noteRef, { likes: increment(1) });
+            console.log(`User ${userId} liked note ${noteId}`);
+        }
+    } catch (error) {
+        console.error("Error updating like:", error);
+    }
+};
+
+/**
+ * Fetches the like status for a note.
+ */
+const getUserLikeStatus = async (noteId) => {
+    if (!auth.currentUser) return false;
+
+    const likeRef = doc(collection(doc(db, "notes", noteId), "likes"), auth.currentUser.uid);
+    const likeSnap = await getDoc(likeRef);
+    
+    return likeSnap.exists();
+};
+
+
+
+
 export { 
     auth, 
     db, 
     addNote, 
-    getNotes 
+    getNotes ,
+    handleLike, 
+    getUserLikeStatus
 };

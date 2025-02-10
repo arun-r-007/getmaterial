@@ -6,12 +6,14 @@ import { getNotes } from '../firebase';
 import CustomSelect from "./CustomSelect";
 
 import { db } from '../firebase';
-import { ArrowUp, Trash } from 'lucide-react';
+import { ArrowUp, Trash, MessageSquare, MessageCircle } from 'lucide-react';
 
 
 import { auth } from '../firebase';
 
 import './loader.css'
+
+import { getCountFromServer,getDocs } from "firebase/firestore";
 
 
 
@@ -148,6 +150,8 @@ function Dashboard() {
   const owner = auth.currentUser;
 
   const Navigate = useNavigate();
+
+  const [commentCount, setCommentCount] = useState(0);
 
 
 
@@ -319,13 +323,42 @@ function Dashboard() {
 
 
 
+  useEffect(() => {
+    const fetchCommentCounts = async () => {
+      if (!notes || notes.length === 0) return;
+  
+      const fetchedCommentCounts = {};
+  
+      await Promise.all(
+        notes.map(async (note) => {
+          try {
+            const commentsRef = collection(db, "notes", note.id, "comments"); 
+            const snapshot = await getCountFromServer(commentsRef);
+            fetchedCommentCounts[note.id] = snapshot.data().count || 0; 
+          } catch (error) {
+            console.error(`Error fetching comments for note ${note.id}:`, error);
+            fetchedCommentCounts[note.id] = 0; 
+          }
+        })
+      );
+  
+      setCommentCount(fetchedCommentCounts);
+    };
+  
+    fetchCommentCounts();
+  }, [notes]);
 
 
 
-  const handleViewNote = (noteUrl) => {
-    // Encode the URL to handle special characters
-    const encodedUrl = noteUrl;
-    Navigate(`/note?url=${encodedUrl}`);
+
+  const handleViewNote = (noteUrl, noteId) => {
+    if (!noteId || !noteUrl) {
+      alert("Invalid Note ID or URL"); // Debugging
+      return;
+    }
+
+    const encodedUrl = encodeURIComponent(noteUrl);
+    Navigate(`/note?url=${encodedUrl}&id=${noteId}`);
   };
 
 
@@ -568,17 +601,18 @@ function Dashboard() {
                 </p>
 
 
-                <div className='flex flex-row justify-start gap-1 items-center'>
+                <div className='flex flex-row justify-start w-full items-center'>
 
                   <button
-                    onClick={() => handleViewNote(note.fileUrl)}
+                    onClick={() => handleViewNote(note.fileUrl, note.id)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                   >
                     View Note
                   </button>
 
-                  <div className='flex flex-row bg-gray-50 md:px-2 p-1 rounded-lg md:hover:bg-gray-100 transition-all'>
+                  <div className='flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all'>
                     <Heart
+                      size={26}
                       style={{
                         cursor: "pointer",
                         marginRight: "0px",
@@ -590,22 +624,12 @@ function Dashboard() {
                     {allLikes[note.id] || 0}
                   </div>
 
+                  <div onClick={() => Navigate(`/note?url=${encodeURIComponent(note.fileUrl)}&id=${note.id}`)} className='flex gap-1 flex-row bg-gray-50 md:px-2 p-1 rounded-lg md:hover:bg-gray-100 transition-all cursor-pointer'>
+                    <MessageCircle size={26} color="black" />
+                    {commentCount[note.id || 0]}
+                  </div>
 
-                  {admin && ( // Show Delete button only for admin
-                    <div className="bg-slate-200 rounded-lg p-2 hover:rounded-xl transition-all duration-300">
-                      <button onClick={() => handleDelete(note.id)}>
-                        <Trash size={20} color="red" />
-                      </button>
-                    </div>
-                  )}
-
-                  {owner && owner.email == note.metadata.createdBy && (
-                    <div className="bg-slate-100 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
-                      <button onClick={() => handleDelete(note.id)}>
-                        <Trash size={20} color="red" />
-                      </button>
-                    </div>
-                  )}
+                 
 
                 </div>
 
@@ -613,12 +637,32 @@ function Dashboard() {
               </div>
 
               <div className='flex flex-col items-center justify-between'>
-                <img onClick={() => handleViewNote(note.fileUrl)}
+                <img onClick={() => handleViewNote(note.fileUrl, note.id)}
                   src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl))}
                   alt="PDF Preview"
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
                 />
+
+                <div className='flex flex-row justify-around items-center w-full'>
+                {admin && ( // Show Delete button only for admin
+                    <div className="bg-slate-50 hover:bg-slate-100 rounded-lg p-2 transition-all duration-300">
+                      <button onClick={() => handleDelete(note.id)}>
+                        <Trash size={20} color="red" />
+                      </button>
+                    </div>
+                  )}
+
+                  {owner && owner.email == note.metadata.createdBy && (
+                    <div className="bg-slate-50 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
+                      <button onClick={() => handleDelete(note.id)}>
+                        <Trash size={20} color="red" />
+                      </button>
+                    </div>
+                  )}
+
                 <p className='opacity-40 bottom-0'>{note.uploadedAt.toDate().toLocaleDateString('en-GB')}</p>
+
+                </div>
 
 
               </div>

@@ -156,6 +156,10 @@ function NotePage() {
   }, [embedUrl]);
 
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  },[]);
+
 
   const handleKey = (e) => {
     if (e.key === "Enter") {
@@ -274,7 +278,7 @@ function NotePage() {
             </div>
           )}
 
-          <div className={`rounded-lg border border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
+          <div className={`rounded-lg border mx-8 md:mx-0 border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
             <iframe
               src={embedUrl}
               className="w-full h-full rounded-lg bg-white"
@@ -286,7 +290,7 @@ function NotePage() {
         </div>
 
         {/* Comments Section - 4 columns on desktop */}
-        <div className="col-span-12 lg:col-span-4 border rounded-lg h-[calc(100vh-11rem)] flex flex-col">
+        <div className="col-span-12 lg:col-span-4 border rounded-lg md:h-[calc(100vh-11rem)] max-h-96 md:max-h-full flex flex-col">
           <div className="p-4 border-b">
             <h2 className="font-semibold">Comments</h2>
           </div>

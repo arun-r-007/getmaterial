@@ -497,13 +497,13 @@ function Upload() {
         </button>
       </form>
 
-      {fileUploading && !fileUploaded && (
-        <div>
+      {/* {fileUploading && !fileUploaded && ( */}
+        <div className='bg-yellow-50 pb-5 px-3 md:right-20 w-fit md:absolute md:top-1/2'>
           <div className='mt-5 h-20 md:h-0'>
-            <p className='text-center text-red-500 font-semibold'>{message}</p>
+            <p className='text-center text-emerald-700 font-semibold'>{message}</p>
           </div>
         </div>
-      )}
+      {/* )} */}
 
       {uploading && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 transition-all z-50">

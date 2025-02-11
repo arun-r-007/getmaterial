@@ -295,21 +295,27 @@ function Dashboard() {
     }
   };
 
-  // Fetch Likes on Component Mount
+
+
+
   useEffect(() => {
     const fetchLikes = async () => {
-      if (!auth.currentUser) return;
-
       const fetchedLikes = {};
       const likedNotes = {};
 
       await Promise.all(
         notes.map(async (note) => {
-          const likeRef = doc(collection(doc(db, "notes", note.id), "likes"), auth.currentUser.uid);
-          const likeSnap = await getDoc(likeRef);
-
+          // Always fetch total likes
           fetchedLikes[note.id] = note.likes || 0;
-          likedNotes[note.id] = likeSnap.exists();
+
+          // Only check if user has liked if they're authenticated
+          if (auth.currentUser) {
+            const likeRef = doc(collection(doc(db, "notes", note.id), "likes"), auth.currentUser.uid);
+            const likeSnap = await getDoc(likeRef);
+            likedNotes[note.id] = likeSnap.exists();
+          } else {
+            likedNotes[note.id] = false; // Set default value when not authenticated
+          }
         })
       );
 
@@ -318,7 +324,7 @@ function Dashboard() {
     };
 
     fetchLikes();
-  }, [notes, auth.currentUser]); // Dependencies
+  }, [notes, auth.currentUser]);
 
 
 

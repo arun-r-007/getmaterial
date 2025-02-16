@@ -74,7 +74,7 @@ function Navbar({ user }) {
         </Link>
         <div>
           {user ? (
-            <div className='flex justify-center items-center'>
+            <div className='flex  justify-center items-center'>
               <Link to="/upload" className="text-black md:text-base uploadButton md:py-2 md:px-5 text-sm px-3 py-1 mr-2 border-black border-[1px] rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
                 Upload
               </Link>
@@ -82,10 +82,10 @@ function Navbar({ user }) {
 
                 <button
                   onClick={toggleMenu}
-                  className='text-black rounded-full size-8 md:size-10 md:hover:opacity-90 transition-all font-semibold'
+                  className='text-black rounded-full size-7 mt-0.5 md:size-10 md:hover:opacity-90 transition-all font-semibold'
                 >
                   {user?.photoURL ? (
-                    <img src={user.photoURL || "/placeholder.svg"} alt="Profile" className="w-9 h-9 rounded-full" />
+                    <img src={user.photoURL || "/placeholder.svg"} alt="Profile" className="md:w-9 md:h-9 rounded-full" />
                   ) : (
                     <User className="w-9 rounded-full p-1 h-9 bg-gray-300 text-gray-500" />
                   )}

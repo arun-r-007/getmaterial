@@ -108,7 +108,7 @@ export default function UserPage() {
   }, [user, navigate])
 
 
-  
+
 
 
   const handleViewNote = (noteUrl, noteId) => {
@@ -135,7 +135,7 @@ export default function UserPage() {
 
 
   const NoteCardSkeleton = () => (
-    <div className="bg-white p-5 rounded-xl shadow-xl flex w-fit flex-row justify-between">
+    <div className="bg-white p-5 rounded-xl overflow-hidden  shadow-xl flex w-full flex-row justify-between">
       <div className="flex flex-col justify-between flex-grow">
         <Skeleton height={20} width={150} className="mb-4" /> {/* Title */}
         <Skeleton height={14} width={100} className="mb-2" /> {/* Module */}
@@ -242,7 +242,7 @@ export default function UserPage() {
   return (
     <div className="min-h-screen">
       {/* Fixed sidebar */}
-      <div className="fixed flex flex-col justify-around left-0 top-10 px-3 h-screen w-64 bg-amber-50 shadow-lg z-10">
+      <div className="fixed hidden  md:flex flex-col justify-around left-0 top-10 px-3 h-screen w-64 bg-amber-50 shadow-lg z-10">
         <div className="p-4 mt-5">
           <div className="mb-6">
             <div className="w-20 h-20 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-2">
@@ -278,9 +278,26 @@ export default function UserPage() {
         </div>
       </div>
 
+      <div className="md:hidden flex mt-20 justify-between items-center p-4 bg-amber-50 shadow-sm">
+        <button
+          onClick={() => setActiveTab("uploads")}
+          className={`p-2 rounded flex items-center ${activeTab === "uploads" ? "bg-amber-100" : "hover:bg-slate-100"
+            }`}
+        >
+          <Upload size={18} className="mr-2" /> Your Uploads
+        </button>
+        <button
+          onClick={() => setActiveTab("likes")}
+          className={`p-2 rounded flex items-center ${activeTab === "likes" ? "bg-amber-100" : "hover:bg-slate-100"
+            }`}
+        >
+          <ThumbsUp size={18} className="mr-2" /> Liked Notes
+        </button>
+      </div>
+
       {/* Main content - Fixed width container */}
-      <div className="ml-64 min-h-screen">
-        <div className="max-w-7xl mx-auto p-6 mt-20">
+      <div className="md:ml-64 min-h-screen">
+        <div className="max-w-7xl mx-auto p-6 md:mt-20">
 
 
           {loading ? (

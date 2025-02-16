@@ -618,7 +618,7 @@ function Dashboard() {
 
                   <div className='flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all'>
                     <Heart
-                      size={26}
+                      size={20}
                       style={{
                         cursor: "pointer",
                         marginRight: "0px",
@@ -631,7 +631,7 @@ function Dashboard() {
                   </div>
 
                   <div onClick={() => Navigate(`/note?url=${encodeURIComponent(note.fileUrl)}&id=${note.id}`)} className='flex gap-1 flex-row bg-gray-50 md:px-2 p-1 rounded-lg md:hover:bg-gray-100 transition-all cursor-pointer'>
-                    <MessageCircle size={26} color="black" />
+                    <MessageCircle size={20} color="black" />
                     {commentCount[note.id || 0]}
                   </div>
 
@@ -649,7 +649,7 @@ function Dashboard() {
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
                 />
 
-                <div className='flex flex-row justify-around items-center w-full'>
+                <div className='flex md:flex-row flex-col justify-around items-center w-full'>
                 {admin && ( // Show Delete button only for admin
                     <div className="bg-slate-50 hover:bg-slate-100 rounded-lg p-2 transition-all duration-300">
                       <button onClick={() => handleDelete(note.id)}>

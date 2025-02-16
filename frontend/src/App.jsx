@@ -8,7 +8,7 @@ import Upload from './components/Upload';
 import Navbar from './components/Navbar';
 import AboutMe from './components/AboutMe';
 import NotePage from './components/NotePage';
-
+import UserPage from './components/UserPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -31,6 +31,7 @@ function App() {
           <Route path="/upload" element={<Upload user={user} />} />
           <Route path='/about' element={<AboutMe/>} />
           <Route path='/note' element={<NotePage/>} />
+          <Route path = '/userpage' element={<UserPage/>}/>
         </Routes>
       </div>
     </Router>

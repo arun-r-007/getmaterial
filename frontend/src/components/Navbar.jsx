@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Linkedin } from 'lucide-react';
+import { BookOpen, Linkedin, Users } from 'lucide-react';
 import { LogOutIcon } from 'lucide-react';
 import { UserIcon } from 'lucide-react';
+import { User } from 'lucide-react';
 
 import myPhoto3 from '../assets/myphoto3.jpg';
 
@@ -17,38 +18,6 @@ import { useEffect, useState, useRef } from 'react';
 
 
 function Navbar({ user }) {
-
-  const googleColors = [
-    "#BF360C",  // Orange
-    "#D32F2F",  // Red
-    "#388E3C",  // Green
-    "#0288D1",  // Light Blue
-    "#F57C00",  // Amber
-    "#8E24AA",  // Purple
-    "#0288D1",  // Cyan
-    "#7B1FA2",  // Deep Purple
-    "#FF5722",  // Deep Orange
-  ];
-  
-
-  // Universal hash function
-const getHashCode = (str) => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-};
-
-// Map hash to color
-const getColorFromHash = (str) => {
-  const hash = getHashCode(str);
-  return googleColors[hash % googleColors.length];
-};
-
-  
-
 
 
   const handleSignOut = async () => {
@@ -67,16 +36,7 @@ const getColorFromHash = (str) => {
 
 
 
-  const [userIcon, setUserIcon] = useState(null);
-  const [userColor, setUserColor] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      setUserIcon(user.displayName[0].toUpperCase());
-      const bgColor = getColorFromHash(user.displayName);
-      setUserColor(bgColor);
-    }
-  },[user]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null); // Ref for the menu
@@ -122,11 +82,13 @@ const getColorFromHash = (str) => {
 
                 <button
                   onClick={toggleMenu}
-
                   className='text-black rounded-full size-8 md:size-10 md:hover:opacity-90 transition-all font-semibold'
-                  style={{backgroundColor: userColor}}
                 >
-                  {userIcon}
+                  {user?.photoURL ? (
+                    <img src={user.photoURL || "/placeholder.svg"} alt="Profile" className="w-9 h-9 rounded-full" />
+                  ) : (
+                    <User className="w-9 rounded-full p-1 h-9 bg-gray-300 text-gray-500" />
+                  )}
                 </button>
 
                 {/* Dropdown Menu */}
@@ -139,15 +101,29 @@ const getColorFromHash = (str) => {
                       exit={{ opacity: 0, scale: 0.95, y: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <ul className="py-2 px-1 bg-amber-50 rounded-xl">
-                        <li className="px-4 py-0 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer">
-                          <UserIcon size={20} className='mr-2'/>
-                          <Link to="/auth" onClick={toggleMenu} className=' pr-0 py-2'>Change Account</Link>
+                      <ul className="pb-2 px-1 bg-amber-50 rounded-xl">
+                        <li className=" py-2 border-b border-gray-400 rounded-sm hover:bg-amber-100 transition-all font-semibold cursor-pointer">
+                          <Link to="/userpage" onClick={toggleMenu} className='flex px-4 justify-start items-center' >
+                            <UserIcon size={20} className='mr-2' />
+                            <h1 className=' pr-0 py-2'>Your Profile</h1>
+
+                          </Link>
                         </li>
-                        <li className="px-4 py-2 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
+
+                        <li className=' mt-2 py-0 rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer'>
+                          <Link to="/about" onClick={toggleMenu} className='flex px-4 justify-start items-center '>
+                            <BookOpen size={20} className='mr-2' />
+                            <h1 className='py-2'>About us</h1>
+                          </Link>
+                        </li>
+
+                        <li className="px-4 pt-1 py-2 text-red-500 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
                           <LogOutIcon size={16} className="mr-2" />
                           <p>Log out</p>
                         </li>
+
+
+
                       </ul>
                     </motion.div>
                   )}
@@ -159,15 +135,15 @@ const getColorFromHash = (str) => {
           ) : (
             <div className='flex justify-end items-center gap-3'>
               <Link to="/auth" className="text-black bg-[#25d366] hover:text-white delay-200 transition-all contributeButton font-semibold text-xs w-full text-center md:w-full md:text-sm  md:py-3 p-2 md:px-3 rounded-full border-[1px] border-black">
-                  Contribute
+                Contribute
               </Link>
 
               {/* LinkedIn Button */}
-                <Link
-                  to="/about"
-                >
-                  <img src={myPhoto3} alt="rajesh" className='w-[50px] h-[30px] md:w-[68px] md:h-[40px] hover:brightness-90 transition-all rounded-full ' />
-                </Link>
+              <Link
+                to="/about"
+              >
+                <img src={myPhoto3} alt="rajesh" className='w-[50px] h-[30px] md:w-[68px] md:h-[40px] hover:brightness-90 transition-all rounded-full ' />
+              </Link>
 
             </div>
 

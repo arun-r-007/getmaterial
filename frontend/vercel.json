@@ -12,7 +12,9 @@
               "Cache-Control": "no-cache" 
             },
             "dest": "/favicon.ico"
-          }
+          },
+          { "src": "/favicon.ico", "dest": "/favicon.ico" },
+          { "src": "/favicon.png", "dest": "/favicon.png" }
         ]
       
 }

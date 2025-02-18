@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/GM logo 2.png';
+import logo from '/favicon.ico';
 import axios from 'axios';
 import './loader.css';
 

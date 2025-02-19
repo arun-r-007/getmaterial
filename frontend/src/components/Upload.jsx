@@ -312,7 +312,7 @@ function Upload() {
 
 
   return (
-    <div className="container mx-auto md:mt-20 mt-14 px-4 pt-2">
+    <div className="container mx-auto md:mt-20 mt-24 px-4 pt-2">
       <h1 className="text-3xl font-bold md:my-6 mb-3 text-center">Upload Note</h1>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">

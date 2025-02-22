@@ -8,6 +8,7 @@ import { auth } from "../firebase";
 
 import { db } from "../firebase"; // Ensure Firebase is properly configured
 import { collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import { use } from "react";
 
 
 const ADMIN_MAIL = "talaganarajesh25@gmail.com";
@@ -32,6 +33,9 @@ function NotePage() {
 
   const postButtonRef = useRef(null);
 
+  const [urlFetching, setUrlFetching] = useState(true);
+  const [finalUrl, setFinalUrl] = useState("");
+  const [fileName, setFileName] = useState("GetMaterial-notes.pdf");
 
 
 
@@ -167,40 +171,64 @@ function NotePage() {
     }
   };
 
+
+
+
+
+  useEffect(() => {
+    const fetchUrl = async () => {
+      if (!embedUrl) return;
+      setUrlFetching(true);
+
+      try {
+        let tempUrl = embedUrl;
+        let tempFileName = "GetMaterial-notes.pdf";
+
+        if (embedUrl.includes("drive.google.com")) {
+          const fileIdMatch = embedUrl.match(/[-\w]{25,}/);
+          if (fileIdMatch) {
+            const fileId = fileIdMatch[0];
+            const apiKey = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
+
+            // Fetch file metadata to get the actual file name
+            const metadataUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?fields=name&key=${apiKey}`;
+            const metadataResponse = await fetch(metadataUrl);
+            const metadata = await metadataResponse.json();
+
+            if (metadata && metadata.name) {
+              tempFileName = metadata.name;
+            }
+
+            // Construct direct download URL
+            tempUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
+          }
+        }
+
+        setFinalUrl(tempUrl);
+        setFileName(tempFileName);
+      } catch (error) {
+        console.error("Failed to fetch file URL:", error);
+      } finally {
+        setUrlFetching(false);
+      }
+    };
+
+    fetchUrl();
+  }, [embedUrl]);
+
+
+
   const handleDownload = async () => {
-    if (!embedUrl) return;
+    if (!finalUrl) return;
 
     setIsDownloading(true);
 
     try {
-      let finalUrl = embedUrl;
-      let fileName = "note-file.pdf"; // Default name
-
-      if (embedUrl.includes("drive.google.com")) {
-        const fileIdMatch = embedUrl.match(/[-\w]{25,}/);
-        if (fileIdMatch) {
-          const fileId = fileIdMatch[0];
-          const apiKey = import.meta.env.VITE_GOOGLE_DRIVE_API_KEY;
-
-          // 🔹 Fetch file metadata to get the actual file name
-          const metadataUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?fields=name&key=${apiKey}`;
-          const metadataResponse = await fetch(metadataUrl);
-          const metadata = await metadataResponse.json();
-
-          if (metadata && metadata.name) {
-            fileName = metadata.name; // Use actual file name
-          }
-
-          // 🔹 Construct direct download URL
-          finalUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
-        }
-      }
-
-      // 🔹 Fetch file as a blob
+      // Fetch file as a blob
       const response = await fetch(finalUrl);
       const blob = await response.blob();
 
-      // 🔹 Create a local URL and trigger the download
+      // Create a local URL and trigger the download
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
@@ -208,16 +236,16 @@ function NotePage() {
       document.body.appendChild(link);
       link.click();
 
-      // 🔹 Clean up after download
+      // Clean up after download
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error("Download failed:", error);
-      window.open(embedUrl, "_blank");
+      window.open(finalUrl, "_blank");
     } finally {
-      setTimeout(() => setIsDownloading(false), 2000);
+      setIsDownloading(false);
     }
   };
+
 
 
   if (!decodedUrl) {
@@ -247,10 +275,11 @@ function NotePage() {
         <div className="flex items-center gap-3">
           <button
             onClick={handleDownload}
+            disabled={isDownloading || urlFetching}
             className=" border downloadButton border-black rounded transition-all text-black px-4 py-2 duration-300 flex items-center gap-2"
           >
-            {isDownloading ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} />}
-            {isDownloading ? <h1 className="hidden md:flex">Downloading..</h1> : <h1 className="hidden md:flex">Download</h1>}
+            {isDownloading ||urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} />}
+            {isDownloading|| urlFetching ? <h1 className="hidden md:flex">processing..</h1> : <h1 className="hidden md:flex">Download</h1>}
           </button>
 
           <div className="">

@@ -215,7 +215,7 @@ function Dashboard() {
 
   const handleLike = async (noteId) => {
     if (!auth.currentUser) {
-      alert("Please sign in to vote!")
+      alert("Please sign in to Like!")
       Navigate("/auth")
       return
     }

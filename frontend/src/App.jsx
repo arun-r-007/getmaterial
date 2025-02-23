@@ -10,6 +10,9 @@ import AboutMe from './components/AboutMe';
 import NotePage from './components/NotePage';
 import UserPage from './components/UserPage';
 
+import NotesContextProvider from './components/context/NotesContextProvider';
+import SavedNotesContextProvider from './components/context/SavedNotesContextProvider';
+
 function App() {
   const [user, setUser] = useState(null);
 
@@ -21,20 +24,25 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-r flex items-center flex-col from-yellow-50 to-amber-50">
-        <Navbar user={user} />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/auth" element={<ContributorAuth />} />
-          <Route path="/upload" element={<Upload user={user} />} />
-          <Route path='/about' element={<AboutMe/>} />
-          <Route path='/note' element={<NotePage/>} />
-          <Route path = '/userpage' element={<UserPage/>}/>
-        </Routes>
-      </div>
-    </Router>
+    <NotesContextProvider>
+      <SavedNotesContextProvider>
+        <Router>
+          <div className="min-h-screen bg-gradient-to-r flex items-center flex-col from-yellow-50 to-amber-50">
+            <Navbar user={user} />
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/auth" element={<ContributorAuth />} />
+              <Route path="/upload" element={<Upload user={user} />} />
+              <Route path='/about' element={<AboutMe />} />
+              <Route path='/note' element={<NotePage />} />
+              <Route path='/userpage' element={<UserPage />} />
+            </Routes>
+          </div>
+        </Router>
+      </SavedNotesContextProvider>
+    </NotesContextProvider>
   );
 }
 

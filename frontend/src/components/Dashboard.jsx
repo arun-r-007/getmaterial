@@ -1,45 +1,25 @@
 "use client"
 
-import { useState, useEffect } from "react"
-
+import { useState, useEffect, useContext } from "react"
 import { getNotes } from "../firebase"
-
 import CustomSelect from "./CustomSelect"
-
-import { db } from "../firebase"
-import { ArrowUp, Trash, MessageCircle } from "lucide-react"
-
-import { auth } from "../firebase"
-
+import { db, auth } from "../firebase"
+import { ArrowUp, Trash, Bookmark } from "lucide-react"
 import "./loader.css"
-
-import { getCountFromServer } from "firebase/firestore"
-
-// import { getDocs, collection } from "firebase/firestore";
-
-import { Heart } from "lucide-react"
-
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
-
 import { MorphingText } from "@/components/ui/morphing-text"
 import { useNavigate } from "react-router-dom"
+import { doc, collection, getDocs, setDoc, deleteDoc } from "firebase/firestore"
+import NotesContext  from "./context/NotesContext"
+import SavedNotesContext from "./context/SavedNotesContext"
 
-import { getFirestore, doc, collection, getDoc, setDoc, deleteDoc } from "firebase/firestore"
+
 
 const TopContributor = ({ topContributor }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
   const contributors = topContributor || [] // Fallback to an empty array
 
-  useEffect(() => {
-    if (contributors.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % contributors.length)
-      }, 2000)
-
-      return () => clearInterval(interval) // Cleanup on unmount
-    }
-  }, [contributors])
+  
 
   const texts = contributors.map((contributor) => `${contributor.name}-${contributor.noteCount}`)
 
@@ -90,7 +70,9 @@ function findTopContributor(notes) {
 }
 
 function Dashboard() {
-  const [notes, setNotes] = useState([])
+  const { notes, setNotes } = useContext(NotesContext)
+  const { savedNotes, setSavedNotes, setIsSavedNotesLoading } = useContext(SavedNotesContext);
+
   const [filteredNotes, setFilteredNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -115,16 +97,15 @@ function Dashboard() {
   const adminEmail = "talaganarajesh25@gmail.com"
   const [admin, setAdmin] = useState(false)
 
-  const [isLiked, setIsLiked] = useState({})
-  const [allLikes, setAllLikes] = useState({})
-
   const [topContributor, setTopContributor] = useState(null)
 
   const owner = auth.currentUser
 
   const Navigate = useNavigate()
 
-  const [commentCount, setCommentCount] = useState(0)
+  const [savingNotes, setSavingNotes] = useState(false)
+
+
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -141,7 +122,7 @@ function Dashboard() {
         // Normalize subject names
         const normalizedNotes = fetchedNotes.map((note) => ({
           ...note,
-          subject: note.subject.trim().toUpperCase(), // Normalize subject jjjjjjjjsjust test comment
+          subject: note.subject.trim().toUpperCase(),
         }))
 
         setNotes(normalizedNotes)
@@ -172,7 +153,7 @@ function Dashboard() {
     }
 
     fetchNotes()
-  }, [])
+  }, [setNotes])
 
   // Filter effect
   useEffect(() => {
@@ -180,16 +161,16 @@ function Dashboard() {
     const filtered = notes.filter(
       (note) =>
         (note.name.toLowerCase().includes(titleFilter.toLowerCase()) ||
-          note.subject.toLowerCase().includes(titleFilter.toLowerCase()) || // Match subject as well
-          note.contributorName.toLowerCase().includes(titleFilter.toLowerCase())) && // Match contributor name as well
+          note.subject.toLowerCase().includes(titleFilter.toLowerCase()) ||
+          note.contributorName.toLowerCase().includes(titleFilter.toLowerCase())) &&
         (semesterFilter === "" || note.semester === semesterFilter) &&
         (subjectFilter === "" || note.subject === subjectFilter) &&
-        (moduleFilter === "" || note.module === moduleFilter) && // Filter by module
-        (nameFilter === "" || note.contributorName === nameFilter), // Filter by contributor name
+        (moduleFilter === "" || note.module === moduleFilter) &&
+        (nameFilter === "" || note.contributorName === nameFilter),
     )
 
     setFilteredNotes(filtered)
-  }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter]) // Include nameFilter
+  }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter])
 
   // Reset filters
   const resetFilters = () => {
@@ -213,110 +194,74 @@ function Dashboard() {
     }
   }
 
-  const handleLike = async (noteId) => {
-    if (!auth.currentUser) {
-      alert("Please sign in to Like!")
-      Navigate("/auth")
-      return
-    }
 
-    const db = getFirestore()
-    const userId = auth.currentUser.uid
-    const noteRef = doc(db, "notes", noteId)
-    const likeRef = doc(collection(noteRef, "likes"), userId)
 
-    try {
-      const likeSnap = await getDoc(likeRef)
-
-      if (likeSnap.exists()) {
-        // Unlike
-        await deleteDoc(likeRef)
-      } else {
-        // Like
-        await setDoc(likeRef, {
-          timestamp: new Date(),
-          userId: userId,
-        })
+  useEffect(() => {
+    const fetchSavedNotes = async () => {
+      if (!auth.currentUser) {
+        setIsSavedNotesLoading(false);
+        return;
       }
 
-      // Update local state after successful Firebase operation
-      const likesCollectionRef = collection(noteRef, "likes")
-      const likesSnapshot = await getCountFromServer(likesCollectionRef)
-      const newLikeCount = likesSnapshot.data().count
+      try {
+        setIsSavedNotesLoading(true);
+        const userId = auth.currentUser.uid;
+        const savedNotesRef = collection(db, "users", userId, "savedNotes");
+        const savedNotesSnapshot = await getDocs(savedNotesRef);
 
-      setIsLiked((prev) => ({ ...prev, [noteId]: !prev[noteId] }))
-      setAllLikes((prev) => ({ ...prev, [noteId]: newLikeCount }))
+        const saved = {};
+        savedNotesSnapshot.forEach((doc) => {
+          saved[doc.id] = true;
+        });
+
+        setSavedNotes(saved);
+      } catch (error) {
+        console.error("Error fetching saved notes:", error);
+      } finally {
+        setIsSavedNotesLoading(false);
+      }
+    };
+
+    fetchSavedNotes();
+  }, [auth.currentUser, setSavedNotes, setIsSavedNotesLoading]);
+
+  // Update handleSaveNote function
+  const handleSaveNote = async (noteId) => {
+    if (!auth.currentUser) {
+      alert("Please log in to save notes!");
+      return;
+    }
+
+    try {
+      setSavingNotes(true);
+      const userId = auth.currentUser.uid;
+      const noteRef = doc(db, "users", userId, "savedNotes", noteId);
+
+      if (savedNotes[noteId]) {
+        await deleteDoc(noteRef);
+        setSavedNotes((prev) => {
+          const updated = { ...prev };
+          delete updated[noteId];
+          return updated;
+        });
+      } else {
+        await setDoc(noteRef, { 
+          savedAt: new Date(),
+          noteId: noteId 
+        });
+        setSavedNotes((prev) => ({
+          ...prev,
+          [noteId]: true
+        }));
+      }
     } catch (error) {
-      console.error("Error updating like:", error)
+      console.error("Error saving note:", error);
+      alert("Error saving note. Please try again.");
+    } finally {
+      setSavingNotes(false);
     }
-  }
+  };
 
-  useEffect(() => {
-    const fetchLikes = async () => {
-      const fetchedLikes = {}
-      const likedNotes = {}
-
-      await Promise.all(
-        notes.map(async (note) => {
-          try {
-            // Get total likes count from subcollection
-            const likesCollectionRef = collection(doc(db, "notes", note.id), "likes")
-            const likesSnapshot = await getCountFromServer(likesCollectionRef)
-            fetchedLikes[note.id] = likesSnapshot.data().count
-
-            // Check if current user has liked
-            if (auth.currentUser) {
-              const userLikeRef = doc(likesCollectionRef, auth.currentUser.uid)
-              const userLikeSnap = await getDoc(userLikeRef)
-              likedNotes[note.id] = userLikeSnap.exists()
-            } else {
-              likedNotes[note.id] = false
-            }
-          } catch (error) {
-            console.error(`Error fetching likes for note ${note.id}:`, error)
-            fetchedLikes[note.id] = 0
-            likedNotes[note.id] = false
-          }
-        }),
-      )
-
-      setAllLikes(fetchedLikes)
-      setIsLiked(likedNotes)
-    }
-
-    fetchLikes()
-
-    // Cleanup function
-    return () => {
-      setAllLikes({})
-      setIsLiked({})
-    }
-  }, [notes])
-
-  useEffect(() => {
-    const fetchCommentCounts = async () => {
-      if (!notes || notes.length === 0) return
-
-      const fetchedCommentCounts = {}
-
-      await Promise.all(
-        notes.map(async (note) => {
-          try {
-            const commentsRef = collection(db, "notes", note.id, "comments")
-            const snapshot = await getCountFromServer(commentsRef)
-            fetchedCommentCounts[note.id] = snapshot.data().count || 0
-          } catch (error) {
-            console.error(`Error fetching comments for note ${note.id}:`, error)
-            fetchedCommentCounts[note.id] = 0
-          }
-        }),
-      )
-
-      setCommentCount(fetchedCommentCounts)
-    }
-
-    fetchCommentCounts()
-  }, [notes])
 
   const handleViewNote = (noteUrl, noteId) => {
     if (!noteId || !noteUrl) {
@@ -327,6 +272,7 @@ function Dashboard() {
     const encodedUrl = encodeURIComponent(noteUrl)
     Navigate(`/note?url=${encodedUrl}&id=${noteId}`)
   }
+
 
   return (
     <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
@@ -418,6 +364,7 @@ function Dashboard() {
       </div>
 
       {error && <p className="text-red-500">Error fetching notes: {error}</p>}
+
 
       {/* Notes Grid */}
 
@@ -536,7 +483,7 @@ function Dashboard() {
                   </span>
                 </p>
 
-                <div className="flex flex-row justify-start w-full items-center">
+                <div className="flex flex-row justify-start w-full items-baseline">
                   <button
                     onClick={() => handleViewNote(note.fileUrl, note.id)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
@@ -544,30 +491,39 @@ function Dashboard() {
                     View Note
                   </button>
 
-                  <div className="flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all">
-                    <Heart
-                      size={20}
-                      style={{
-                        cursor: "pointer",
-                        marginRight: "0px",
-                        color: isLiked[note.id] ? "red" : "black", // Instant UI toggle
-                      }}
-                      onClick={() => handleLike(note.id)}
-                      className={
-                        isLiked[note.id]
-                          ? "fill-red-500 rounded-md transition-all"
-                          : "bg-transparent md:hover:fill-red-500 md:hover:p-0.5 rounded-full transition-all"
-                      }
-                    />
-                    {allLikes[note.id] || 0}
-                  </div>
+                  <div className="flex flex-row md:px-2 gap-1 px-1 rounded-lg transition-all">
+                    <div className="flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all">
+                      <Bookmark
+                        size={20}
+                        style={{
+                          cursor: "pointer",
+                          marginRight: "0px",
+                          color: savedNotes[note.id] ? "red" : "black", // Instant UI toggle
+                        }}
+                        onClick={() => handleSaveNote(note.id)}
+                        className={
+                          savedNotes[note.id]
+                            ? "fill-red-500 rounded-md transition-all"
+                            : "bg-transparent md:hover:fill-red-500  md:hover:scale-125 rounded-full transition-all"
+                        }
+                      />
+                    </div>
 
-                  <div
-                    onClick={() => Navigate(`/note?url=${encodeURIComponent(note.fileUrl)}&id=${note.id}`)}
-                    className="flex gap-1 flex-row bg-gray-50 md:px-2 p-1 rounded-lg md:hover:bg-gray-100 transition-all cursor-pointer"
-                  >
-                    <MessageCircle size={20} color="black" />
-                    {commentCount[note.id || 0]}
+                    {admin && ( // Show Delete button only for admin
+                      <div className="bg-slate-50 hover:bg-slate-100 rounded-lg p-2 transition-all duration-300">
+                        <button onClick={() => handleDelete(note.id)}>
+                          <Trash size={20} color="red" />
+                        </button>
+                      </div>
+                    )}
+
+                    {owner && owner.email == note.metadata.createdBy && (
+                      <div className="bg-slate-50 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
+                        <button onClick={() => handleDelete(note.id)}>
+                          <Trash size={20} color="red" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -580,25 +536,7 @@ function Dashboard() {
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
                 />
 
-                <div className="flex md:flex-row flex-col justify-around items-center w-full">
-                  {admin && ( // Show Delete button only for admin
-                    <div className="bg-slate-50 hover:bg-slate-100 rounded-lg p-2 transition-all duration-300">
-                      <button onClick={() => handleDelete(note.id)}>
-                        <Trash size={20} color="red" />
-                      </button>
-                    </div>
-                  )}
-
-                  {owner && owner.email == note.metadata.createdBy && (
-                    <div className="bg-slate-50 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
-                      <button onClick={() => handleDelete(note.id)}>
-                        <Trash size={20} color="red" />
-                      </button>
-                    </div>
-                  )}
-
-                  <p className="opacity-40 bottom-0">{note.uploadedAt.toDate().toLocaleDateString("en-GB")}</p>
-                </div>
+                <p className="opacity-40 bottom-0">{note.uploadedAt.toDate().toLocaleDateString("en-GB")}</p>
               </div>
             </div>
           ))}
@@ -612,6 +550,11 @@ function Dashboard() {
         </div>
       )}
 
+      {savingNotes && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-all z-50">
+          <h1 className="loader3 "></h1>
+        </div>
+      )}
       <div className="text-center opacity-90 pt-14 flex flex-col">
         <a
           href="https://talaganarajesh.vercel.app/"

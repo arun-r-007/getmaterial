@@ -88,10 +88,14 @@ function NotePage() {
 
             if (metadata && metadata.name) {
               tempFileName = metadata.name;
+              setFileName(tempFileName);
+
             }
 
             // Construct direct download URL
             tempUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`;
+            setFinalUrl(tempUrl);
+
           }
         }
 

@@ -10,7 +10,7 @@ import { doc, deleteDoc } from "firebase/firestore"
 import { User, Upload, Trash, LogOutIcon, Bookmark } from "lucide-react"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
-import  NotesContext  from "./context/NotesContext"
+import NotesContext from "./context/NotesContext"
 import SavedNotesContext from "./context/SavedNotesContext"
 
 export default function UserPage() {
@@ -24,6 +24,9 @@ export default function UserPage() {
   const [savedNotesList, setSavedNotesList] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("saves")
+
+  const [savingNotes, setSavingNotes] = useState(false)
+
 
   const getPDFPreviewUrl = (fileId) => {
     return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
@@ -43,7 +46,7 @@ export default function UserPage() {
 
       try {
         setLoading(true);
-        
+
         // Filter user's uploaded notes
         const uploadedNotes = notes.filter(
           (note) => note.metadata.createdBy === user?.email
@@ -92,6 +95,37 @@ export default function UserPage() {
     }
   }
 
+
+  const handleUnsave = async (noteId) => {
+
+    setSavingNotes(true);
+
+    const confirmUnsave=window.confirm("Are you sure you want to unsave this note?");
+    if (!confirmUnsave) {
+      setSavingNotes(false);
+      return;
+    }
+  
+    try {
+      const userId = auth.currentUser.uid;
+      const noteRef = doc(db, "users", userId, "savedNotes", noteId);
+  
+      await deleteDoc(noteRef); // Remove from Firestore
+  
+  
+      setSavedNotesList((prev) => prev.filter((note) => note.id !== noteId));
+  
+    } catch (error) {
+      console.error("Error unsaving note:", error);
+      alert("Error unsaving note. Please try again.");
+    }finally{
+      setSavingNotes(false);
+    }
+  };
+  
+  
+
+
   const NoteCardSkeleton = () => (
     <div className="bg-white p-5 rounded-xl overflow-hidden shadow-xl flex w-full flex-row justify-between">
       <div className="flex flex-col justify-between flex-grow">
@@ -138,6 +172,25 @@ export default function UserPage() {
           >
             View Note
           </button>
+          {activeTab === "saves" && (
+            <div className="flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all">
+            <Bookmark
+              size={20}
+              style={{
+                cursor: "pointer",
+                marginRight: "0px",
+                color: savedNotes[note.id] ? "red" : "black", // Instant UI toggle
+              }}
+              onClick={() => handleUnsave(note.id)}
+              className={
+                savedNotes[note.id]
+                  ? "fill-red-500 rounded-md transition-all"
+                  : "bg-transparent md:hover:fill-red-500  md:hover:scale-125 rounded-full transition-all"
+              }
+            />
+          </div>
+          )}
+
         </div>
       </div>
       <div className="flex flex-col items-center justify-between">
@@ -266,6 +319,11 @@ export default function UserPage() {
           )}
         </div>
       </div>
+      {savingNotes && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-all z-50">
+          <h1 className="loader3 "></h1>
+        </div>
+      )}
     </div>
   )
 }

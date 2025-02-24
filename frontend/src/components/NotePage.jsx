@@ -156,12 +156,13 @@ function NotePage() {
 
   const handleShare = () => {
     const currentUrl = window.location.href; // Get the full URL of the page
-    const message = `Check out the notes on GetMaterial 📚\n\n📄 ${fileName}\n🔗 ${currentUrl}`;
+    const message = `Check out the following notes on GetMaterial :- \n\n ${fileName} :\n ${currentUrl}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, "_blank"); // Open WhatsApp with the message
-  };
-  
+};
+
+
 
 
   return (

@@ -1,10 +1,10 @@
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Download, Expand, Trash2 } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import { auth } from "../firebase";
 
-
+import whatsapplogo from '../assets/whatsapp-logo.png'
 
 function NotePage() {
   const [searchParams] = useSearchParams();
@@ -60,7 +60,7 @@ function NotePage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  },[]);
+  }, []);
 
 
 
@@ -141,7 +141,7 @@ function NotePage() {
 
   if (!decodedUrl) {
     return (
-      <div className="container mx-auto p-4">
+      <div className="container flex flex-col justify-center items-center mt-44 mx-auto p-4">
         <div className="text-red-500 font-medium">No URL provided!</div>
         <button
           onClick={() => navigate("/")}
@@ -153,24 +153,45 @@ function NotePage() {
     );
   }
 
+
+  const handleShare = () => {
+    const currentUrl = window.location.href; // Get the full URL of the page
+    const message = `Check out the notes on GetMaterial 📚\n\n📄 ${fileName}\n🔗 ${currentUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, "_blank"); // Open WhatsApp with the message
+  };
+  
+
+
   return (
     <div className="container mx-auto md:mt-24 mt-16">
       {/* Header */}
       <div className="flex justify-between items-center p-4 rounded-lg shadow-sm">
+
         <button
           onClick={() => navigate("/")}
           className="bg-yellow-100 text-black border border-black px-4 py-2 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
         >
           <ArrowLeft />
         </button>
+
         <div className="flex items-center gap-3">
+
+          <button
+            onClick={handleShare}
+          >
+            <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 size-10" />
+          </button>
+
+
           <button
             onClick={handleDownload}
             disabled={isDownloading || urlFetching}
             className=" border downloadButton border-black rounded transition-all text-black px-4 py-2 duration-300 flex items-center gap-2"
           >
-            {isDownloading ||urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} />}
-            {isDownloading|| urlFetching ? <h1 className="hidden md:flex">processing..</h1> : <h1 className="hidden md:flex">Download</h1>}
+            {isDownloading || urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} />}
+            {isDownloading || urlFetching ? <h1 className="hidden md:flex">processing..</h1> : <h1 className="hidden md:flex">Download</h1>}
           </button>
 
           <div className="">
@@ -191,22 +212,22 @@ function NotePage() {
 
       <div className="max-w-5xl mx-auto gap-4">
         {/* Preview Section - 8 columns on desktop */}
-          {isLoading && (
-            <div className="h-[calc(100vh-12rem)] flex justify-center items-center">
-              <div className="loader"></div>
-            </div>
-          )}
-
-          <div className={`rounded-lg border mx-8 md:mx-0 border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
-            <iframe
-              src={embedUrl}
-              className="w-full h-full rounded-lg bg-white"
-              title="Note Viewer"
-              allow="fullscreen"
-              onLoad={() => setIsLoading(false)}
-            />
+        {isLoading && (
+          <div className="h-[calc(100vh-12rem)] flex justify-center items-center">
+            <div className="loader"></div>
           </div>
-        
+        )}
+
+        <div className={`rounded-lg border mx-8 md:mx-0 border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
+          <iframe
+            src={embedUrl}
+            className="w-full h-full rounded-lg bg-white"
+            title="Note Viewer"
+            allow="fullscreen"
+            onLoad={() => setIsLoading(false)}
+          />
+        </div>
+
       </div>
 
 

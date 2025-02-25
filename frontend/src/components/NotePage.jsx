@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Download, Expand, Trash2 } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import { auth } from "../firebase";
 
 import whatsapplogo from '../assets/whatsapp-logo.png'
+
 
 function NotePage() {
   const [searchParams] = useSearchParams();
@@ -26,17 +26,6 @@ function NotePage() {
 
 
 
-  useEffect(() => {
-    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
-    });
-
-    return () => unsubscribeAuth();
-  }, []);
 
 
 
@@ -213,6 +202,7 @@ function NotePage() {
 
         </div>
       </div>
+
 
 
       <div className="max-w-5xl mx-auto gap-4">

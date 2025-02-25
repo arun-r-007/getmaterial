@@ -34,7 +34,7 @@ function Upload() {
         // Normalize subject names
         const normalizedNotes = fetchedNotes.map(note => ({
           ...note,
-          subject: note.subject.trim().toUpperCase(), // Normalize subject jjjjjjjjsjust test comment
+          subject: note.subject.trim().toUpperCase(),
         }));
 
 
@@ -168,6 +168,28 @@ function Upload() {
 
 
 
+  useEffect(() => {
+    const preAuthenticate = async () => {
+  
+      try {
+        auth.onAuthStateChanged(async (user) => {  // Wait for auth state
+          if (user) {
+            await user.getIdToken();
+            console.log(user.getIdToken());
+          } else {
+            console.log("No user authenticated");
+          }
+        });
+      } catch (error) {
+        console.error("Error pre-authenticating Google Drive:", error);
+      }
+    };
+  
+    preAuthenticate();
+  }, []);
+  
+
+
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -200,6 +222,8 @@ function Upload() {
         if (!user) throw new Error('User not authenticated');
 
         const idToken = await user.getIdToken();
+
+
         const formData = new FormData();
         formData.append('file', selectedFile);
 
@@ -220,7 +244,6 @@ function Upload() {
         setUploadedFileLink(fileLink);
         setUploadedFileId(fileId);
 
-        console.log('File uploaded successfully:', fileLink);
         setFileUploaded(true);
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -230,8 +253,6 @@ function Upload() {
 
     }
   };
-
-
 
 
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -247,11 +268,6 @@ function Upload() {
       setError('Subject already exists or is empty'); // Use state instead of alert
     }
   };
-
-
-
-
-
 
 
 
@@ -397,8 +413,8 @@ function Upload() {
                 type="text"
                 value={newSubject}
                 onChange={(e) => setNewSubject(e.target.value)}
-                placeholder="Add new subject"
-                className="w-full p-2 border rounded-l-lg focus:ring-1 focus:ring-green-500"
+                placeholder="Add new subject ..."
+                className="w-full p-2 border-2 border-green-500 rounded-l-lg focus:ring-1 focus:ring-green-500"
               />
               <button
                 onClick={handleAddSubject}

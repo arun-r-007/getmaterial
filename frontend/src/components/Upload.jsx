@@ -175,7 +175,6 @@ function Upload() {
         auth.onAuthStateChanged(async (user) => {  // Wait for auth state
           if (user) {
             await user.getIdToken();
-            console.log(user.getIdToken());
           } else {
             console.log("No user authenticated");
           }

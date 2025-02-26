@@ -11,7 +11,7 @@ import "react-loading-skeleton/dist/skeleton.css"
 import { MorphingText } from "@/components/ui/morphing-text"
 import { useNavigate } from "react-router-dom"
 import { doc, collection, getDocs, setDoc, deleteDoc } from "firebase/firestore"
-import NotesContext  from "./context/NotesContext"
+import NotesContext from "./context/NotesContext"
 import SavedNotesContext from "./context/SavedNotesContext"
 
 
@@ -19,7 +19,7 @@ import SavedNotesContext from "./context/SavedNotesContext"
 const TopContributor = ({ topContributor }) => {
   const contributors = topContributor || [] // Fallback to an empty array
 
-  
+
 
   const texts = contributors.map((contributor) => `${contributor.name}-${contributor.noteCount}`)
 
@@ -245,9 +245,9 @@ function Dashboard() {
           return updated;
         });
       } else {
-        await setDoc(noteRef, { 
+        await setDoc(noteRef, {
           savedAt: new Date(),
-          noteId: noteId 
+          noteId: noteId
         });
         setSavedNotes((prev) => ({
           ...prev,
@@ -509,21 +509,14 @@ function Dashboard() {
                       />
                     </div>
 
-                    {admin && ( // Show Delete button only for admin
-                      <div className="bg-slate-50 hover:bg-slate-100 rounded-lg p-2 transition-all duration-300">
+                    {(admin || (owner && owner.email === note.metadata.createdBy)) && (
+                      <div className="bg-slate-50 hover:bg-red-200 rounded-lg p-1 transition-all duration-300">
                         <button onClick={() => handleDelete(note.id)}>
-                          <Trash size={20} color="red" />
+                          <Trash size={20} color="red" className="hover:scale-110 transition-all duration-300" />
                         </button>
                       </div>
                     )}
 
-                    {owner && owner.email == note.metadata.createdBy && (
-                      <div className="bg-slate-50 rounded-lg md:px-2 p-1 hover:bg-slate-200 hover:rounded-xl transition-all duration-300">
-                        <button onClick={() => handleDelete(note.id)}>
-                          <Trash size={20} color="red" />
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

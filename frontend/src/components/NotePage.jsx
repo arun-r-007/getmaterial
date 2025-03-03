@@ -11,7 +11,12 @@ function NotePage() {
   const navigate = useNavigate();
 
   const noteUrl = searchParams.get("url");
-  const noteId = searchParams.get("id");
+  const noteSubject = searchParams.get("subject");
+  const noteModule=searchParams.get('module');
+  const noteContributorName = searchParams.get("contributor");
+  
+
+
   const decodedUrl = noteUrl ? decodeURIComponent(noteUrl) : null;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -149,7 +154,7 @@ function NotePage() {
 
   const handleShare = () => {
     const currentUrl = window.location.href; // Get the full URL of the page
-    const message = `Check out the following notes on GetMaterial :- \n\n ${fileName} :\n ${currentUrl}`;
+    const message = `Check out the notes of *${noteSubject}* | *${noteModule}* by *${noteContributorName}* on *GET MATERIAL* :- \n\n *${fileName}* :\n ${currentUrl}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, "_blank"); // Open WhatsApp with the message
@@ -165,26 +170,32 @@ function NotePage() {
 
         <button
           onClick={() => navigate("/")}
-          className="bg-yellow-100 text-black border border-black px-4 py-2 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
+          className="bg-yellow-100 mr-2 text-black border border-black px-4 py-2 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
         >
-          <ArrowLeft />
+          <ArrowLeft className="size-3 md:size-auto" />
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex justify-start md:gap-2 items-center">
+          <h1 className="md:text-xl text-xs md:font-semibold">{noteSubject} </h1>
+          <h1 className="md:text-xl hidden md:block text-xs md:font-semibold">| {noteModule} |</h1>
+          <h1 className="md:text-xl hidden md:block text-xs md:font-semibold">{noteContributorName}</h1>
+        </div>
+
+        <div className="flex items-center md:gap-3 gap-2">
 
           <button
             onClick={handleShare}
           >
-            <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 size-10" />
+            <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 md:size-10 size-6" />
           </button>
 
 
           <button
             onClick={handleDownload}
             disabled={isDownloading || urlFetching}
-            className=" border downloadButton border-black rounded transition-all text-black px-4 py-2 duration-300 flex items-center gap-2"
+            className=" border downloadButton border-black rounded transition-all text-black md:px-4 md:py-2 px-2 py-1  duration-300 flex items-center gap-2"
           >
-            {isDownloading || urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} />}
+            {isDownloading || urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} className="size-4 md:size-auto" />}
             {isDownloading || urlFetching ? <h1 className="hidden md:flex">processing..</h1> : <h1 className="hidden md:flex">Download</h1>}
           </button>
 
@@ -193,9 +204,9 @@ function NotePage() {
               href={decodedUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-yellow-100 text-black border border-black px-4 py-2 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
+              className="bg-yellow-100 text-black border border-black md:px-4 md:py-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
             >
-              <Expand size={20} />
+              <Expand size={20} className="size-4 md:size-auto"/>
               <h1 className="hidden md:flex">Full Preview</h1>
             </a>
           </div>

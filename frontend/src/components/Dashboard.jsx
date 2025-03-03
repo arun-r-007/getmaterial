@@ -263,14 +263,14 @@ function Dashboard() {
   };
 
 
-  const handleViewNote = (noteUrl, noteId) => {
-    if (!noteId || !noteUrl) {
-      alert("Invalid Note ID or URL") // Debugging
+  const handleViewNote = (noteUrl, noteSubject, noteModule, noteContributorName) => {
+    if (!noteUrl) {
+      alert("Invalid Note URL") // Debugging
       return
     }
 
     const encodedUrl = encodeURIComponent(noteUrl)
-    Navigate(`/note?url=${encodedUrl}&id=${noteId}`)
+    Navigate(`/note?url=${encodedUrl}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`)
   }
 
 
@@ -485,11 +485,12 @@ function Dashboard() {
 
                 <div className="flex flex-row justify-start w-full items-baseline">
                   <button
-                    onClick={() => handleViewNote(note.fileUrl, note.id)}
+                    onClick={() => handleViewNote(note.fileUrl, note.subject, note.module, note.contributorName)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                   >
                     View Note
                   </button>
+
 
                   <div className="flex flex-row md:px-2 gap-1 px-1 rounded-lg transition-all">
                     <div className="flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all">
@@ -523,7 +524,7 @@ function Dashboard() {
 
               <div className="flex flex-col items-center justify-between">
                 <img
-                  onClick={() => handleViewNote(note.fileUrl, note.id)}
+                  onClick={() => handleViewNote(note.fileUrl, note.subject, note.module, note.contributorName)}
                   src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl)) || "/placeholder.svg"}
                   alt="PDF Preview"
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"

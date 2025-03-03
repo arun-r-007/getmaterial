@@ -1,20 +1,37 @@
 {
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "framework": "vite",
-    
-        "routes": [
-          { "src": "/assets/(.*)", "headers": { "Cache-Control": "max-age=31536000, immutable" }, "dest": "/assets/$1" },
-          { "src": "/(.*)", "headers": { "Cache-Control": "no-cache" }, "dest": "/index.html" },
-          {
-            "src": "/favicon.ico",
-            "headers": { 
-              "Cache-Control": "no-cache" 
-            },
-            "dest": "/favicon.ico"
-          },
-          { "src": "/favicon.ico", "dest": "/favicon.ico" },
-          { "src": "/favicon.png", "dest": "/favicon.png" }
-        ]
-      
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Cache-Control": "max-age=31536000, immutable"
+      },
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "dest": "/index.html"
+    },
+    {
+      "src": "/favicon.ico",
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/favicon.png",
+      "dest": "/favicon.png"
+    }
+  ],
+  "name": "Get Material"
 }

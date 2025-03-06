@@ -270,7 +270,9 @@ function Dashboard() {
     }
 
     const encodedUrl = encodeURIComponent(noteUrl)
-    Navigate(`/note?url=${encodedUrl}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`)
+    const url=`/note?url=${encodedUrl}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`
+    window.open(url, '_blank')
+
   }
 
 

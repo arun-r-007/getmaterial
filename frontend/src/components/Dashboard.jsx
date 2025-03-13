@@ -157,21 +157,19 @@ function Dashboard() {
 
   // Filter effect
   useEffect(() => {
-    // Apply filters
-    const filtered = notes.filter(
-      (note) =>
-        ((note?.name?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
-          (note?.subject?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
-          (note?.contributorName?.toLowerCase() || "").includes((titleFilter || "").toLowerCase())) &&
-        (semesterFilter === "" || note.semester === semesterFilter) &&
-        (subjectFilter === "" || note.subject === subjectFilter) &&
-        (moduleFilter === "" || note.module === moduleFilter) &&
-        (nameFilter === "" || note.contributorName === nameFilter),
-    )
-
-    setFilteredNotes(filtered)
-  }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter])
-
+    const filtered = notes.filter((note) =>
+      (
+       (note?.subject?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
+       (note?.contributorName?.toLowerCase() || "").includes((titleFilter || "").toLowerCase())) &&
+      (semesterFilter === "" || note?.semester === semesterFilter) &&
+      (subjectFilter === "" || note?.subject === subjectFilter) &&
+      (moduleFilter === "" || note?.module === moduleFilter) &&
+      (nameFilter === "" || note?.contributorName === nameFilter)
+    );
+  
+    setFilteredNotes(filtered);
+  }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter]);
+  
   // Reset filters
   const resetFilters = () => {
     setTitleFilter("")
@@ -263,14 +261,14 @@ function Dashboard() {
   };
 
 
-  const handleViewNote = (noteUrl, noteId, noteSubject, noteModule, noteContributorName) => {
+  const handleViewNote = (noteUrl,noteId, noteSubject, noteModule, noteContributorName) => {
     if (!noteUrl) {
       alert("Invalid Note URL") // Debugging
       return
     }
 
     const encodedUrl = encodeURIComponent(noteUrl)
-    const url = `/note?url=${encodedUrl}&id=${noteId}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`
+    const url=`/note?url=${encodedUrl}&id=${noteId}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`
     window.open(url, '_blank')
 
   }
@@ -487,7 +485,7 @@ function Dashboard() {
 
                 <div className="flex flex-row justify-start w-full items-baseline">
                   <button
-                    onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
+                    onClick={() => handleViewNote(note.fileUrl,note.id, note.subject, note.module, note.contributorName)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                   >
                     View Note
@@ -526,7 +524,7 @@ function Dashboard() {
 
               <div className="flex flex-col items-center justify-between">
                 <img
-                  onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
+                  onClick={() => handleViewNote(note.fileUrl,note.id, note.subject, note.module, note.contributorName)}
                   src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl)) || "/placeholder.svg"}
                   alt="PDF Preview"
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"

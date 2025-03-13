@@ -6,16 +6,28 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import whatsapplogo from '../assets/whatsapp-logo.png'
 
 
+import { serverTimestamp } from "firebase/firestore";
+
+import { auth } from "../firebase";
+
+
+import { db } from "../firebase"; // Ensure Firebase is properly configured
+import { collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+
+
+const ADMIN_MAIL = "talaganarajesh25@gmail.com";
+
+
 function NotePage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const noteUrl = searchParams.get("url");
   const noteSubject = searchParams.get("subject");
-  const noteModule=searchParams.get('module');
+  const noteModule = searchParams.get('module');
   const noteContributorName = searchParams.get("contributor");
-  
 
+  const noteId = searchParams.get("id");
 
   const decodedUrl = noteUrl ? decodeURIComponent(noteUrl) : null;
 
@@ -156,9 +168,124 @@ function NotePage() {
     const currentUrl = window.location.href; // Get the full URL of the page
     const message = `Check out the notes of *${noteSubject}* | *${noteModule}* by *${noteContributorName}* on *GET MATERIAL* :- \n\n *${fileName}* :\n ${currentUrl}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    
+
     window.open(whatsappUrl, "_blank"); // Open WhatsApp with the message
-};
+  };
+
+
+
+
+
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const postButtonRef = useRef(null);
+
+
+
+
+  useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!noteId) return;
+
+    const commentsRef = collection(db, "notes", noteId, "comments");
+    const q = query(commentsRef, orderBy("timestamp", "asc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setComments(
+        snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            text: data.text,
+            userEmail: data.userEmail,
+            userName: data.userName || "Anonymous",
+            timestamp: formatDate(data.timestamp?.toDate()),
+          };
+        })
+      );
+    });
+
+    return () => unsubscribe();
+  }, [noteId]);
+
+  // Function to format timestamp as dd/mm/yyyy
+  const formatDate = (date) => {
+    if (!date) return "Unknown Date";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Add comment with user details and timestamp
+  const addComment = async () => {
+    if (!currentUser) {
+      alert("Please sign in to comment");
+      return;
+    }
+
+
+    if (!newComment.trim()) {
+      alert("Comment cannot be empty");
+      return;
+    };
+
+    const commentsRef = collection(db, "notes", noteId, "comments");
+    await addDoc(commentsRef, {
+      text: newComment,
+      timestamp: serverTimestamp(),
+      userEmail: currentUser.email,
+      userName: currentUser.displayName || currentUser.email.split('@')[0],
+    });
+
+    setNewComment("");
+  };
+
+  const deleteComment = async (commentId) => {
+    const comment = comments.find((c) => c.id === commentId);
+    console.log(comment);
+    const currentUserEmail = currentUser?.email;
+
+    const isAdmin = currentUserEmail === ADMIN_MAIL;
+    const isAuthor = currentUserEmail === comment?.userEmail;
+
+    console.log(currentUserEmail);
+    console.log(comment?.userEmail);
+
+    if (!comment) {
+      console.error("Comment not found");
+      return;
+    }
+
+    if (!isAdmin && !isAuthor) {
+      alert("Only admins and comment authors can delete comments");
+      return;
+    }
+
+    if (!window.confirm("Delete this comment?")) return;
+
+    try {
+      await deleteDoc(doc(db, "notes", noteId, "comments", commentId));
+      console.log("Comment deleted successfully");
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+
 
 
 
@@ -206,7 +333,7 @@ function NotePage() {
               rel="noopener noreferrer"
               className="bg-yellow-100 text-black border border-black md:px-4 md:py-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
             >
-              <Expand size={20} className="size-4 md:size-auto"/>
+              <Expand size={20} className="size-4 md:size-auto" />
               <h1 className="hidden md:flex">Full Preview</h1>
             </a>
           </div>
@@ -215,30 +342,81 @@ function NotePage() {
       </div>
 
 
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+        {/* Notes Preview - Takes 2/3 width on larger screens */}
+        <div className="w-full md:w-2/3">
+          {isLoading && (
+            <div className="h-[calc(100vh-12rem)] flex justify-center items-center">
+              <div className="loader"></div>
+            </div>
+          )}
 
-      <div className="max-w-5xl mx-auto gap-4">
-        {/* Preview Section - 8 columns on desktop */}
-        {isLoading && (
-          <div className="h-[calc(100vh-12rem)] flex justify-center items-center">
-            <div className="loader"></div>
+          <div className={`rounded-lg border mx-4 md:mx-0 border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
+            <iframe
+              src={embedUrl}
+              className="w-full h-full rounded-lg bg-white"
+              title="Note Viewer"
+              allow="fullscreen"
+              onLoad={() => setIsLoading(false)}
+            />
           </div>
-        )}
-
-        <div className={`rounded-lg border mx-8 md:mx-0 border-black h-[calc(100vh-11rem)] ${isLoading ? "hidden" : ""}`}>
-          <iframe
-            src={embedUrl}
-            className="w-full h-full rounded-lg bg-white"
-            title="Note Viewer"
-            allow="fullscreen"
-            onLoad={() => setIsLoading(false)}
-          />
         </div>
 
+        {/* Comment Section - Takes 1/3 width on large screens */}
+        <div className="w-full md:w-1/3 flex flex-col border-l px-4 relative h-[calc(100vh-11rem)] ">
+          {/* Comments List - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-16">
+            {comments.length === 0 ? (
+              <div className="text-center text-gray-500 mt-20">No comments yet</div>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="flex border-b pb-2 flex-col space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm">{comment.userName}</span>
+                    {(currentUser?.email === comment.userEmail || currentUser?.email === ADMIN_MAIL) && (
+                      <button onClick={() => deleteComment(comment.id)} className="text-red-500 hover:text-red-700">
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm">{comment.text}</p>
+                  <span className="text-xs text-gray-500">{comment.timestamp}</span>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Sticky Comment Input Bar */}
+          <div className="absolute bottom-0  left-0 w-full px-4">
+            {currentUser ? (
+              <div className="flex items-center">
+                <textarea
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Ask doubt / comment..."
+                  className="flex-1 border h-14 border-gray-400 rounded-l-lg px-3 py-2"
+                />
+                <button
+                  ref={postButtonRef}
+                  onClick={addComment}
+                  className="bg-black h-14 border border-black text-white px-7 rounded-r-lg hover:bg-gray-800"
+                >
+                  Post
+                </button>
+              </div>
+            ) : (
+              <div className="text-center text-sm text-gray-500">Please sign in to comment</div>
+            )}
+          </div>
+        </div>
       </div>
 
 
 
     </div>
+
+
   );
 }
 

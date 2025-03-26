@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { BookOpen, Linkedin, Users } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { LogOutIcon } from 'lucide-react';
 import { UserIcon } from 'lucide-react';
 import { User } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 import myPhoto3 from '../assets/myphoto3.jpg';
-
+import placeholder from '../assets/placeholder.svg';
 
 import { Button } from '@headlessui/react';
 
@@ -75,6 +76,20 @@ function Navbar({ user }) {
         <div>
           {user ? (
             <div className='flex  justify-center items-center'>
+              <div className="relative group">
+                <a
+                  className="font-semibold md:block hidden animate-pulse hover:animate-none duration-1000 mx-4 border-green-400 border p-2 rounded text-green-500 hover:bg-green-100 transition-all"
+                  href="https://oroom.vercel.app/study"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  OpenRoom
+                </a>
+                <span className="absolute left-1/2 -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Discuss doubts
+                </span>
+              </div>
+
               <Link to="/upload" className="text-black md:text-base uploadButton md:py-2 md:px-5 text-sm px-3 py-1 mr-2 border-black border-[1px] rounded-3xl md:mr-4 font-semibold hover:rounded-xl transition-all duration-300">
                 Upload
               </Link>
@@ -85,7 +100,7 @@ function Navbar({ user }) {
                   className='text-black rounded-full size-7 mt-0.5 md:size-10 md:hover:opacity-90 transition-all font-semibold'
                 >
                   {user?.photoURL ? (
-                    <img src={user.photoURL || "/placeholder.svg"} alt="Profile" className="md:w-9 md:h-9 rounded-full" />
+                    <img src={user.photoURL || placeholder} alt="Profile" className="md:w-9 md:h-9 rounded-full" />
                   ) : (
                     <User className="w-9 rounded-full p-1 h-9 bg-gray-300 text-gray-500" />
                   )}
@@ -117,7 +132,14 @@ function Navbar({ user }) {
                           </Link>
                         </li>
 
-                        <li className="px-4 pt-1 py-2 text-red-500 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
+                        <li>
+                          <a className='font-semibold flex items-center duration-1000 mx-4 border-b-2 py-2 rounded text-green-500 hover:bg-green-100 transition-all' href="https://oroom.vercel.app/study" target="_blank" rel="noopener noreferrer">
+                            <MessageCircle size={20} className='mr-2' />
+                            OpenRoom
+                          </a>
+                        </li>
+
+                        <li className="px-4 pt-3 py-2 text-red-500 flex justify-start items-center rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer" onClick={handleSignOut}>
                           <LogOutIcon size={16} className="mr-2" />
                           <p>Log out</p>
                         </li>

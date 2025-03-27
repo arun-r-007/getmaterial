@@ -10,6 +10,8 @@ import AboutMe from './components/AboutMe';
 import NotePage from './components/NotePage';
 import UserPage from './components/UserPage';
 
+import Donate from './components/Donate';
+
 import NotesContextProvider from './components/context/NotesContextProvider';
 import SavedNotesContextProvider from './components/context/SavedNotesContextProvider';
 
@@ -38,6 +40,7 @@ function App() {
               <Route path='/about' element={<AboutMe />} />
               <Route path='/note' element={<NotePage />} />
               <Route path='/userpage' element={<UserPage />} />
+              <Route path='/donate' element={<Donate/>} />
             </Routes>
           </div>
         </Router>

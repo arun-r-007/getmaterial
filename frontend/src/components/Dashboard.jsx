@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect, useContext,useRef } from "react"
 import { getNotes } from "../firebase"
 import CustomSelect from "./CustomSelect"
 import { db, auth } from "../firebase"
@@ -14,6 +14,9 @@ import { doc, collection, getDocs, setDoc, deleteDoc } from "firebase/firestore"
 import NotesContext from "./context/NotesContext"
 import SavedNotesContext from "./context/SavedNotesContext"
 
+import { Link } from "react-router-dom"
+
+import { HandHeart, X } from "lucide-react";
 
 
 const TopContributor = ({ topContributor }) => {
@@ -159,17 +162,17 @@ function Dashboard() {
   useEffect(() => {
     const filtered = notes.filter((note) =>
       (
-       (note?.subject?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
-       (note?.contributorName?.toLowerCase() || "").includes((titleFilter || "").toLowerCase())) &&
+        (note?.subject?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
+        (note?.contributorName?.toLowerCase() || "").includes((titleFilter || "").toLowerCase())) &&
       (semesterFilter === "" || note?.semester === semesterFilter) &&
       (subjectFilter === "" || note?.subject === subjectFilter) &&
       (moduleFilter === "" || note?.module === moduleFilter) &&
       (nameFilter === "" || note?.contributorName === nameFilter)
     );
-  
+
     setFilteredNotes(filtered);
   }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter]);
-  
+
   // Reset filters
   const resetFilters = () => {
     setTitleFilter("")
@@ -261,21 +264,86 @@ function Dashboard() {
   };
 
 
-  const handleViewNote = (noteUrl,noteId, noteSubject, noteModule, noteContributorName) => {
+  const handleViewNote = (noteUrl, noteId, noteSubject, noteModule, noteContributorName) => {
     if (!noteUrl) {
       alert("Invalid Note URL") // Debugging
       return
     }
 
     const encodedUrl = encodeURIComponent(noteUrl)
-    const url=`/note?url=${encodedUrl}&id=${noteId}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`
+    const url = `/note?url=${encodedUrl}&id=${noteId}&subject=${noteSubject}&module=${noteModule}&contributor=${noteContributorName}`
     window.open(url, '_blank')
 
   }
 
 
+  const [showPopup, setShowPopup] = useState(false);
+  const popupRef = useRef(null);
+
+  useEffect(() => {
+    // Check if popup has already been shown in this session
+    if (!sessionStorage.getItem("donatePopupShown")) {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        sessionStorage.setItem("donatePopupShown", "true"); // Mark as shown
+      }, 3000); // Show after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Close popup when clicking outside
+  const handleClickOutside = (event) => {
+    if (popupRef.current && !popupRef.current.contains(event.target)) {
+      setShowPopup(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPopup]);
+
+
   return (
-    <div className="container md:mt-20 mt-14 mx-auto px-4 pb-8 pt-4">
+    <div className="container md:mt-16 mt-14 mx-auto px-4 pb-8 pt-4">
+
+
+      <div>
+        {showPopup && (
+          <div className="fixed z-50 px-2 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div
+              ref={popupRef}
+              className="bg-amber-100 p-6 rounded-lg shadow-lg w-80 text-center relative"
+            >
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPopup(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <HandHeart className="w-12 h-12 mx-auto text-red-500" />
+              <h2 className="text-xl font-semibold mt-2">
+                Database <span className="text-amber-600">Cost</span> Rising! Support Us
+              </h2>
+              <p className="text-gray-600 text-xs mt-2">
+                Help us continue our mission by making a small donation.
+              </p>
+              <Link to="/donate">
+                <button className="bg-green-500 transition-all duration-300 hover:bg-green-600 text-black font-semibold px-4 py-2 rounded-sm mt-4">
+                  Donate Now
+                </button>
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
       <button
         className="fixed bottom-4 right-4 border border-black  text-black p-2 rounded-full shadow-lg hover:bg-green-100 transition-all duration-300"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -284,13 +352,21 @@ function Dashboard() {
       </button>
 
       <div className="flex justify-center items-center flex-col">
-        <p className="text-xs font-semibold ">Thanks</p>
+        <p className="text-xs font-semibold ">Top Contributers</p>
         <TopContributor topContributor={topContributor || []} />
       </div>
 
+      <Link to="/donate">
+        <div className="flex flex-row justify-center animate-pulse duration-700 hover:animate-none items-center">
+          <h1 className="text-sm hover:underline md:hover:border-x px-5 md:hover:border-green-400 font-bold text-center hover:text-green-600 transition-all duration-200 ">Database <span className="text-amber-600 hover:text-green-600"> Cost
+          </span> Rising. <span className="text-green-700">Donate</span> to Keep Us Running!</h1>
+
+        </div>
+      </Link>
+
       {/* Updated rendering of top contributor */}
       <h1 className=" text-xs text-gray-600 mb-1 ml-1 font-semibold ">
-        NIST NOTES - <span>{totalNotes}</span>
+        Notes - <span>{totalNotes}</span>
       </h1>
 
       {/* Filter Panel */}
@@ -485,7 +561,7 @@ function Dashboard() {
 
                 <div className="flex flex-row justify-start w-full items-baseline">
                   <button
-                    onClick={() => handleViewNote(note.fileUrl,note.id, note.subject, note.module, note.contributorName)}
+                    onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
                     className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
                   >
                     View Note
@@ -524,7 +600,7 @@ function Dashboard() {
 
               <div className="flex flex-col items-center justify-between">
                 <img
-                  onClick={() => handleViewNote(note.fileUrl,note.id, note.subject, note.module, note.contributorName)}
+                  onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
                   src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl)) || "/placeholder.svg"}
                   alt="PDF Preview"
                   className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"

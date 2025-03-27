@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Handshake } from 'lucide-react';
 import { LogOutIcon } from 'lucide-react';
 import { UserIcon } from 'lucide-react';
 import { User } from 'lucide-react';
 import { MessageCircle } from 'lucide-react';
+
+import { HandHeart} from "lucide-react";
+
 
 import myPhoto3 from '../assets/myphoto3.jpg';
 import placeholder from '../assets/placeholder.svg';
@@ -85,7 +88,7 @@ function Navbar({ user }) {
                 >
                   OpenRoom
                 </a>
-                <span className="absolute left-1/2 -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="absolute left-1/2 md:block hidden -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   Discuss doubts
                 </span>
               </div>
@@ -122,6 +125,13 @@ function Navbar({ user }) {
                             <UserIcon size={20} className='mr-2' />
                             <h1 className=' pr-0 py-2'>Your Profile</h1>
 
+                          </Link>
+                        </li>
+
+                        <li className=' mt-2 py-0 rounded-2xl hover:bg-amber-100 transition-all font-semibold cursor-pointer'>
+                          <Link to="/donate" onClick={toggleMenu} className='flex px-4 justify-start items-center '>
+                            <HandHeart size={20} className='mr-2' />
+                            <h1 className='py-2'>Donate us</h1>
                           </Link>
                         </li>
 
@@ -166,7 +176,7 @@ function Navbar({ user }) {
                 >
                   OpenRoom
                 </a>
-                <span className="absolute left-1/2 -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="absolute left-1/2 md:block hidden -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   Discuss doubts
                 </span>
               </div>

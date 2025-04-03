@@ -26,24 +26,26 @@ const Donate = () => {
         </div>
 
 
-          <p className="text-gray-500 md:hidden block md:text-sm text-xs mt-5">OR</p>
+        <p className="text-gray-500 md:hidden block md:text-sm text-xs mt-5">OR</p>
         <div className="flex flex-col md:hidden items-center gap-4 mt-5">
-          
-          {/* Pay with PhonePe button */}
+
           <a
-            href="upi://pay?pa=9692544587@ibl&cu=INR&tn=GetMaterialDonation"
-            className="bg-green-600 hover:bg-green-700 text-white w-40 px-5 py-3 font-semibold rounded-md shadow-md transition duration-300"
+            href="https://gpay.app.goo.gl/pay?pa=9398377748@axl&pn=Tanuj"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-40 px-5 py-3 font-semibold rounded-md shadow-md transition duration-300"
           >
-            Pay via UPI
+            Pay via Google Pay
           </a>
+
+
+
         </div>
 
 
 
 
       </div>
-        {/* Thank You Message */}
-        <p className="text-gray-500 md:text-sm text-center text-xs mt-10">Every contribution helps us grow. Thank you for your support!</p>
+      {/* Thank You Message */}
+      <p className="text-gray-500 md:text-sm text-center text-xs mt-10">Every contribution helps us grow. Thank you for your support!</p>
     </div>
   );
 };

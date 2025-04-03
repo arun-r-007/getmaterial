@@ -5,12 +5,6 @@ import qrImage from "../assets/PhonePeQR_GM.png"
 
 const Donate = () => {
 
-  const [amount, setAmount] = useState(20); // Default amount is ₹20
-
-  const handlePayment = () => {
-    const upiLink = `upi://pay?pa=9692544587@ibl&cu=INR&am=${amount}&tn=GetMaterialDonation`;
-    window.location.href = upiLink; // Redirect to UPI payment app
-  };
 
   return (
     <div className="flex flex-col items-center justify-center md:mt-16 mt-20 min-h-full p-6">
@@ -34,27 +28,14 @@ const Donate = () => {
 
           <p className="text-gray-500 md:hidden block md:text-sm text-xs mt-5">OR</p>
         <div className="flex flex-col md:hidden items-center gap-4 mt-5">
-          {/* Input field for amount */}
-          <div className="flex w-40  flex-row justify-center items-center gap-2">
-            <h1>
-              Amount :
-            </h1>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="border border-gray-300 px-2 py-1 w-20 rounded-md text-center"
-              min="1"
-            />
-          </div>
-
+          
           {/* Pay with PhonePe button */}
-          <button
-            onClick={handlePayment}
+          <a
+            href="upi://pay?pa=9692544587@ibl&cu=INR&tn=GetMaterialDonation"
             className="bg-green-600 hover:bg-green-700 text-white w-40 px-5 py-3 font-semibold rounded-md shadow-md transition duration-300"
           >
             Pay via UPI
-          </button>
+          </a>
         </div>
 
 

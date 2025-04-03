@@ -6,7 +6,7 @@ import paytmLogo from "../assets/paytm.png";
 import { FiCheck, FiCopy } from "react-icons/fi"; // Import icons for copy animation
 
 const Donate = () => {
-  const upiID = "9398377748@axl";
+  const upiID = "9692544587@ibl";
   const [copied, setCopied] = useState(false);
 
   const copyUPI = () => {
@@ -16,8 +16,8 @@ const Donate = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen mt-10 p-10 w-full">
-      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen mt-14 md:p-10 p-5 w-full">
+      <div className="bg-white w-full shadow-lg rounded-2xl p-8 max-w-md text-center">
         {/* Heading */}
         <h1 className="text-2xl font-bold text-gray-800">Support Our Mission</h1>
         <p className="text-gray-600 mt-2">
@@ -38,43 +38,47 @@ const Donate = () => {
         {/* OR Separator */}
         <p className="text-gray-500 text-sm mt-4">OR</p>
 
-        {/* UPI ID Copy Section */}
-        <div className="flex items-center gap-2 bg-gray-100 p-3 mt-5 rounded-lg shadow-md">
-          <span className="text-lg font-semibold">{upiID}</span>
-          <button
-            onClick={copyUPI}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1"
+        {/* Google Pay Button - Takes Full Width */}
+        <a
+          href="tez://upi/pay?pa=9692544587@ibl"
+          className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-3xl shadow-md p-3 transition duration-300 mt-4"
+        >
+          <img src={gpayLogo} alt="Google Pay" className="w-1/2" />
+        </a>
+
+        {/* Payment Buttons Row */}
+        <div className="flex justify-between items-center md:gap-5 gap-2 mt-8">
+          {/* UPI ID Copy Section */}
+          <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg shadow-md flex-1">
+            <span className="md:text-lg text-xs font-semibold">{upiID}</span>
+            <button
+              onClick={copyUPI}
+              className="bg-blue-500 text-xs hover:bg-blue-600 text-white px-3 py-1 rounded-md flex items-center gap-1"
+            >
+              {copied ? <FiCheck className="text-white" /> : <FiCopy className="text-white" />}
+              {/* {copied ? "Copied!" : "Copy"} */}
+            </button>
+          </div>
+
+          {/* PhonePe Button */}
+          <a
+            href="phonepe://search?query=9692544587@ibl"
+            className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
           >
-            {copied ? <FiCheck className="text-white" /> : <FiCopy className="text-white" />}
-            {copied ? "Copied!" : "Copy"}
-          </button>
+            <img src={phonePeLogo} alt="PhonePe"/>
+          </a>
+
+          {/* Paytm Button */}
+          <a
+            href="paytmmp://upi/pay?pa=9692544587@ibl"
+            className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
+          >
+            <img src={paytmLogo} alt="Paytm" />
+          </a>
         </div>
-
-
-
-        {/* Payment Buttons with Logos */}
-        <div className="flex flex-row items-center gap-4 mt-5">
-          <a
-            href="phonepe://search?query=9398377748@axl"
-            className="w-20 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-md shadow-md p-3 transition duration-300"
-          >
-            <img src={phonePeLogo} alt="PhonePe" className="w-8 h-8" />
-          </a>
-
-          <a
-            href="tez://upi/pay?pa=9398377748@axl"
-            className="w-20 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-md shadow-md p-3 transition duration-300"
-          >
-            <img src={gpayLogo} alt="Google Pay" className="w-fit h-8" />
-          </a>
-
-          <a
-            href="paytmmp://upi/pay?pa=9398377748@axl"
-            className="w-20 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-md shadow-md p-3 transition duration-300"
-          >
-            <img src={paytmLogo} alt="Paytm" className="w-fit h-8" />
-          </a>
-        </div>
+        
+        {/* Small Note */}
+        <p className="text-gray-500 text-xs mt-4">For PhonePe and Paytm, copy UPI ID and paste into the app.</p>
       </div>
 
       {/* Thank You Message */}

@@ -55,7 +55,7 @@ const Donate = () => {
         {/* Payment Buttons with Logos */}
         <div className="flex flex-row items-center gap-4 mt-5">
           <a
-            href="phonepe://search?query=9398377748"
+            href="phonepe://search?query=9398377748@axl"
             className="w-20 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-md shadow-md p-3 transition duration-300"
           >
             <img src={phonePeLogo} alt="PhonePe" className="w-8 h-8" />

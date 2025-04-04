@@ -97,7 +97,7 @@ function Dashboard() {
 
   // Admin Email
 
-  const adminEmail = "talaganarajesh25@gmail.com"
+  const adminEmail = import.meta.env.VITE_ADMIN_MAIL;
   const [admin, setAdmin] = useState(false)
 
   const [topContributor, setTopContributor] = useState(null)

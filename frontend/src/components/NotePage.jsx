@@ -15,7 +15,7 @@ import { db } from "../firebase"; // Ensure Firebase is properly configured
 import { collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 
 
-const ADMIN_MAIL = "talaganarajesh25@gmail.com";
+const ADMIN_MAIL = import.meta.env.VITE_ADMIN_MAIL;
 
 
 function NotePage() {

@@ -370,8 +370,8 @@ function Dashboard() {
       </h1>
 
       {/* Filter Panel */}
-      <div className="mb-6 border-2 border-green-200 shadow-xl border-x-teal-200 p-4 rounded-2xl">
-        <div className="grid md:grid-cols-5 gap-4 p-2 items-center">
+      <div className="mb-6 border-2 border-amber-100 shadow-xl border-x-amber-200 p-4 rounded-2xl">
+        <div className="grid md:grid-cols-5 gap-3 items-center">
           {/* Title Filter */}
           <div>
             {/* <label htmlFor="titleFilter" className="block text-sm font-medium text-gray-700">

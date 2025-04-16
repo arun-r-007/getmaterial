@@ -81,15 +81,15 @@ function Navbar({ user }) {
             <div className='flex  justify-center items-center'>
               <div className="relative group">
                 <a
-                  className="font-semibold md:block hidden animate-pulse hover:animate-none duration-1000 mx-4 border-green-400 border p-2 rounded text-green-500 hover:bg-green-100 transition-all"
+                  className="font-semibold md:block hidden hover:animate-none duration-1000 mx-4 border-green-400 border p-2 rounded text-green-500 hover:bg-green-100 transition-all"
                   href="https://oroom.vercel.app/study"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  OpenRoom
+                  Ask Doubts
                 </a>
                 <span className="absolute left-1/2 md:block hidden -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Discuss doubts
+                  OpenRoom
                 </span>
               </div>
 
@@ -165,30 +165,30 @@ function Navbar({ user }) {
               </div>
             </div>
           ) : (
-            <div className='flex justify-end items-center gap-3'>
+            <div className='flex justify-end items-center md:gap-3 gap-2'>
 
               <div className="relative group">
                 <a
-                  className="font-semibold md:block hidden animate-pulse hover:animate-none duration-1000 mx-4 border-green-400 border p-2 rounded text-green-500 hover:bg-green-100 transition-all"
+                  className="font-semibold md:block hidden hover:animate-none duration-1000 border-green-300 border p-2 rounded text-green-500 hover:bg-green-100 transition-all"
                   href="https://oroom.vercel.app/study"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  OpenRoom
+                  Ask Doubts
                 </a>
                 <span className="absolute left-1/2 md:block hidden -translate-x-1/2 bottom-full w-max bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Discuss doubts
+                  OpenRoom
                 </span>
               </div>
 
-              <Link to="/auth" className="text-black bg-[#25d366] hover:text-white delay-200 transition-all contributeButton font-semibold text-xs w-full text-center md:w-full md:text-sm  md:py-3 p-2 md:px-3 rounded-full border-[1px] border-black">
-                Contribute
+              <Link to="/auth" className="text-black bg-[#25d366] hover:text-white delay-200 transition-all contributeButton font-semibold text-xs w-full text-center md:w-fit md:text-sm  md:py-3 px-1 py-2 md:px-4 rounded-full border-[1px] border-black">
+                Upload notes
               </Link>
 
               <Link
                 to="/about"
               >
-                <img src={myPhoto3} alt="rajesh" className='w-[50px] h-[30px] md:w-[98px] md:h-[40px] hover:brightness-90 transition-all rounded-full ' />
+                <img src={myPhoto3} alt="rajesh" className=' h-[30px] w-[50px] md:h-[40px] md:w-fit hover:brightness-90 transition-all rounded-full ' />
               </Link>
 
             </div>

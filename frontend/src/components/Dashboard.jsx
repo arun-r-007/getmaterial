@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useContext,useRef } from "react"
+import { useState, useEffect, useContext, useRef } from "react"
 import { getNotes } from "../firebase"
 import CustomSelect from "./CustomSelect"
 import { db, auth } from "../firebase"
@@ -17,6 +17,9 @@ import SavedNotesContext from "./context/SavedNotesContext"
 import { Link } from "react-router-dom"
 
 import { HandHeart, X } from "lucide-react";
+
+import whatsapplogo from '../assets/whatsapp-logo.png'
+
 
 
 const TopContributor = ({ topContributor }) => {
@@ -310,6 +313,26 @@ function Dashboard() {
   }, [showPopup]);
 
 
+
+
+  const handleShare = (noteUrl, noteId, noteSubject, noteModule, noteContributorName) => {
+    const encodedUrl = encodeURIComponent(noteUrl);
+    const encodedSubject = encodeURIComponent(noteSubject);
+    const encodedModule = encodeURIComponent(noteModule);
+    const encodedContributor = encodeURIComponent(noteContributorName);
+
+    const url = `https://getmaterial.vercel.app/note?url=${encodedUrl}&id=${noteId}&subject=${encodedSubject}&module=${encodedModule}&contributor=${encodedContributor}`;
+
+    const message = `Check out the notes of *${noteSubject}* | *${noteModule}* by *${noteContributorName}* on *GET MATERIAL* :- ${url}`;
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+
+
+
+
   return (
     <div className="container md:mt-16 mt-14 mx-auto px-4 pb-8 pt-4">
 
@@ -472,142 +495,160 @@ function Dashboard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredNotes.map((note) => (
-            <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl flex flex-row justify-between">
-              <div className="flex flex-col justify-between">
-                <h1 className="text-xl font-bold mb-2">
-                  <span
-                    onClick={() => {
-                      if (subjectFilter == note.subject) {
-                        setSubjectFilter("")
-                      } else {
-                        setSubjectFilter(note.subject)
-                      }
-                    }}
-                    className="group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
-                  >
-                    {note.subject || "unknown"}
+            <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl">
 
-                    {/* Tooltip */}
-                    <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      View all notes of {note.subject}
-                    </span>
-                  </span>
-                </h1>
+              <div className="flex flex-row justify-between">
 
-                <p className="text-gray-600 mb-2">
-                  @
-                  <span
-                    onClick={() => {
-                      if (moduleFilter == note.module) {
-                        setModuleFilter("")
-                      } else {
-                        setModuleFilter(note.module)
-                      }
-                    }}
-                    className="text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
-                  >
-                    {note.module || "unknown"}
-
-                    {/* Tooltip */}
-                    <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      View all notes of {note.module}
-                    </span>
-                  </span>
-                </p>
-
-                <p className="text-gray-600 mb-2">
-                  Semester:
-                  <span
-                    onClick={() => {
-                      if (semesterFilter == note.semester) {
-                        setSemesterFilter("")
-                      } else {
-                        setSemesterFilter(note.semester)
-                      }
-                    }}
-                    className="text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
-                  >
-                    {note.semester || "unknown"}
-
-                    {/* Tooltip */}
-                    <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      View all notes of sem {note.semester}
-                    </span>
-                  </span>
-                </p>
-
-                <h2 className="mb-2 text-gray-600">Details: {note.name}</h2>
-
-                <p className="text-gray-600 mb-4">
-                  Uploaded by:
-                  <span
-                    onClick={() => {
-                      if (nameFilter == note.contributorName) {
-                        setNameFilter("")
-                      } else {
-                        setNameFilter(note.contributorName)
-                      }
-                    }}
-                    className="text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
-                  >
-                    {note.contributorName || "unknown"}
-
-                    {/* Tooltip */}
-                    <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      View all notes by {note.contributorName}
-                    </span>
-                  </span>
-                </p>
-
-                <div className="flex flex-row justify-start w-full items-baseline">
-                  <button
-                    onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
-                    className="text-white bg-black py-2 text-center text-xs md:text-sm md:w-fit md:px-3 w-20 rounded-lg hover:rounded-2xl transition-all duration-300"
-                  >
-                    View Note
-                  </button>
-
-
-                  <div className="flex flex-row md:px-2 gap-1 px-1 rounded-lg transition-all">
-                    <div className="flex flex-row bg-gray-50 md:px-2 gap-1 p-1 rounded-lg md:hover:bg-gray-100 transition-all">
-                      <Bookmark
-                        size={20}
-                        style={{
-                          cursor: "pointer",
-                          marginRight: "0px",
-                          color: savedNotes[note.id] ? "red" : "black", // Instant UI toggle
-                        }}
-                        onClick={() => handleSaveNote(note.id)}
-                        className={
-                          savedNotes[note.id]
-                            ? "fill-red-500 rounded-md transition-all"
-                            : "bg-transparent md:hover:fill-red-500  md:hover:scale-125 rounded-full transition-all"
+                <div className="flex flex-col justify-between">
+                  <h1 className="md:text-xl font-bold mb-2">
+                    <span
+                      onClick={() => {
+                        if (subjectFilter == note.subject) {
+                          setSubjectFilter("")
+                        } else {
+                          setSubjectFilter(note.subject)
                         }
-                      />
-                    </div>
+                      }}
+                      className="group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
+                    >
+                      {note.subject || "unknown"}
 
-                    {(admin || (owner && owner.email === note.metadata.createdBy)) && (
-                      <div className="bg-slate-50 hover:bg-red-200 rounded-lg p-1 transition-all duration-300">
-                        <button onClick={() => handleDelete(note.id)}>
-                          <Trash size={20} color="red" className="hover:scale-110 transition-all duration-300" />
-                        </button>
-                      </div>
-                    )}
+                      {/* Tooltip */}
+                      <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        View all notes of {note.subject}
+                      </span>
+                    </span>
+                  </h1>
 
+                  <p className="text-gray-600 mb-2">
+                    @
+                    <span
+                      onClick={() => {
+                        if (moduleFilter == note.module) {
+                          setModuleFilter("")
+                        } else {
+                          setModuleFilter(note.module)
+                        }
+                      }}
+                      className="text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
+                    >
+                      {note.module || "unknown"}
+
+                      {/* Tooltip */}
+                      <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        View all notes of {note.module}
+                      </span>
+                    </span>
+                  </p>
+
+                  <p className="text-gray-600 mb-2">
+                    Semester:
+                    <span
+                      onClick={() => {
+                        if (semesterFilter == note.semester) {
+                          setSemesterFilter("")
+                        } else {
+                          setSemesterFilter(note.semester)
+                        }
+                      }}
+                      className="text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
+                    >
+                      {note.semester || "unknown"}
+
+                      {/* Tooltip */}
+                      <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        View all notes of sem {note.semester}
+                      </span>
+                    </span>
+                  </p>
+
+                  <p className="mb-2 text-gray-600 md:text-sm text-xs ">Details: {note.name}</p>
+
+                  <p className="text-gray-600 mb-4">
+                    By:
+                    <span
+                      onClick={() => {
+                        if (nameFilter == note.contributorName) {
+                          setNameFilter("")
+                        } else {
+                          setNameFilter(note.contributorName)
+                        }
+                      }}
+                      className="text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
+                    >
+                      {note.contributorName || "unknown"}
+
+                      {/* Tooltip */}
+                      <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        View all notes by {note.contributorName}
+                      </span>
+                    </span>
+                  </p>
+
+                </div>
+
+                <div className="flex flex-col items-center justify-between">
+                  <img
+                    onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
+                    src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl)) || "/placeholder.svg"}
+                    alt="PDF Preview"
+                    className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
+                  />
+                </div>
+
+              </div>
+
+              <div className="flex flex-row items-center justify-between w-full gap-1 md:gap-2">
+                <button
+                  onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
+                  className="text-white bg-black py-2 text-xs md:text-sm md:px-3 px-2 rounded-lg hover:rounded-2xl transition-all duration-300"
+                >
+                  View Note
+                </button>
+
+                <div className="flex flex-row items-center gap-2">
+                  {/* WhatsApp share */}
+                  <div className="flex items-center justify-center bg-gray-50 p-1 rounded-lg hover:bg-gray-100 transition-all">
+                    <img
+                      src={whatsapplogo}
+                      alt="share"
+                      onClick={() => handleShare(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
+                      className="w-5 h-5 cursor-pointer hover:scale-125 transition-all"
+                    />
                   </div>
+
+                  {/* Bookmark */}
+                  <div className="flex items-center justify-center bg-gray-50 p-1 rounded-lg hover:bg-gray-100 transition-all">
+                    <Bookmark
+                      size={20}
+                      style={{
+                        cursor: "pointer",
+                        color: savedNotes[note.id] ? "red" : "black",
+                      }}
+                      onClick={() => handleSaveNote(note.id)}
+                      className={
+                        savedNotes[note.id]
+                          ? "fill-red-500 transition-all"
+                          : "hover:fill-red-500 hover:scale-125 transition-all"
+                      }
+                    />
+                  </div>
+
+                  {/* Delete button - conditionally rendered */}
+                  {(admin || (owner && owner.email === note.metadata.createdBy)) && (
+                    <div className="flex items-center justify-center bg-slate-50 p-1 rounded-lg hover:bg-red-200 transition-all duration-300">
+                      <button onClick={() => handleDelete(note.id)}>
+                        <Trash size={20} color="red" className="hover:scale-110 transition-all duration-300" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="md:mr-10">
+                  <p className="opacity-40 text-xs md:text-sm bottom-0">{note.uploadedAt.toDate().toLocaleDateString("en-GB")}</p>
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-between">
-                <img
-                  onClick={() => handleViewNote(note.fileUrl, note.id, note.subject, note.module, note.contributorName)}
-                  src={getPDFPreviewUrl(extractFileIdFromUrl(note.fileUrl)) || "/placeholder.svg"}
-                  alt="PDF Preview"
-                  className="md:w-40 cursor-pointer hover:brightness-90 transition-all duration-300 md:h-48 w-28 h-36  object-cover rounded-lg  ml-2 border-2 border-gray-300"
-                />
-
-                <p className="opacity-40 bottom-0">{note.uploadedAt.toDate().toLocaleDateString("en-GB")}</p>
-              </div>
             </div>
           ))}
 

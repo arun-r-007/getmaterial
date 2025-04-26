@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import qrImage from "../assets/PhonePeQR_GM.png";
 import phonePeLogo from "../assets/phonepe.png";
-import gpayLogo from "../assets/googlepay.png";
+import gpayLogo from "../assets/googlepay.jpeg";
 import paytmLogo from "../assets/paytm.png";
-import { FiCheck, FiCopy } from "react-icons/fi"; // Import icons for copy animation
+import { FiCheck, FiCopy } from "react-icons/fi";
 
 const Donate = () => {
   const upiID = "9692544587@ibl";
@@ -14,6 +14,7 @@ const Donate = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen mt-14 md:p-10 p-5 w-full">
@@ -53,46 +54,40 @@ const Donate = () => {
             {copied ? "Copied!" : "Copy"}
           </button>
         </div>
-        
+
         {/* Payment App Icons */}
         <div className="mt-6">
           <p className="text-sm text-gray-700 mb-3">Open your preferred payment app:</p>
           <div className="flex justify-center items-center gap-4 md:gap-8">
+
             {/* Google Pay Button */}
             <a
-              href="gpay://"
-              className="payment-app-button"
+              href="gpay://upi/pay?pa=9692544587@ibl&pn=RecipientName"
+              className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
             >
-              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
-                <img src={gpayLogo} alt="Google Pay" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
-              </div>
-              <span className="text-xs mt-1 block">Google Pay</span>
+              <img src={gpayLogo} alt="Google Pay" className="w-8 p-1 md:w-10 h-8 md:h-10 object-contain" />
             </a>
 
             {/* PhonePe Button */}
             <a
-              href="phonepe://"
-              className="payment-app-button"
+              href="phonepe://search?query=9692544587@ibl"
+              className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
             >
-              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
-                <img src={phonePeLogo} alt="PhonePe" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
-              </div>
-              <span className="text-xs mt-1 block">PhonePe</span>
+              <img src={phonePeLogo} alt="PhonePe" />
             </a>
 
             {/* Paytm Button */}
             <a
-              href="paytmmp://"
-              className="payment-app-button"
+              href="paytmmp://upi/pay?pa=9692544587@ibl"
+              className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
             >
-              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
-                <img src={paytmLogo} alt="Paytm" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
-              </div>
-              <span className="text-xs mt-1 block">Paytm</span>
+              <img src={paytmLogo} alt="Paytm" />
             </a>
+
+
           </div>
         </div>
-        
+
         {/* Small Note */}
         <p className="text-gray-500 text-xs mt-6">
           Copy the UPI ID and paste it in your preferred payment app to complete your donation.

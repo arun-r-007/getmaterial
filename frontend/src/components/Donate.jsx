@@ -7,7 +7,6 @@ import { FiCheck, FiCopy } from "react-icons/fi"; // Import icons for copy anima
 
 const Donate = () => {
   const upiID = "9692544587@ibl";
-  const payeeName = "GetMaterial";
   const [copied, setCopied] = useState(false);
 
   const copyUPI = () => {
@@ -18,10 +17,10 @@ const Donate = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen mt-14 md:p-10 p-5 w-full">
-      <div className="bg-white w-full shadow-lg rounded-2xl p-8 max-w-md text-center">
+      <div className="bg-white w-full shadow-lg rounded-2xl p-6 md:p-8 max-w-md text-center">
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-gray-800">Support Our Mission</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">Support Our Mission</h1>
+        <p className="text-sm md:text-base text-gray-600 mt-2">
           Our <span className="text-amber-600 font-semibold">database costs</span> are increasing, and we need your{" "}
           <span className="text-green-600 font-semibold">support</span> to keep our services{" "}
           <span className="text-green-600 font-semibold">free</span> forever.
@@ -32,58 +31,76 @@ const Donate = () => {
           <img
             src={qrImage}
             alt="Donate QR Code"
-            className="mx-auto w-48 border p-2 rounded-lg shadow-md"
+            className="mx-auto w-36 md:w-48 border p-2 rounded-lg shadow-md"
           />
         </div>
 
         {/* OR Separator */}
-        <p className="text-gray-500 text-sm mt-4">OR</p>
+        <div className="flex items-center justify-center my-4">
+          <div className="border-t border-gray-300 flex-grow"></div>
+          <span className="mx-4 text-gray-500 text-sm">OR</span>
+          <div className="border-t border-gray-300 flex-grow"></div>
+        </div>
 
-        {/* Google Pay Button - Takes Full Width */}
-        <a
-          href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
-          className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-3xl shadow-md p-3 transition duration-300 mt-4"
-        >
-          <img src={gpayLogo} alt="Google Pay" className="w-1/2" />
-        </a>
-
-        {/* Payment Buttons Row */}
-        <div className="flex justify-between items-center md:gap-5 gap-2 mt-8">
-          {/* UPI ID Copy Section */}
-          <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg shadow-md flex-1">
-            <span className="md:text-lg text-xs font-semibold">{upiID}</span>
-            <button
-              onClick={copyUPI}
-              className="bg-blue-500 text-xs hover:bg-blue-600 text-white px-3 py-1 rounded-md flex items-center gap-1"
+        {/* UPI ID Copy Section */}
+        <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg shadow-md mt-4">
+          <span className="text-xs md:text-base font-semibold flex-1 text-left pl-2">{upiID}</span>
+          <button
+            onClick={copyUPI}
+            className="bg-blue-500 text-xs hover:bg-blue-600 text-white px-3 py-1 rounded-md flex items-center gap-1"
+          >
+            {copied ? <FiCheck className="text-white" /> : <FiCopy className="text-white" />}
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+        
+        {/* Payment App Icons */}
+        <div className="mt-6">
+          <p className="text-sm text-gray-700 mb-3">Open your preferred payment app:</p>
+          <div className="flex justify-center items-center gap-4 md:gap-8">
+            {/* Google Pay Button */}
+            <a
+              href="gpay://"
+              className="payment-app-button"
             >
-              {copied ? <FiCheck className="text-white" /> : <FiCopy className="text-white" />}
-              {/* {copied ? "Copied!" : "Copy"} */}
-            </button>
+              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
+                <img src={gpayLogo} alt="Google Pay" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
+              </div>
+              <span className="text-xs mt-1 block">Google Pay</span>
+            </a>
+
+            {/* PhonePe Button */}
+            <a
+              href="phonepe://"
+              className="payment-app-button"
+            >
+              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
+                <img src={phonePeLogo} alt="PhonePe" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
+              </div>
+              <span className="text-xs mt-1 block">PhonePe</span>
+            </a>
+
+            {/* Paytm Button */}
+            <a
+              href="paytmmp://"
+              className="payment-app-button"
+            >
+              <div className="bg-white rounded-full p-2 md:p-3 shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
+                <img src={paytmLogo} alt="Paytm" className="w-8 md:w-10 h-8 md:h-10 object-contain" />
+              </div>
+              <span className="text-xs mt-1 block">Paytm</span>
+            </a>
           </div>
-
-          {/* PhonePe Button */}
-          <a
-            href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
-            className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
-          >
-            <img src={phonePeLogo} alt="PhonePe"/>
-          </a>
-
-          {/* Paytm Button */}
-          <a
-            href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
-            className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
-          >
-            <img src={paytmLogo} alt="Paytm" />
-          </a>
         </div>
         
         {/* Small Note */}
-        <p className="text-gray-500 text-xs mt-4">For PhonePe and Paytm, copy UPI ID and paste into the app.</p>
+        <p className="text-gray-500 text-xs mt-6">
+          Copy the UPI ID and paste it in your preferred payment app to complete your donation.
+        </p>
       </div>
 
       {/* Thank You Message */}
-      <p className="text-gray-500 text-sm text-center mt-10">
+      <p className="text-gray-500 text-sm text-center mt-8 mb-4">
         Every contribution helps us grow. Thank you for your support! ❤️
       </p>
     </div>

@@ -7,6 +7,7 @@ import { FiCheck, FiCopy } from "react-icons/fi"; // Import icons for copy anima
 
 const Donate = () => {
   const upiID = "9692544587@ibl";
+  const payeeName = "GetMaterial";
   const [copied, setCopied] = useState(false);
 
   const copyUPI = () => {
@@ -40,7 +41,7 @@ const Donate = () => {
 
         {/* Google Pay Button - Takes Full Width */}
         <a
-          href="tez://upi/pay?pa=9692544587@ibl"
+          href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
           className="w-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-3xl shadow-md p-3 transition duration-300 mt-4"
         >
           <img src={gpayLogo} alt="Google Pay" className="w-1/2" />
@@ -62,7 +63,7 @@ const Donate = () => {
 
           {/* PhonePe Button */}
           <a
-            href="phonepe://search?query=9692544587@ibl"
+            href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
             className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
           >
             <img src={phonePeLogo} alt="PhonePe"/>
@@ -70,7 +71,7 @@ const Donate = () => {
 
           {/* Paytm Button */}
           <a
-            href="paytmmp://upi/pay?pa=9692544587@ibl"
+            href={`upi://pay?pa=${upiID}&pn=${encodeURIComponent(payeeName)}&cu=INR`}
             className="w-10 rounded-full flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 shadow-md transition duration-300"
           >
             <img src={paytmLogo} alt="Paytm" />

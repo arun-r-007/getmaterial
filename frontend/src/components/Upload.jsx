@@ -463,7 +463,7 @@ function Upload() {
               required
             >
               <option value="">Select Module</option>
-              {["Module: 1", "Module: 2", "Module: 3", "Module: 4", "Module: 5","All modules","Book", "assignments", "questions", "others"].map(mod => (
+              {["Module: 1", "Module: 2", "Module: 3", "Module: 4", "Module: 5", "assignment 1","assignment 2","All modules","Module: 1,2","Module: 2,3","Module: 3,4","Module: 4,5","Book", "questions", "others"].map(mod => (
                 <option key={mod} value={mod}>{mod}</option>
               ))}
             </select>

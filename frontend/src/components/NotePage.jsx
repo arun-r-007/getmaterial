@@ -329,8 +329,6 @@ function NotePage() {
           <div className="">
             <a
               href={decodedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="bg-yellow-100 text-black border border-black md:px-4 md:py-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
             >
               <Expand size={20} className="size-4 md:size-auto" />

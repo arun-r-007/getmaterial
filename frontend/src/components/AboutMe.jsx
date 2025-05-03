@@ -81,7 +81,7 @@ export default function About() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                                 src={ownerPhoto}
-                                alt="Profile"
+                                alt="Talagana Rajesh"
                                 className="w-full h-full object-cover"
                             />
                         </div>

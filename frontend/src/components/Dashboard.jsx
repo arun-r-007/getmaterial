@@ -20,14 +20,22 @@ import { HandHeart, X } from "lucide-react";
 
 import whatsapplogo from '../assets/whatsapp-logo.png'
 
+const donators = [
+  { name: "Aniket Singh", amount: 25 },
+  {name :"Bidya", amount: 30},
+  { name: "Saurav SD", amount: 20 },
+  { name: "Dipti", amount: 10 },
+  {name:"Anurag", amount: 5},  
+  { name: "Rajib", amount: 20 },
 
+]
 
 const TopContributor = ({ topContributor }) => {
   const contributors = topContributor || [] // Fallback to an empty array
 
 
 
-  const texts = contributors.map((contributor) => `${contributor.name}-${contributor.noteCount}`)
+  const texts = contributors.map((contributor) => `${contributor.name}-${contributor.amount}₹`)
 
   return (
     <div className="w-full">
@@ -375,8 +383,7 @@ function Dashboard() {
       </button>
 
       <div className="flex justify-center items-center flex-col">
-        <p className="text-xs font-semibold ">Top Contributers</p>
-        <TopContributor topContributor={topContributor || []} />
+        <TopContributor topContributor={donators || []} />
       </div>
 
       <Link to="/donate">

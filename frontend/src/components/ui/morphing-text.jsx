@@ -1,130 +1,67 @@
-"use client";;
-import { useCallback, useEffect, useRef } from "react";
+"use client";
 
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-const morphTime = 1.5;
-const cooldownTime = 0.5;
-
-const useMorphingText = (texts) => {
-  const textIndexRef = useRef(0);
-  const morphRef = useRef(0);
-  const cooldownRef = useRef(0);
-  const timeRef = useRef(new Date());
-
-  const text1Ref = useRef(null);
-  const text2Ref = useRef(null);
-
-  const setStyles = useCallback((fraction) => {
-    const [current1, current2] = [text1Ref.current, text2Ref.current];
-    if (!current1 || !current2) return;
-
-    current2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
-    current2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
-
-    const invertedFraction = 1 - fraction;
-    current1.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`;
-    current1.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`;
-
-    current1.textContent = texts[textIndexRef.current % texts.length];
-    current2.textContent = texts[(textIndexRef.current + 1) % texts.length];
-  }, [texts]);
-
-  const doMorph = useCallback(() => {
-    morphRef.current -= cooldownRef.current;
-    cooldownRef.current = 0;
-
-    let fraction = morphRef.current / morphTime;
-
-    if (fraction > 1) {
-      cooldownRef.current = cooldownTime;
-      fraction = 1;
-    }
-
-    setStyles(fraction);
-
-    if (fraction === 1) {
-      textIndexRef.current++;
-    }
-  }, [setStyles]);
-
-  const doCooldown = useCallback(() => {
-    morphRef.current = 0;
-    const [current1, current2] = [text1Ref.current, text2Ref.current];
-    if (current1 && current2) {
-      current2.style.filter = "none";
-      current2.style.opacity = "100%";
-      current1.style.filter = "none";
-      current1.style.opacity = "0%";
-    }
-  }, []);
+export const MorphingText = ({ texts = [], className, speed = 0.5 }) => {
+  const containerRef = useRef(null);
+  const scrollRef = useRef(null);
+  const animationRef = useRef(null);
+  const combinedText = texts.join("     •    ");
 
   useEffect(() => {
-    let animationFrameId;
-
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-
-      const newTime = new Date();
-      const dt = (newTime.getTime() - timeRef.current.getTime()) / 1000;
-      timeRef.current = newTime;
-
-      cooldownRef.current -= dt;
-
-      if (cooldownRef.current <= 0) doMorph();
-      else doCooldown();
+    if (!scrollRef.current) return;
+    
+    // Clone the content for seamless looping
+    const scrollWidth = scrollRef.current.scrollWidth / 2;
+    
+    const scroll = () => {
+      if (!scrollRef.current) return;
+      
+      // Increment scroll position with reduced speed
+      // Using a lower value than 1 to slow down the scrolling
+      scrollRef.current.scrollLeft += speed;
+      
+      // Reset position when we've scrolled through the first clone
+      // This creates the illusion of infinite scrolling
+      if (scrollRef.current.scrollLeft >= scrollWidth) {
+        scrollRef.current.scrollLeft = 0;
+      }
+      
+      animationRef.current = requestAnimationFrame(scroll);
     };
-
-    animate();
+    
+    animationRef.current = requestAnimationFrame(scroll);
+    
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [doMorph, doCooldown]);
+  }, [speed]);
 
-  return { text1Ref, text2Ref };
+  return (
+    <div 
+      ref={containerRef}
+      className={cn("relative w-full overflow-hidden h-8", className)}
+    >
+      {/* Gradient edges */}
+      <div className="pointer-events-none absolute left-0 top-0 h-full w-10 z-10 bg-gradient-to-r from-amber-50 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-10 z-10 bg-gradient-to-l from-amber-50 via-transparent to-transparent" />
+
+      {/* Scrolling text wrapper */}
+      <div
+        ref={scrollRef}
+        className="flex items-center text-zinc-500 whitespace-nowrap text-lg md:text-xl font-bold tracking-wide overflow-hidden"
+      >
+        {/* Duplicate text content for seamless loop */}
+        <div className="flex min-w-max">
+          <span className="mx-2">{combinedText}</span>
+          <span className="mx-2">{combinedText}</span>
+          <span className="mx-2">{combinedText}</span>
+          <span className="mx-2">{combinedText}</span>
+        </div>
+      </div>
+    </div>
+  );
 };
-
-const Texts = ({ texts }) => {
-  const { text1Ref, text2Ref } = useMorphingText(texts);
-  return (<>
-    <span
-      className="absolute inset-x-0 top-0 m-auto inline-block w-full"
-      ref={text1Ref} />
-    <span
-      className="absolute inset-x-0 top-0 m-auto inline-block w-full"
-      ref={text2Ref} />
-  </>);
-};
-
-const SvgFilters = () => (
-  <svg
-    id="filters"
-    className="fixed h-0 w-0"
-    preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <filter id="threshold">
-        <feColorMatrix
-          in="SourceGraphic"
-          type="matrix"
-          values="1 0 0 0 0
-                  0 1 0 0 0
-                  0 0 1 0 0
-                  0 0 0 255 -140" />
-      </filter>
-    </defs>
-  </svg>
-);
-
-export const MorphingText = ({
-  texts,
-  className,
-}) => (
-  <div
-    className={cn(
-      "relative mx-auto h-12 w-full max-w-screen-md text-center font-sans text-[16pt] font-bold leading-none [filter:url(#threshold)_blur(0.6px)] lg:text-[1.5rem]",
-      className
-    )}>
-    <Texts texts={texts} />
-    <SvgFilters />
-  </div>
-);

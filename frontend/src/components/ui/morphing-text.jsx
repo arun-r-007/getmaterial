@@ -52,7 +52,7 @@ export const MorphingText = ({ texts = [], className, speed = 0.5 }) => {
       {/* Scrolling text wrapper */}
       <div
         ref={scrollRef}
-        className="flex items-center text-zinc-500 whitespace-nowrap text-lg md:text-xl font-bold tracking-wide overflow-hidden"
+        className="flex items-center text-zinc-500 whitespace-nowrap text-xs md:text-sm font-bold tracking-wide overflow-hidden"
       >
         {/* Duplicate text content for seamless loop */}
         <div className="flex min-w-max">

@@ -42,7 +42,7 @@ const TopContributor = ({ topContributor }) => {
       {texts.length > 0 ? (
         <MorphingText texts={texts} />
       ) : (
-        <p className="text-black font-bold text-center h-14">Loading..</p>
+        <p className="text-black font-bold text-center md:text-sm h-14">Loading..</p>
       )}
     </div>
   )

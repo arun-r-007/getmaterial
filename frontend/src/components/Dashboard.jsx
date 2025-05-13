@@ -21,12 +21,17 @@ import { HandHeart, X } from "lucide-react";
 import whatsapplogo from '../assets/whatsapp-logo.png'
 
 const donators = [
+  {name:"Ashumal Pradhan", amount: 40},
   { name: "Aniket Singh", amount: 25 },
   {name :"Bidya", amount: 30},
   { name: "Saurav SD", amount: 20 },
   { name: "Dipti", amount: 10 },
   {name:"Anurag", amount: 5},  
   { name: "Rajib", amount: 20 },
+  {name:"Aditya Das",amount:1.5},
+  {name:"Tanuj",amount: 1.96},
+  {name:"Praveen",amount: 1.34},
+
 
 ]
 

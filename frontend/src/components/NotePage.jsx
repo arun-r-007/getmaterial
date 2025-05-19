@@ -302,7 +302,7 @@ function NotePage() {
           <ArrowLeft size={16} className="size-4" />
         </button>
 
-        <div className="flex justify-start max-w-36 bg-green-300 items-center">
+        <div className="flex justify-start max-w-36 items-center">
           <h1 className=" text-xs md:font-semibold">{noteSubject} </h1>
         </div>
 
@@ -337,7 +337,7 @@ function NotePage() {
 
       <div className="flex flex-col md:flex-row justify-between items-start gap-1">
         {/* Notes Preview - Takes 2/3 width on larger screens */}
-        <div className="w-full bg-red-200 md:w-2/3  ">
+        <div className="w-full md:w-2/3  ">
           {isLoading && (
             <div className="h-[calc(100vh-7rem)] flex justify-center items-center">
               <div className="loader"></div>

@@ -292,53 +292,49 @@ function NotePage() {
 
   return (
     <div className="container mx-auto md:mt-24 mt-16">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 rounded-lg shadow-sm">
+
+      <div className="flex md:hidden justify-between items-center p-4 bg-amber-50 z-50 rounded-lg shadow-sm">
 
         <button
           onClick={() => navigate("/")}
-          className="bg-yellow-100 mr-2 text-black border border-black px-4 py-2 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
+          className="bg-yellow-100 mr-2 text-black border border-black px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center"
         >
-          <ArrowLeft className="size-3 md:size-auto" />
+          <ArrowLeft size={16} className="size-4" />
         </button>
 
         <div className="flex justify-start md:gap-2 items-center">
-          <h1 className="md:text-xl text-xs md:font-semibold">{noteSubject} </h1>
-          <h1 className="md:text-xl hidden md:block text-xs md:font-semibold">| {noteModule} |</h1>
-          <h1 className="md:text-xl hidden md:block text-xs md:font-semibold">{noteContributorName}</h1>
+          <h1 className="md:text-sm text-xs md:font-semibold">{noteSubject} </h1>
+          <h1 className="md:text-sm  md:block text-xs md:font-semibold">| {noteModule}</h1>
         </div>
 
-        <div className="flex items-center md:gap-3 gap-2">
+        <div className="flex items-center md:gap-2 gap-2">
 
           <button
             onClick={handleShare}
           >
-            <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 md:size-10 size-6" />
+            <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 md:size-6 size-6" />
           </button>
 
 
           <button
             onClick={handleDownload}
             disabled={isDownloading || urlFetching}
-            className=" border downloadButton border-black rounded transition-all text-black md:px-4 md:py-2 px-2 py-1  duration-300 flex items-center gap-2"
+            className=" border downloadButton border-black rounded transition-all text-black md:px-2 px-2 py-1  duration-300 flex items-center gap-2"
           >
-            {isDownloading || urlFetching ? <div className="loader2 transition-all duration-300"></div> : <Download size={20} className="size-4 md:size-auto" />}
-            {isDownloading || urlFetching ? <h1 className="hidden md:flex">processing..</h1> : <h1 className="hidden md:flex">Download</h1>}
+            {isDownloading || urlFetching ? <div className="loader2 transition-all my-0.5 duration-300"></div> : <Download size={16} className="size-4 md:size-auto" />}
           </button>
 
           <div className="">
             <a
               href={decodedUrl}
-              className="bg-yellow-100 text-black border border-black md:px-4 md:py-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
+              className="bg-yellow-100 text-black border border-black md:px-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
             >
-              <Expand size={20} className="size-4 md:size-auto" />
-              <h1 className="hidden md:flex">Full Preview</h1>
+              <Expand size={16} className="size-4 md:size-auto" />
             </a>
           </div>
 
         </div>
       </div>
-
 
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         {/* Notes Preview - Takes 2/3 width on larger screens */}
@@ -362,6 +358,51 @@ function NotePage() {
 
         {/* Comment Section - Takes 1/3 width on large screens */}
         <div className="w-full md:w-1/3 flex flex-col border-l px-4 relative h-[calc(100vh-11rem)] ">
+
+          {/* Header */}
+          <div className="md:flex hidden justify-between items-center p-4 bg-amber-50 z-50 rounded-lg shadow-sm">
+
+            <button
+              onClick={() => navigate("/")}
+              className="bg-yellow-100 mr-2 text-black border border-black px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center"
+            >
+              <ArrowLeft className="size-3 md:size-4" />
+            </button>
+
+            <div className="flex justify-start md:gap-2 items-center">
+              <h1 className="md:text-sm text-xs md:font-semibold">{noteSubject} </h1>
+              <h1 className="md:text-sm hidden md:block text-xs md:font-semibold">| {noteModule}</h1>
+            </div>
+
+            <div className="flex items-center md:gap-2 gap-2">
+
+              <button
+                onClick={handleShare}
+              >
+                <img src={whatsapplogo} alt="share" className="rounded-md hover:border-2 border-gray-300 md:size-6 size-6" />
+              </button>
+
+
+              <button
+                onClick={handleDownload}
+                disabled={isDownloading || urlFetching}
+                className=" border downloadButton border-black rounded transition-all text-black md:px-2 px-2 py-1  duration-300 flex items-center gap-2"
+              >
+                {isDownloading || urlFetching ? <div className="loader2 transition-all my-0.5 duration-300"></div> : <Download size={16} className="size-4 md:size-auto" />}
+              </button>
+
+              <div className="">
+                <a
+                  href={decodedUrl}
+                  className="bg-yellow-100 text-black border border-black md:px-2 px-2 py-1 rounded hover:bg-yellow-200 transition-colors flex items-center gap-2"
+                >
+                  <Expand size={16} className="size-4 md:size-auto" />
+                </a>
+              </div>
+
+            </div>
+          </div>
+
           {/* Comments List - Scrollable */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-16">
             {comments.length === 0 ? (
@@ -385,7 +426,7 @@ function NotePage() {
           </div>
 
           {/* Sticky Comment Input Bar */}
-          <div className="absolute bottom-0  left-0 w-full px-4">
+          <div className="absolute md:-bottom-16 bottom-0  left-0 w-full px-4">
             {currentUser ? (
               <div className="flex items-center">
                 <textarea

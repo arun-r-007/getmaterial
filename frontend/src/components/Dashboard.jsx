@@ -30,8 +30,9 @@ const donators = [
   { name: "Rajib", amount: 20 },
   {name:"Aditya Das",amount:1.5},
   {name:"Tanuj",amount: 1.96},
-  {name:"Praveen",amount: 1.34},
-
+  {name:"Prabin",amount: 1.34},
+  {name:"Saumya Singh",amount:10},
+  {name:"Bidit raj",amount:1}
 
 ]
 

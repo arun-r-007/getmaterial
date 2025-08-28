@@ -57,7 +57,7 @@ const Donate = () => {
 
         {/* Payment App Icons */}
         <div className="mt-6">
-          <p className="text-sm text-gray-700 mb-3">Open your preferred payment app:</p>
+          <p className="text-sm text-gray-700 mb-3">Copy above ID and Open your payment app:</p>
           <div className="flex justify-center items-center gap-4 md:gap-8">
 
             {/* Google Pay Button */}

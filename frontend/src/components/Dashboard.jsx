@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useContext, useRef } from "react"
-import { getNotes } from "../firebase"
+import { getInitialNotes, getNotesWithPagination, searchNotes, getFilterOptions, getTotalNotesCount, getAllNotesWithFilters } from "../firebase"
 import CustomSelect from "./CustomSelect"
 import { db, auth } from "../firebase"
 import { ArrowUp, Trash, Bookmark } from "lucide-react"
@@ -14,6 +14,8 @@ import { doc, collection, getDocs, setDoc, deleteDoc } from "firebase/firestore"
 import NotesContext from "./context/NotesContext"
 import SavedNotesContext from "./context/SavedNotesContext"
 
+import NotesLoader from "./NotesLoader"
+
 import { Link } from "react-router-dom"
 
 import { HandHeart, X } from "lucide-react";
@@ -21,19 +23,19 @@ import { HandHeart, X } from "lucide-react";
 import whatsapplogo from '../assets/whatsapp-logo.png'
 
 const donators = [
-  {name :"Sachin Barik", amount: 51},
-  {name:"Ashumal Pradhan", amount: 40},
+  { name: "Sachin Barik", amount: 51 },
+  { name: "Ashumal Pradhan", amount: 40 },
   { name: "Aniket Singh", amount: 25 },
   { name: "Saurav SD", amount: 20 },
-  {name:"P S Ganesan",amount:100},
+  { name: "P S Ganesan", amount: 100 },
   { name: "Dipti", amount: 10 },
-  {name:"Anurag", amount: 5},  
+  { name: "Anurag", amount: 5 },
   { name: "Rajib", amount: 20 },
-  {name:"Aditya Das",amount:1.5},
-  {name:"Tanuj",amount: 10},
-  {name:"Prabin",amount: 13},
-  {name:"Saumya Singh",amount:10},
-  {name:"Bidit raj",amount:1}
+  { name: "Aditya Das", amount: 1.5 },
+  { name: "Tanuj", amount: 10 },
+  { name: "Prabin", amount: 13 },
+  { name: "Saumya Singh", amount: 10 },
+  { name: "Bidit raj", amount: 1 }
 ]
 
 const TopContributor = ({ topContributor }) => {
@@ -90,30 +92,37 @@ function findTopContributor(notes) {
 }
 
 function Dashboard() {
-  const { notes, setNotes } = useContext(NotesContext)
+  const {
+    notes,
+    setNotes,
+    loading,
+    setLoading,
+    loadingMore,
+    setLoadingMore,
+    hasMore,
+    setHasMore,
+    lastDocSnapshot,
+    setLastDocSnapshot,
+    currentFilters,
+    setCurrentFilters,
+    totalNotesCount,
+    setTotalNotesCount,
+    filterOptions,
+    setFilterOptions
+  } = useContext(NotesContext);
+
   const { savedNotes, setSavedNotes, setIsSavedNotesLoading } = useContext(SavedNotesContext);
 
-  const [filteredNotes, setFilteredNotes] = useState([])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   // Filter state
   const [titleFilter, setTitleFilter] = useState("")
   const [semesterFilter, setSemesterFilter] = useState("")
   const [subjectFilter, setSubjectFilter] = useState("")
-  const [nameFilter, setNameFilter] = useState("") // Add nameFilter state
+  const [nameFilter, setNameFilter] = useState("")
   const [moduleFilter, setModuleFilter] = useState("")
 
-  // Unique semesters and subjects for dropdowns
-  const [uniqueSemesters, setUniqueSemesters] = useState([])
-  const [uniqueSubjects, setUniqueSubjects] = useState([])
-  const [uniqueModules, setUniqueModules] = useState([])
-
-  // Total notes count
-  const [totalNotes, setTotalNotes] = useState(0)
-
   // Admin Email
-
   const adminEmail = import.meta.env.VITE_ADMIN_MAIL;
   const [admin, setAdmin] = useState(false)
 
@@ -125,86 +134,162 @@ function Dashboard() {
 
   const [savingNotes, setSavingNotes] = useState(false)
 
+  // Helper function to check if any filters are applied
+  const hasActiveFilters = () => {
+    return titleFilter.trim() !== '' || semesterFilter || subjectFilter || moduleFilter || nameFilter;
+  };
 
 
+
+  // Initial load effect
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchInitialData = async () => {
       try {
-        setLoading(true)
-        const fetchedNotes = await getNotes()
+        setLoading(true);
+        setError(null);
 
-        const user = auth.currentUser
+        // Fetch initial notes (first 9)
+        const initialNotesResult = await getInitialNotes();
+        setNotes(initialNotesResult.notes);
+        setLastDocSnapshot(initialNotesResult.lastDocSnapshot);
+        setHasMore(initialNotesResult.hasMore);
 
-        if (user && user.email == adminEmail) {
-          setAdmin(true)
+        // Fetch filter options
+        const filterOptionsResult = await getFilterOptions();
+        setFilterOptions(filterOptionsResult);
+
+        // Fetch total notes count
+        const totalCount = await getTotalNotesCount();
+        setTotalNotesCount(totalCount);
+
+        // Check admin status
+        const user = auth.currentUser;
+        if (user && user.email === adminEmail) {
+          setAdmin(true);
         }
 
-        // Normalize subject names
-        const normalizedNotes = fetchedNotes.map((note) => ({
-          ...note,
-          subject: note.subject.trim().toUpperCase(),
-        }))
+        // Find top contributor from initial notes
+        const contributorInfo = findTopContributor(initialNotesResult.notes);
+        setTopContributor(contributorInfo);
 
-        setNotes(normalizedNotes)
-
-        // Extract unique semesters and subjects
-        const semesters = [...new Set(normalizedNotes.map((note) => note.semester))]
-        const subjects = [...new Set(normalizedNotes.map((note) => note.subject))]
-        const modules = [...new Set(normalizedNotes.map((note) => note.module))]
-
-        setUniqueSemesters(semesters.sort())
-        setUniqueSubjects(subjects.sort())
-        setUniqueModules(modules.sort())
-
-        // Find top contributor
-        const contributorInfo = findTopContributor(fetchedNotes)
-
-        setTopContributor(contributorInfo)
-
-        setTotalNotes(fetchedNotes.length)
-
-        setError(null)
       } catch (error) {
-        console.error("Error fetching notes:", error)
-        setError(error.message)
+        console.error("Error fetching initial data:", error);
+        setError(error.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  // Load more notes function (only for latest notes without filters)
+  const loadMoreNotes = async () => {
+    if (loadingMore || !hasMore) return;
+
+    try {
+      setLoadingMore(true);
+      
+      // Only paginate when no filters are applied
+      const result = await getNotesWithPagination(9, lastDocSnapshot, {});
+      
+      setNotes(prevNotes => [...prevNotes, ...result.notes]);
+      setLastDocSnapshot(result.lastDocSnapshot);
+      setHasMore(result.hasMore);
+
+    } catch (error) {
+      console.error("Error loading more notes:", error);
+      setError(error.message);
+    } finally {
+      setLoadingMore(false);
     }
+  };  // Apply filters function - gets ALL filtered results (no pagination)
+  const applyFilters = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    fetchNotes()
-  }, [setNotes])
+      // Check if any filters are applied
+      const hasFilters = titleFilter.trim() !== '' || semesterFilter || subjectFilter || moduleFilter || nameFilter;
 
-  // Filter effect
+      if (hasFilters) {
+        // Get ALL notes with filters applied (no pagination)
+        const filters = {
+          semester: semesterFilter,
+          subject: subjectFilter,
+          module: moduleFilter,
+          contributorName: nameFilter
+        };
+        const result = await getAllNotesWithFilters(filters, titleFilter);
+        
+        setNotes(result.notes);
+        setLastDocSnapshot(null);
+        setHasMore(false); // No pagination for filtered results
+      } else {
+        // Reset to initial state - first 9 notes with pagination
+        const result = await getInitialNotes();
+        setNotes(result.notes);
+        setLastDocSnapshot(result.lastDocSnapshot);
+        setHasMore(result.hasMore);
+      }
+
+      setCurrentFilters({
+        titleFilter,
+        semesterFilter,
+        subjectFilter,
+        moduleFilter,
+        nameFilter
+      });
+
+    } catch (error) {
+      console.error("Error applying filters:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced search effect
   useEffect(() => {
-    const filtered = notes.filter((note) =>
-      (
-        (note?.subject?.toLowerCase() || "").includes((titleFilter || "").toLowerCase()) ||
-        (note?.contributorName?.toLowerCase() || "").includes((titleFilter || "").toLowerCase())) &&
-      (semesterFilter === "" || note?.semester === semesterFilter) &&
-      (subjectFilter === "" || note?.subject === subjectFilter) &&
-      (moduleFilter === "" || note?.module === moduleFilter) &&
-      (nameFilter === "" || note?.contributorName === nameFilter)
-    );
+    const timeoutId = setTimeout(() => {
+      if (titleFilter.trim() !== '' || semesterFilter || subjectFilter || moduleFilter || nameFilter) {
+        applyFilters();
+      }
+    }, 500); // 500ms debounce
 
-    setFilteredNotes(filtered);
-  }, [notes, titleFilter, semesterFilter, subjectFilter, nameFilter, moduleFilter]);
+    return () => clearTimeout(timeoutId);
+  }, [titleFilter, semesterFilter, subjectFilter, moduleFilter, nameFilter]);
 
   // Reset filters
-  const resetFilters = () => {
-    setTitleFilter("")
-    setSemesterFilter("")
-    setSubjectFilter("")
-    setNameFilter("") // Reset nameFilter as well
-    setModuleFilter("")
-  }
-
-  const handleDelete = async (id) => {
+  const resetFilters = async () => {
+    setTitleFilter("");
+    setSemesterFilter("");
+    setSubjectFilter("");
+    setNameFilter("");
+    setModuleFilter("");
+    
+    try {
+      setLoading(true);
+      // Reset to initial state - first 9 notes with pagination
+      const result = await getInitialNotes();
+      setNotes(result.notes);
+      setLastDocSnapshot(result.lastDocSnapshot);
+      setHasMore(result.hasMore);
+      setCurrentFilters({});
+    } catch (error) {
+      console.error("Error resetting filters:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this note?")) {
       try {
         const noteRef = doc(db, "notes", id) // Replace "notes" with your collection name
         await deleteDoc(noteRef)
         setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id)) // Remove deleted note from state
+        // Update total count
+        setTotalNotesCount(prevCount => prevCount - 1);
         console.log(`Note with ID: ${id} has been deleted successfully.`)
       } catch (error) {
         console.error("Error deleting note:", error)
@@ -402,7 +487,7 @@ function Dashboard() {
 
       {/* Updated rendering of top contributor */}
       <h1 className=" text-xs text-gray-600 mb-1 ml-1 font-semibold ">
-        Notes - <span>{totalNotes}</span>
+        Notes - <span>{totalNotesCount}</span>
       </h1>
 
       {/* Filter Panel */}
@@ -433,9 +518,16 @@ function Dashboard() {
               Subject
             </label> */}
             <CustomSelect
-              options={uniqueSubjects}
-              placeholder={subjectFilter || "All Subjects"}
-              onChange={(selectedOption) => setSubjectFilter(selectedOption)}
+              options={["Select Subject", ...filterOptions.subjects]}
+              placeholder={subjectFilter || "Select Subject"}
+              onChange={(selectedOption) => {
+                if (selectedOption === "Select Subject") {
+                  setSubjectFilter(""); // Clear filter when "Select Subject" is chosen
+                } else {
+                  setSubjectFilter(selectedOption);
+                }
+                setTitleFilter(""); // Clear search filter when subject filter is applied
+              }}
             />
           </div>
 
@@ -445,9 +537,16 @@ function Dashboard() {
               Module
             </label> */}
             <CustomSelect
-              options={uniqueModules}
-              placeholder={moduleFilter || "All Modules"}
-              onChange={(selectedOption) => setModuleFilter(selectedOption)}
+              options={["Select Module", ...filterOptions.modules]}
+              placeholder={moduleFilter || "Select Module"}
+              onChange={(selectedOption) => {
+                if (selectedOption === "Select Module") {
+                  setModuleFilter(""); // Clear filter when "Select Module" is chosen
+                } else {
+                  setModuleFilter(selectedOption);
+                }
+                setTitleFilter(""); // Clear search filter when module filter is applied
+              }}
             />
           </div>
 
@@ -457,9 +556,16 @@ function Dashboard() {
               Semester
             </label> */}
             <CustomSelect
-              options={uniqueSemesters}
-              placeholder={semesterFilter || "All Semesters"}
-              onChange={(selectedOption) => setSemesterFilter(selectedOption)}
+              options={["Select Semester", ...filterOptions.semesters]}
+              placeholder={semesterFilter || "Select Semester"}
+              onChange={(selectedOption) => {
+                if (selectedOption === "Select Semester") {
+                  setSemesterFilter(""); // Clear filter when "Select Semester" is chosen
+                } else {
+                  setSemesterFilter(selectedOption);
+                }
+                setTitleFilter(""); // Clear search filter when semester filter is applied
+              }}
             />
           </div>
 
@@ -479,35 +585,11 @@ function Dashboard() {
 
 
       {/* Notes Grid */}
-
       {loading ? (
-        <div className="flex-row justify-center gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((card) => (
-            <div
-              key={card}
-              className="z-70 w-full bg-zinc-50 rounded-lg shadow-lg p-4 flex flex-row space-x-6 overflow-hidden"
-            >
-              {/* Left Section Skeletons */}
-              <div className="flex flex-col justify-center flex-grow">
-                <Skeleton height={30} width={200} className="mb-4" /> {/* Title */}
-                <Skeleton height={20} width={140} className="mb-4" /> {/* Subtitle */}
-                <Skeleton height={20} width={180} className="mb-4" /> {/* Subtitle */}
-                <div className="flex flex-row gap-2">
-                  <Skeleton height={40} width={100} className="mt-4" /> {/* Button */}
-                  <Skeleton height={40} width={40} className="mt-4" /> {/* likes */}
-                </div>
-              </div>
-
-              {/* Right Section Skeleton */}
-              <div className="flex-shrink-0">
-                <Skeleton height={200} width={150} className="rounded-lg" /> {/* Image Placeholder */}
-              </div>
-            </div>
-          ))}
-        </div>
+        <NotesLoader />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredNotes.map((note) => (
+          {notes.map((note) => (
             <div key={note.id} className="bg-white p-5 rounded-xl shadow-xl">
 
               <div className="flex flex-row justify-between">
@@ -520,6 +602,7 @@ function Dashboard() {
                           setSubjectFilter("")
                         } else {
                           setSubjectFilter(note.subject)
+                          setTitleFilter("") // Clear search filter when subject filter is applied
                         }
                       }}
                       className="group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
@@ -541,6 +624,7 @@ function Dashboard() {
                           setModuleFilter("")
                         } else {
                           setModuleFilter(note.module)
+                          setTitleFilter("") // Clear search filter when module filter is applied
                         }
                       }}
                       className="text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
@@ -562,6 +646,7 @@ function Dashboard() {
                           setSemesterFilter("")
                         } else {
                           setSemesterFilter(note.semester)
+                          setTitleFilter("") // Clear search filter when semester filter is applied
                         }
                       }}
                       className="text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
@@ -585,6 +670,7 @@ function Dashboard() {
                           setNameFilter("")
                         } else {
                           setNameFilter(note.contributorName)
+                          setTitleFilter("") // Clear search filter when contributor filter is applied
                         }
                       }}
                       className="text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
@@ -666,11 +752,58 @@ function Dashboard() {
           ))}
 
           {/* No results message */}
-          {filteredNotes.length === 0 && !loading && (
+          {notes.length === 0 && !loading && (
             <div className="col-span-full text-center text-gray-500 py-8">
-              No notes found ! Reset filters or Refresh page.
+              No notes found! Reset filters or try different search terms.
             </div>
           )}
+
+          {/* Load More Button - only show when no filters are applied */}
+          {hasMore && notes.length > 0 && !hasActiveFilters() && (
+            <div className="col-span-full flex justify-center py-8">
+              <button
+                onClick={loadMoreNotes}
+                disabled={loadingMore}
+                className="px-6 py-3 rounded-lg font-medium
+               bg-amber-300 text-black
+               hover:bg-amber-400 
+               disabled:bg-zinc-300 disabled:text-zinc-600
+               shadow-sm hover:shadow-md
+               transition-all duration-300 ease-in-out"
+              >
+                {loadingMore ? 'Loading More...' : 'Load More Notes'}
+              </button>
+            </div>
+
+          )}
+        </div>
+      )}
+
+      {/* Loading More Skeleton */}
+      {loadingMore && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          {[1, 2, 3].map((card) => (
+            <div
+              key={card}
+              className="z-70 w-full bg-zinc-50 rounded-lg shadow-lg p-4 flex flex-row space-x-6 overflow-hidden"
+            >
+              {/* Left Section Skeletons */}
+              <div className="flex flex-col justify-center flex-grow">
+                <Skeleton height={30} width={200} className="mb-4" />
+                <Skeleton height={20} width={140} className="mb-4" />
+                <Skeleton height={20} width={180} className="mb-4" />
+                <Skeleton height={20} width={160} className="mb-4" />
+                <div className="flex flex-row gap-2">
+                  <Skeleton height={40} width={100} className="mt-4" />
+                  <Skeleton height={40} width={40} className="mt-4" />
+                </div>
+              </div>
+              {/* Right Section Skeleton */}
+              <div className="flex-shrink-0">
+                <Skeleton height={200} width={150} className="rounded-lg" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

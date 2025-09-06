@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 // import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -257,6 +257,19 @@ function Upload() {
   const [selectedSubject, setSelectedSubject] = useState('');
   const [newSubject, setNewSubject] = useState('');
 
+  // Ref for the new subject input field
+  const newSubjectInputRef = useRef(null);
+
+  // Auto-focus the input when "Not mentioned" is selected
+  useEffect(() => {
+    if (selectedSubject === 'Not mentioned' && newSubjectInputRef.current) {
+      // Small delay to ensure the input is rendered
+      setTimeout(() => {
+        newSubjectInputRef.current.focus();
+      }, 100);
+    }
+  }, [selectedSubject]);
+
 
   const handleAddSubject = () => {
     if (newSubject && !subjects.includes(newSubject)) {
@@ -266,6 +279,14 @@ function Upload() {
     } else {
       setError('Subject already exists or is empty'); // Use state instead of alert
     }
+  };
+
+  // Function to get the actual subject name to submit
+  const getSubjectForSubmission = () => {
+    if (selectedSubject === 'Not mentioned') {
+      return newSubject.trim() || '';
+    }
+    return selectedSubject;
   };
 
 
@@ -278,6 +299,15 @@ function Upload() {
       setError('You must be authenticated to submit the form.');
       alert('Redirecting to login page...');
       navigate('/auth');
+      return;
+    }
+
+    // Get the actual subject to use for submission
+    const subjectToSubmit = getSubjectForSubmission();
+    
+    // Validate that we have a subject
+    if (!subjectToSubmit) {
+      setError('Please select a subject or enter a new subject name.');
       return;
     }
 
@@ -301,7 +331,7 @@ function Upload() {
       const noteData = {
         name: title,
         semester,
-        subject: selectedSubject,
+        subject: subjectToSubmit,
         contributorName,
         module,
         fileUrl: uploadedFileLink,
@@ -407,20 +437,17 @@ function Upload() {
 
           {/* Conditionally render the input field when 'Not mentioned' is selected */}
           {selectedSubject === 'Not mentioned' && (
-            <div className="mt-2 flex">
+            <div className="mt-2">
               <input
+                ref={newSubjectInputRef}
                 type="text"
                 value={newSubject}
                 onChange={(e) => setNewSubject(e.target.value)}
-                placeholder="Add new subject ..."
-                className="w-full p-2 border-2 border-green-500 rounded-l-lg focus:ring-1 focus:ring-green-500"
+                placeholder="Enter new subject name..."
+                className="w-full p-2 border-2 border-green-500 rounded-lg focus:ring-1 focus:ring-green-500"
+                required
               />
-              <button
-                onClick={handleAddSubject}
-                className="bg-green-500 text-white px-4 rounded-r-lg"
-              >
-                Add
-              </button>
+              
             </div>
           )}
         </div>

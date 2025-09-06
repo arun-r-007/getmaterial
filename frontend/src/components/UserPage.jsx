@@ -5,27 +5,33 @@ import { useNavigate } from "react-router-dom"
 import { auth, db } from "../firebase"
 import { signOut } from "firebase/auth"
 import { useAuthState } from "react-firebase-hooks/auth"
-import { doc, deleteDoc } from "firebase/firestore"
+import { doc, deleteDoc, collection, getDocs, query, where } from "firebase/firestore"
 
 import { User, Upload, Trash, LogOutIcon, Bookmark } from "lucide-react"
 import Skeleton from "react-loading-skeleton"
 import "react-loading-skeleton/dist/skeleton.css"
-import NotesContext from "./context/NotesContext"
 import SavedNotesContext from "./context/SavedNotesContext"
 
 export default function UserPage() {
   const navigate = useNavigate()
   const [user] = useAuthState(auth)
 
-  const { notes } = useContext(NotesContext);
-  const { savedNotes, isSavedNotesLoading } = useContext(SavedNotesContext);
+  const { savedNotes, setSavedNotes } = useContext(SavedNotesContext);
 
   const [userNotes, setUserNotes] = useState([])
   const [savedNotesList, setSavedNotesList] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("saves")
-
   const [savingNotes, setSavingNotes] = useState(false)
+  const [dataFetched, setDataFetched] = useState(false) // Flag to prevent refetching
+  const [error, setError] = useState(null) // Error state for better error handling
+
+  // Function to manually refresh data
+  const refreshData = async () => {
+    setDataFetched(false);
+    setError(null);
+    setLoading(true);
+  };
 
 
   const getPDFPreviewUrl = (fileId) => {
@@ -37,42 +43,112 @@ export default function UserPage() {
     return fileIdMatch ? fileIdMatch[1] : null
   }
 
+  // Fetch user's uploaded notes directly from database
+  const fetchUserUploadedNotes = async (userEmail) => {
+    try {
+      const notesCollection = collection(db, 'notes');
+      const userNotesQuery = query(notesCollection, where('metadata.createdBy', '==', userEmail));
+      const querySnapshot = await getDocs(userNotesQuery);
+      
+      const uploadedNotes = [];
+      querySnapshot.forEach((doc) => {
+        uploadedNotes.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      return uploadedNotes;
+    } catch (error) {
+      console.error("Error fetching user uploaded notes:", error);
+      return [];
+    }
+  };
+
+  // Fetch user's saved notes directly from database
+  const fetchUserSavedNotes = async (userId) => {
+    try {
+      // First, get the list of saved note IDs
+      const savedNotesRef = collection(db, "users", userId, "savedNotes");
+      const savedNotesSnapshot = await getDocs(savedNotesRef);
+      
+      const savedNoteIds = [];
+      const savedNotesMap = {};
+      savedNotesSnapshot.forEach((doc) => {
+        savedNoteIds.push(doc.id);
+        savedNotesMap[doc.id] = true;
+      });
+
+      // Update the saved notes context
+      setSavedNotes(savedNotesMap);
+
+      if (savedNoteIds.length === 0) {
+        return [];
+      }
+
+      // Then, fetch the actual note documents from the notes collection
+      const notesCollection = collection(db, 'notes');
+      const allNotesSnapshot = await getDocs(notesCollection);
+      
+      const savedNotesData = [];
+      allNotesSnapshot.forEach((doc) => {
+        if (savedNoteIds.includes(doc.id)) {
+          savedNotesData.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        }
+      });
+      
+      return savedNotesData;
+    } catch (error) {
+      console.error("Error fetching user saved notes:", error);
+      return [];
+    }
+  };
+
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchUserData = async () => {
-      if (!isMounted) return;
+      if (!isMounted || !user || dataFetched) return;
 
       try {
         setLoading(true);
+        setError(null);
 
-        // Filter user's uploaded notes
-        const uploadedNotes = notes.filter(
-          (note) => note.metadata.createdBy === user?.email
-        );
+        // Fetch both uploaded and saved notes concurrently
+        const [uploadedNotes, savedNotesData] = await Promise.all([
+          fetchUserUploadedNotes(user.email),
+          fetchUserSavedNotes(user.uid)
+        ]);
 
-        // Filter saved notes - only include notes that exist in both notes array and savedNotes object
-        const savedNotesData = notes.filter((note) => savedNotes[note.id]);
-
-        setUserNotes(uploadedNotes);
-        setSavedNotesList(savedNotesData);
+        if (isMounted) {
+          setUserNotes(uploadedNotes);
+          setSavedNotesList(savedNotesData);
+          setDataFetched(true); // Mark data as fetched to prevent refetching
+          console.log(`Fetched ${uploadedNotes.length} uploaded notes and ${savedNotesData.length} saved notes for user ${user.email}`);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        if (isMounted) {
+          setError("Failed to load your notes. Please try refreshing the page.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    // Only fetch when we have both the user and notes data, and savedNotes has finished loading
-    if (user && notes.length > 0 && !isSavedNotesLoading) {
-      fetchUserData();
-    }
+    // Only fetch when we have user and haven't fetched data yet
+    fetchUserData();
 
     return () => {
       isMounted = false;
     };
-  }, [user, notes, savedNotes, isSavedNotesLoading]);
+  }, [user, dataFetched]);
 
   const handleViewNote = (noteUrl, noteId) => {
     if (!noteId || !noteUrl) {
@@ -87,38 +163,44 @@ export default function UserPage() {
     if (window.confirm("Are you sure you want to delete this note?")) {
       try {
         await deleteDoc(doc(db, "notes", id))
+        // Update local state to reflect the deletion
         setUserNotes((prevNotes) => prevNotes.filter((note) => note.id !== id))
         console.log(`Note with ID: ${id} has been deleted successfully.`)
       } catch (error) {
         console.error("Error deleting note:", error)
+        alert("Error deleting note. Please try again.")
       }
     }
   }
 
 
   const handleUnsave = async (noteId) => {
-
     setSavingNotes(true);
 
-    const confirmUnsave=window.confirm("Are you sure you want to unsave this note?");
+    const confirmUnsave = window.confirm("Are you sure you want to unsave this note?");
     if (!confirmUnsave) {
       setSavingNotes(false);
       return;
     }
-  
+
     try {
       const userId = auth.currentUser.uid;
       const noteRef = doc(db, "users", userId, "savedNotes", noteId);
-  
+
       await deleteDoc(noteRef); // Remove from Firestore
-  
-  
+
+      // Update local states
       setSavedNotesList((prev) => prev.filter((note) => note.id !== noteId));
-  
+      setSavedNotes((prev) => {
+        const updated = { ...prev };
+        delete updated[noteId];
+        return updated;
+      });
+
     } catch (error) {
       console.error("Error unsaving note:", error);
       alert("Error unsaving note. Please try again.");
-    }finally{
+    } finally {
       setSavingNotes(false);
     }
   };
@@ -290,6 +372,19 @@ export default function UserPage() {
       {/* Main content - Fixed width container */}
       <div className="md:ml-64 min-h-screen">
         <div className="max-w-7xl mx-auto p-6 md:mt-20">
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+              <div className="flex justify-between items-center">
+                <span>{error}</span>
+                <button
+                  onClick={refreshData}
+                  className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
           {loading ? (
             <div>
               <h2 className="text-2xl font-bold mb-6">{activeTab === "uploads" ? "Your Uploads" : "Saved Notes"}</h2>

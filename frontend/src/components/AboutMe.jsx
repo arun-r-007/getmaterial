@@ -61,7 +61,7 @@ export default function About() {
                             Building smart web solutions with React, AI, and modern tech. Freelancer, innovator, and problem solver.
                         </motion.p>
 
-                        <a href="https://www.linkedin.com/in/talagana-rajesh-75a546289/" target="_blank" rel="noopener noreferrer">
+                        <a href="https://talaganarajesh.vercel.app/" target="_blank" rel="noopener noreferrer">
                             <motion.button
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}

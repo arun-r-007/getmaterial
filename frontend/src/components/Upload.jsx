@@ -1,14 +1,10 @@
 import { useState, useRef } from 'react';
-// import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-import { auth, addNote } from '../firebase';
-
-import './loader.css'
-
 import { useEffect } from 'react';
-import { getNotes } from '../firebase';
+import axios from 'axios';
+import { auth, addNote, getNotes } from '../firebase';
+import { normalizeForStorage, toTitleCase } from '../lib/utils';
+import './loader.css'
 
 import CustomSelect from './CustomSelect';
 
@@ -31,20 +27,22 @@ function Upload() {
       try {
         const fetchedNotes = await getNotes();
 
-        // Normalize subject names
+        // Keep original case for subjects (they're now stored lowercase)
         const normalizedNotes = fetchedNotes.map(note => ({
           ...note,
-          subject: note.subject.trim().toUpperCase(),
+          subject: note.subject || '',
         }));
 
 
-        // Extract unique subjects
+        // Extract unique subjects and format for display
         const fetchedsubjects = [...new Set(normalizedNotes.map(note => note.subject))];
 
-        fetchedsubjects.sort();
-        fetchedsubjects.push('Not mentioned');
+        // Convert to title case for display, but keep the original lowercase value
+        const formattedSubjects = fetchedsubjects.map(subject => toTitleCase(subject));
+        formattedSubjects.sort();
+        formattedSubjects.push('Not mentioned');
 
-        setSubjects(fetchedsubjects);
+        setSubjects(formattedSubjects);
 
       } catch (error) {
         console.error('Error fetching subjects:', error);
@@ -284,9 +282,9 @@ function Upload() {
   // Function to get the actual subject name to submit
   const getSubjectForSubmission = () => {
     if (selectedSubject === 'Not mentioned') {
-      return newSubject.trim() || '';
+      return normalizeForStorage(newSubject.trim() || '');
     }
-    return selectedSubject;
+    return normalizeForStorage(selectedSubject);
   };
 
 

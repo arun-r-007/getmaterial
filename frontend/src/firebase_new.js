@@ -266,12 +266,6 @@ const getFilterOptions = async () => {
         });
         const subjects = Array.from(subjectMap.values());
         
-        // Sort subjects and move "not mentioned" to the bottom
-        const sortedSubjects = subjects.filter(subject => subject !== 'not mentioned').sort();
-        if (subjects.includes('not mentioned')) {
-            sortedSubjects.push('not mentioned');
-        }
-        
         // Deduplicate modules by normalizing to lowercase
         const moduleMap = new Map();
         notes.forEach(note => {
@@ -286,7 +280,7 @@ const getFilterOptions = async () => {
         
         return {
             semesters: semesters.sort(),
-            subjects: sortedSubjects, // Already normalized to lowercase with "not mentioned" at bottom
+            subjects: subjects.sort(), // Already normalized to lowercase
             modules: modules.sort() // Already normalized to lowercase
         };
     } catch (error) {

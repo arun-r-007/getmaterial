@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useContext, useRef } from "react"
 import { getInitialNotes, getNotesWithPagination, searchNotes, getFilterOptions, getTotalNotesCount, getAllNotesWithFilters } from "../firebase"
+import { toTitleCase } from "../lib/utils"
 import CustomSelect from "./CustomSelect"
 import { db, auth } from "../firebase"
 import { ArrowUp, Trash, Bookmark } from "lucide-react"
@@ -252,9 +253,7 @@ function Dashboard() {
   // Debounced search effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (titleFilter.trim() !== '' || semesterFilter || subjectFilter || moduleFilter || nameFilter) {
-        applyFilters();
-      }
+      applyFilters(); // Always apply filters (will handle both filtered and unfiltered states)
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timeoutId);
@@ -518,15 +517,14 @@ function Dashboard() {
               Subject
             </label> */}
             <CustomSelect
-              options={["Select Subject", ...filterOptions.subjects]}
-              placeholder={subjectFilter || "Select Subject"}
+              options={["Select Subject", ...filterOptions.subjects.map(subject => toTitleCase(subject))]}
+              placeholder={subjectFilter ? toTitleCase(subjectFilter) : "Select Subject"}
               onChange={(selectedOption) => {
                 if (selectedOption === "Select Subject") {
                   setSubjectFilter(""); // Clear filter when "Select Subject" is chosen
                 } else {
-                  setSubjectFilter(selectedOption);
+                  setSubjectFilter(selectedOption.toLowerCase());
                 }
-                setTitleFilter(""); // Clear search filter when subject filter is applied
               }}
             />
           </div>
@@ -537,15 +535,14 @@ function Dashboard() {
               Module
             </label> */}
             <CustomSelect
-              options={["Select Module", ...filterOptions.modules]}
-              placeholder={moduleFilter || "Select Module"}
+              options={["Select Module", ...filterOptions.modules.map(module => toTitleCase(module))]}
+              placeholder={moduleFilter ? toTitleCase(moduleFilter) : "Select Module"}
               onChange={(selectedOption) => {
                 if (selectedOption === "Select Module") {
                   setModuleFilter(""); // Clear filter when "Select Module" is chosen
                 } else {
-                  setModuleFilter(selectedOption);
+                  setModuleFilter(selectedOption.toLowerCase());
                 }
-                setTitleFilter(""); // Clear search filter when module filter is applied
               }}
             />
           </div>
@@ -564,7 +561,6 @@ function Dashboard() {
                 } else {
                   setSemesterFilter(selectedOption);
                 }
-                setTitleFilter(""); // Clear search filter when semester filter is applied
               }}
             />
           </div>
@@ -602,16 +598,15 @@ function Dashboard() {
                           setSubjectFilter("")
                         } else {
                           setSubjectFilter(note.subject)
-                          setTitleFilter("") // Clear search filter when subject filter is applied
                         }
                       }}
                       className="group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
                     >
-                      {note.subject || "unknown"}
+                      {toTitleCase(note.subject) || "unknown"}
 
                       {/* Tooltip */}
                       <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        View all notes of {note.subject}
+                        View all notes of {toTitleCase(note.subject)}
                       </span>
                     </span>
                   </h1>
@@ -624,16 +619,15 @@ function Dashboard() {
                           setModuleFilter("")
                         } else {
                           setModuleFilter(note.module)
-                          setTitleFilter("") // Clear search filter when module filter is applied
                         }
                       }}
                       className="text-gray-600 group hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
                     >
-                      {note.module || "unknown"}
+                      {toTitleCase(note.module) || "unknown"}
 
                       {/* Tooltip */}
                       <span className="tooltip absolute bottom-full w-full transform -translate-x-1/2 mt-2 py-3 px-2 bg-slate-900 text-white text-xs rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        View all notes of {note.module}
+                        View all notes of {toTitleCase(note.module)}
                       </span>
                     </span>
                   </p>
@@ -646,7 +640,6 @@ function Dashboard() {
                           setSemesterFilter("")
                         } else {
                           setSemesterFilter(note.semester)
-                          setTitleFilter("") // Clear search filter when semester filter is applied
                         }
                       }}
                       className="text-gray-600 text-center group ml-1 hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
@@ -670,7 +663,6 @@ function Dashboard() {
                           setNameFilter("")
                         } else {
                           setNameFilter(note.contributorName)
-                          setTitleFilter("") // Clear search filter when contributor filter is applied
                         }
                       }}
                       className="text-green-800 group font-semibold hover:text-green-500 transition-colors duration-300 cursor-pointer relative"
